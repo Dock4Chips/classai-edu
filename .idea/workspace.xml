@@ -5,7 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="commit">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +48,7 @@
     "Python.auth.executor": "Run",
     "Python.authorization.executor": "Run",
     "Python.classai_main (1).executor": "Run",
-    "Python.classai_main.executor": "Debug",
+    "Python.classai_main.executor": "Run",
     "Python.config.executor": "Run",
     "Python.count_file.executor": "Run",
     "Python.data_pro.executor": "Run",
@@ -102,7 +102,7 @@
       <recent name="$PROJECT_DIR$/backend-edu" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="npm.dev">
     <configuration name="classai_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="classai-edu" />
       <option name="ENV_FILES" value="" />
@@ -207,10 +207,10 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="npm.dev" />
+        <item itemvalue="Python.classai_main" />
         <item itemvalue="Python.main" />
         <item itemvalue="Python.demo" />
-        <item itemvalue="Python.classai_main" />
-        <item itemvalue="npm.dev" />
         <item itemvalue="Python.dmeo" />
       </list>
     </recent_temporary>
@@ -258,23 +258,7 @@
       <workItem from="1764511993488" duration="9437000" />
       <workItem from="1764584501933" duration="23846000" />
       <workItem from="1765887744239" duration="1428000" />
-      <workItem from="1765892133258" duration="3636000" />
-    </task>
-    <task id="LOCAL-00006" summary="commit">
-      <option name="closed" value="true" />
-      <created>1763276067329</created>
-      <option name="number" value="00006" />
-      <option name="presentableId" value="LOCAL-00006" />
-      <option name="project" value="LOCAL" />
-      <updated>1763276067329</updated>
-    </task>
-    <task id="LOCAL-00007" summary="chore(project): 清理并重构项目配置与依赖管理- 移除冗余的 demo.py 文件内容，简化预测逻辑&#10;- 更新 requirements.txt 以重新组织项目依赖&#10;- 注释掉 predic.py 中的图像和视频展示代码块&#10;-修正 main.py 中模型路径的注释描述&#10;- 移除 val.py 中未使用的 sympy 导入&#10;- 更新 IDE 配置文件以反映新的运行设置和断点位置&#10;- 添加 ProjectRootManager 组件到 .idea/misc.xml 以明确 Python SDK&#10;- 清理工作区中不再需要的运行配置项- 更新日志记录相关模块的时间戳与调试信息- 调整 coverage 测试套件时间戳以匹配最新执行状态">
-      <option name="closed" value="true" />
-      <created>1763372862913</created>
-      <option name="number" value="00007" />
-      <option name="presentableId" value="LOCAL-00007" />
-      <option name="project" value="LOCAL" />
-      <updated>1763372862913</updated>
+      <workItem from="1765892133258" duration="4931000" />
     </task>
     <task id="LOCAL-00008" summary="chore(project): 清理并重构项目配置与依赖管理- 移除冗余的 demo.py 文件内容，简化预测逻辑&#10;- 更新 requirements.txt以重新组织项目依赖&#10;- 注释掉 predic.py 中的图像和视频展示代码块&#10;-修正 main.py 中模型路径的注释描述&#10;- 移除 val.py 中未使用的 sympy 导入&#10;- 更新 IDE 配置文件以反映新的运行设置和断点位置&#10;- 添加 ProjectRootManager 组件到 .idea/misc.xml 以明确 Python SDK- 清理工作区中不再需要的运行配置项&#10;- 更新日志记录相关模块的时间戳与调试信息&#10;- 调整 coverage 测试套件时间戳以匹配最新执行状态">
       <option name="closed" value="true" />
@@ -652,7 +636,23 @@
       <option name="project" value="LOCAL" />
       <updated>1765895716780</updated>
     </task>
-    <option name="localTasksCounter" value="55" />
+    <task id="LOCAL-00055" summary="commit">
+      <option name="closed" value="true" />
+      <created>1765896491875</created>
+      <option name="number" value="00055" />
+      <option name="presentableId" value="LOCAL-00055" />
+      <option name="project" value="LOCAL" />
+      <updated>1765896491875</updated>
+    </task>
+    <task id="LOCAL-00056" summary="commit">
+      <option name="closed" value="true" />
+      <created>1765896498016</created>
+      <option name="number" value="00056" />
+      <option name="presentableId" value="LOCAL-00056" />
+      <option name="project" value="LOCAL" />
+      <updated>1765896498016</updated>
+    </task>
+    <option name="localTasksCounter" value="57" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
