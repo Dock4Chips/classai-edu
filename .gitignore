@@ -22,6 +22,7 @@ yolo_edu/datasets/active/
 # Datasets videos (DO NOT UPLOAD)
 ####################
 yolo_edu/datasets/*.mp4
+yolo_edu/runs/*.pt
 
 ####################
 # Course / resource libraries (DO NOT UPLOAD)
