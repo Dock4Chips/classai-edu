@@ -6,10 +6,16 @@ __pycache__/
 *.pyo
 
 ####################
+# Backend
+####################
+backend_edu/*.env
+
+####################
 # Frontend
 ####################
 node_modules/
 frontend_edu/node_modules/
+frontend_edu/*.env
 
 ####################
 # YOLO / Training outputs
