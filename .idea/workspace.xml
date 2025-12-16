@@ -36,53 +36,54 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python tests.Doctest train_yolo_model.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Doctests in main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.1.executor&quot;: &quot;Run&quot;,
-    &quot;Python.2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.auth.executor&quot;: &quot;Run&quot;,
-    &quot;Python.authorization.executor&quot;: &quot;Run&quot;,
-    &quot;Python.classai_main (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.classai_main.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.config.executor&quot;: &quot;Run&quot;,
-    &quot;Python.count_file.executor&quot;: &quot;Run&quot;,
-    &quot;Python.data_pro.executor&quot;: &quot;Run&quot;,
-    &quot;Python.demo (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.demo.executor&quot;: &quot;Run&quot;,
-    &quot;Python.dmeo.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main (1).executor&quot;: &quot;Debug&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.minio_tools.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.predic (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.predic.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.predict (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.predict.executor&quot;: &quot;Run&quot;,
-    &quot;Python.route_api.executor&quot;: &quot;Run&quot;,
-    &quot;Python.sanjiaozhou.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.train.executor&quot;: &quot;Run&quot;,
-    &quot;Python.tttt.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.val.executor&quot;: &quot;Run&quot;,
-    &quot;Python.val_main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/dock4chips/Script-P/classai-edu&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.gitlab.GitLabSettingsConfigurable&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/dock4chips/Script-P/classai-edu/frontend_edu/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python tests.Doctest train_yolo_model.executor": "Run",
+    "Python tests.Doctests in main.executor": "Run",
+    "Python.1.executor": "Run",
+    "Python.2.executor": "Run",
+    "Python.auth.executor": "Run",
+    "Python.authorization.executor": "Run",
+    "Python.classai_main (1).executor": "Run",
+    "Python.classai_main.executor": "Debug",
+    "Python.config.executor": "Run",
+    "Python.count_file.executor": "Run",
+    "Python.data_pro.executor": "Run",
+    "Python.demo (1).executor": "Run",
+    "Python.demo.executor": "Run",
+    "Python.dmeo.executor": "Run",
+    "Python.main (1).executor": "Debug",
+    "Python.main.executor": "Run",
+    "Python.minio_tools.executor": "Debug",
+    "Python.predic (1).executor": "Run",
+    "Python.predic.executor": "Debug",
+    "Python.predict (1).executor": "Run",
+    "Python.predict.executor": "Run",
+    "Python.route_api.executor": "Run",
+    "Python.sanjiaozhou.executor": "Debug",
+    "Python.train.executor": "Run",
+    "Python.tttt.executor": "Debug",
+    "Python.val.executor": "Run",
+    "Python.val_main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/dock4chips/Script-P/classai-edu",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.dev.executor": "Run",
+    "settings.editor.selected.configurable": "org.jetbrains.plugins.gitlab.GitLabSettingsConfigurable",
+    "ts.external.directory.path": "/Users/dock4chips/Script-P/classai-edu/frontend_edu/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -255,6 +256,7 @@
       <workItem from="1764511993488" duration="9437000" />
       <workItem from="1764584501933" duration="23846000" />
       <workItem from="1765887744239" duration="1428000" />
+      <workItem from="1765892133258" duration="1069000" />
     </task>
     <task id="LOCAL-00001" summary="commit">
       <option name="closed" value="true" />
@@ -616,7 +618,15 @@
       <option name="project" value="LOCAL" />
       <updated>1765887549857</updated>
     </task>
-    <option name="localTasksCounter" value="46" />
+    <task id="LOCAL-00046" summary="commit">
+      <option name="closed" value="true" />
+      <created>1765892198931</created>
+      <option name="number" value="00046" />
+      <option name="presentableId" value="LOCAL-00046" />
+      <option name="project" value="LOCAL" />
+      <updated>1765892198931</updated>
+    </task>
+    <option name="localTasksCounter" value="47" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
