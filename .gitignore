@@ -22,7 +22,6 @@ yolo_edu/datasets/active/
 # Datasets videos (DO NOT UPLOAD)
 ####################
 yolo_edu/datasets/*.mp4
-yolo_edu/runs/*.pt
 
 ####################
 # Course / resource libraries (DO NOT UPLOAD)
@@ -32,7 +31,6 @@ req_py_base_lib/
 req_yolo_lib/
 
 logs/*.log
-model/*.pt
 
 ####################
 # OS
