@@ -14,8 +14,6 @@ frontend_edu/node_modules/
 ####################
 # YOLO / Training outputs
 ####################
-runs/
-results/
 yolo_edu/datasets/results/
 yolo_edu/datasets/active/
 *.zip

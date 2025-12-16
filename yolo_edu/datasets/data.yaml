@@ -1,0 +1,21 @@
+path: ../active
+
+train: train/images
+val: val/images
+test: test/images
+
+
+nc: 7
+names:
+  - Examiner           # 0：监考老师
+  - Learning_To_Copy   # 1：试图抄袭
+  - Looking_Around     # 2：东张西望
+  - Normal             # 3：正常坐姿
+  - Using_Mobile       # 4：使用手机
+  - Sharing_Answers    # 5：分享答案
+  - Sleeping           # 6：睡觉
+
+
+# 1 和 5 的区别
+# 1是A查看B的答案,但是B不知道
+# 5是A查看B的答案,B知道
