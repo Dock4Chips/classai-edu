@@ -25,9 +25,9 @@ yolo_edu/datasets/*.mp4
 ####################
 # Course / resource libraries (DO NOT UPLOAD)
 ####################
-req_opencv_lib/
-req_py_base_lib/
-req_yolo_lib/
+req_opencv_lib/*.mp4
+req_py_base_lib/*.mp4
+req_yolo_lib/*.mp4
 
 logs/*.log
 
