@@ -181,7 +181,7 @@ if __name__ == '__main__':
     # }
     # update_multi_label_id(txt_dir, id_map)
 
-    files = r'/Users/dock4chips/Script-P/datasets/datasets/images'
+    files = r'/Users/dock4chips/Downloads/datasets/train/images'
 
     # print(42 + 40 + 40 + 41 + 309 + 246)
     print(count_files(files))
@@ -196,9 +196,9 @@ if __name__ == '__main__':
     # txt_dir = r'/Users/dock4chips/Script-P/datasets/Exam cheating 2.v4i.yolov8/val/labels'
     # convert_labels(txt_dir)
 
-    src_dir = r'test'
-    dst_dir = r'datasets/labels'
-    new_name = 'data_rbg_frame'
+    # src_dir = r'test'
+    # dst_dir = r'datasets/labels'
+    # new_name = 'data_rbg_frame'
     # copy_and_rename_continue(src_dir, dst_dir, new_name)
 
 # nc: 6

@@ -3,12 +3,12 @@
 import {motion, AnimatePresence} from 'framer-motion';
 import {useEffect, useState} from 'react';
 import {Eye, EyeOff, ArrowRight, User, Lock, RefreshCw, Crosshair, Zap, ShieldCheck, AlertCircle} from 'lucide-react';
-import {GradientText} from './react-bits/gradient-text';
-import {AuroraBackground} from './react-bits/aurora-background';
-import {FloatingParticles} from './react-bits/floating-particles';
-import {Input} from './react-bits/input';
-import {Button} from './react-bits/button';
-import {Card} from './react-bits/card';
+import {GradientText} from '@/components/ui/gradient-text';
+import {AuroraBackground} from '@/components/ui/aurora-background';
+import {FloatingParticles} from '@/components/ui/floating-particles';
+import {Input} from '@/components/ui/input';
+import {Button} from '@/components/ui/button';
+import {Card} from '@/components/ui/card';
 import {AuthService} from "@/lib/service/auth";
 import {apiClient} from "@/lib/api";
 import {useRouter} from 'next/navigation';

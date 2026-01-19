@@ -16,13 +16,13 @@ ClassAI-Edu is an educational monitoring system that uses YOLOv8 object detectio
 
 Run the backend server (port 7869):
 ```bash
-cd backend_edu
+cd backend_api
 python classai_main.py
 ```
 
 Test database connections:
 ```bash
-cd backend_edu
+cd backend_api
 python config/config.py
 ```
 
@@ -30,19 +30,19 @@ python config/config.py
 
 Development server (port 3000):
 ```bash
-cd frontend_edu
+cd frontend_web
 npm run dev
 ```
 
 Build for production:
 ```bash
-cd frontend_edu
+cd frontend_web
 npm run build
 ```
 
 Lint:
 ```bash
-cd frontend_edu
+cd frontend_web
 npm run lint
 ```
 
@@ -51,7 +51,7 @@ npm run lint
 Train the model:
 ```bash
 cd yolo_edu
-python main.py
+python main1.py
 ```
 
 Run predictions:
@@ -175,7 +175,7 @@ Frontend:
 
 The backend controller imports YOLO prediction classes directly:
 ```python
-# In backend_edu/controller/yolo_api.py
+# In backend_api/controller/yolo_api.py
 from yolo_edu.predict import GetPos, PreAct
 ```
 

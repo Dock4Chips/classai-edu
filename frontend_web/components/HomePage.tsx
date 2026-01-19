@@ -2,14 +2,14 @@
 
 import {motion} from 'framer-motion';
 import {Camera, Video, Image as ImageIcon, Cpu, BarChart3} from 'lucide-react';
-import {SpotlightCard} from './react-bits/spotlight-card';
-import {AnimatedContent} from './react-bits/animated-content';
-import {GradientText} from './react-bits/gradient-text';
-import {BeamsBackground} from './react-bits/beams-background';
-import {AuroraBackground} from './react-bits/aurora-background';
-import {FloatingParticles} from './react-bits/floating-particles';
-import {MagneticButton} from './react-bits/magnetic-button';
-import {Carousel} from './react-bits/carousel';
+import {SpotlightCard} from '@/components/ui/spotlight-card';
+import {AnimatedContent} from '@/components/ui/animated-content';
+import {GradientText} from '@/components/ui/gradient-text';
+import {BeamsBackground} from '@/components/ui/beams-background';
+import {AuroraBackground} from '@/components/ui/aurora-background';
+import {FloatingParticles} from '@/components/ui/floating-particles';
+import {MagneticButton} from '@/components/ui/magnetic-button';
+import {Carousel} from '@/components/ui/carousel';
 import {useEffect, useState} from 'react';
 import {Results} from "@/lib/api";
 import {PageIndex} from "@/lib/service/page_index";

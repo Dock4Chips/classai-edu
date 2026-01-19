@@ -5,7 +5,78 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="commit">
+      <change afterPath="$PROJECT_DIR$/backend_api/.env.local" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend_api/.env.prod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/classai-edu.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/classai-edu.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025_12_16_18_34_[Changes]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_2025_12_16_18_34__Changes_.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/.env.local" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/.env.prod" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/auth/authorization.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/auth/authorization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/classai_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/classai_main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/config/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/config/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/config/auth_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/config/auth_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/config/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/config/security_context.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/config/security_context.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/constant/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/constant/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/constant/constant.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/constant/constant.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/controller/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/controller/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/controller/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/controller/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/controller/page_index.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/controller/page_index.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/controller/yolo_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/controller/yolo_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/mapper/page_index_mapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/mapper/page_index_mapper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/mapper/user_mapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/mapper/user_mapper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/model/exceptions.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/model/exceptions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/model/result.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/model/result.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/model/security.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/model/security.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/service/auth_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/service/auth_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/service/page_index_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/service/page_index_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/tools/db_fields.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/tools/db_fields.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_edu/tools/security_tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/tools/security_tool.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/app/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/app/favicon.ico" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/app/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/app/layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/app/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/app/login/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/AuthPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/AuthPage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/HomePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/HomePage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/animated-background.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/animated-background.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/animated-content.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/animated-content.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/animations.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/animations.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/aurora-background.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/aurora-background.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/beams-background.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/beams-background.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/button.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/button.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/card.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/carousel.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/carousel.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/floating-particles.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/floating-particles.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/gradient-text.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/gradient-text.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/input.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/input.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/magnetic-button.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/magnetic-button.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/spotlight-card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/spotlight-card.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/steps.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/steps.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/components/react-bits/tilt-card.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/ui/tilt-card.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/eslint.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/eslint.config.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/lib/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/lib/api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/lib/service/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/lib/service/auth.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/lib/service/page_index.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/lib/service/page_index.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/lib/service/yolo_api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/lib/service/yolo_api.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/next.config.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/postcss.config.mjs" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/postcss.config.mjs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/public/file.svg" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/public/file.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/public/globe.svg" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/public/globe.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/public/next.svg" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/public/next.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/public/vercel.svg" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/public/vercel.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/public/window.svg" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/public/window.svg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_edu/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets_split.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/datasets_split.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,54 +109,57 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python tests.Doctest train_yolo_model.executor": "Run",
-    "Python tests.Doctests in main.executor": "Run",
-    "Python.1.executor": "Run",
-    "Python.2.executor": "Run",
-    "Python.auth.executor": "Run",
-    "Python.authorization.executor": "Run",
-    "Python.classai_main (1).executor": "Run",
-    "Python.classai_main.executor": "Run",
-    "Python.config.executor": "Run",
-    "Python.count_file.executor": "Run",
-    "Python.data_pro.executor": "Run",
-    "Python.demo (1).executor": "Run",
-    "Python.demo.executor": "Run",
-    "Python.dmeo.executor": "Run",
-    "Python.main (1).executor": "Debug",
-    "Python.main.executor": "Run",
-    "Python.minio_tools.executor": "Debug",
-    "Python.predic (1).executor": "Run",
-    "Python.predic.executor": "Debug",
-    "Python.predict (1).executor": "Run",
-    "Python.predict.executor": "Run",
-    "Python.route_api.executor": "Run",
-    "Python.sanjiaozhou.executor": "Debug",
-    "Python.train.executor": "Run",
-    "Python.tttt.executor": "Debug",
-    "Python.val.executor": "Run",
-    "Python.val_main.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/dock4chips/Script-P/classai-edu",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.dev.executor": "Run",
-    "settings.editor.selected.configurable": "org.jetbrains.plugins.gitlab.GitLabSettingsConfigurable",
-    "ts.external.directory.path": "/Users/dock4chips/Script-P/classai-edu/frontend_edu/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python tests.Doctest train_yolo_model.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Doctests in main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.auth.executor&quot;: &quot;Run&quot;,
+    &quot;Python.authorization.executor&quot;: &quot;Run&quot;,
+    &quot;Python.classai_main (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.classai_main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.config.executor&quot;: &quot;Run&quot;,
+    &quot;Python.count_file.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_pro.executor&quot;: &quot;Run&quot;,
+    &quot;Python.datasets_split.executor&quot;: &quot;Run&quot;,
+    &quot;Python.demo (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.demo.executor&quot;: &quot;Run&quot;,
+    &quot;Python.dmeo.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.minio_tools.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.predic (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.predic.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.predict (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.predict.executor&quot;: &quot;Run&quot;,
+    &quot;Python.route_api.executor&quot;: &quot;Run&quot;,
+    &quot;Python.sanjiaozhou.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.train.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tttt.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.val.executor&quot;: &quot;Run&quot;,
+    &quot;Python.val_main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/dock4chips/Script-P/classai-edu&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.dev (1).executor&quot;: &quot;Run&quot;,
+    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/dock4chips/Script-P/classai-edu/frontend_edu/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$" />
@@ -102,7 +176,7 @@
       <recent name="$PROJECT_DIR$/backend-edu" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.dev">
+  <component name="RunManager" selected="Python.datasets_split">
     <configuration name="classai_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="classai-edu" />
       <option name="ENV_FILES" value="" />
@@ -112,12 +186,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/backend_edu" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/backend_api" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/backend_edu/classai_main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/backend_api/classai_main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -126,7 +200,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="demo" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="datasets_split" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="classai-edu" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -140,53 +214,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/demo.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="dmeo" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="classai-edu" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dmeo.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="classai-edu" />
-      <option name="ENV_FILES" value="" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/yolo_edu" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/datasets_split.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -196,7 +224,7 @@
       <method v="2" />
     </configuration>
     <configuration name="dev" type="js.build_tools.npm" temporary="true" nameIsGenerated="true">
-      <package-json value="$PROJECT_DIR$/frontend_edu/package.json" />
+      <package-json value="$PROJECT_DIR$/frontend_web/package.json" />
       <command value="run" />
       <scripts>
         <script value="dev" />
@@ -207,11 +235,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.datasets_split" />
         <item itemvalue="npm.dev" />
         <item itemvalue="Python.classai_main" />
-        <item itemvalue="Python.main" />
-        <item itemvalue="Python.demo" />
-        <item itemvalue="Python.dmeo" />
       </list>
     </recent_temporary>
   </component>
@@ -258,23 +284,12 @@
       <workItem from="1764511993488" duration="9437000" />
       <workItem from="1764584501933" duration="23846000" />
       <workItem from="1765887744239" duration="1428000" />
-      <workItem from="1765892133258" duration="4931000" />
-    </task>
-    <task id="LOCAL-00008" summary="chore(project): 清理并重构项目配置与依赖管理- 移除冗余的 demo.py 文件内容，简化预测逻辑&#10;- 更新 requirements.txt以重新组织项目依赖&#10;- 注释掉 predic.py 中的图像和视频展示代码块&#10;-修正 main.py 中模型路径的注释描述&#10;- 移除 val.py 中未使用的 sympy 导入&#10;- 更新 IDE 配置文件以反映新的运行设置和断点位置&#10;- 添加 ProjectRootManager 组件到 .idea/misc.xml 以明确 Python SDK- 清理工作区中不再需要的运行配置项&#10;- 更新日志记录相关模块的时间戳与调试信息&#10;- 调整 coverage 测试套件时间戳以匹配最新执行状态">
-      <option name="closed" value="true" />
-      <created>1763404037466</created>
-      <option name="number" value="00008" />
-      <option name="presentableId" value="LOCAL-00008" />
-      <option name="project" value="LOCAL" />
-      <updated>1763404037466</updated>
-    </task>
-    <task id="LOCAL-00009" summary="refactor(gui):重构卡密验证界面与逻辑&#10;&#10;- 简化GUI类结构，移除多余窗口管理逻辑&#10;- 更新Redis键存储方式，使用带前缀的字符串键替代集合- 设置卡密默认过期时间为三天&#10;-优化验证窗口UI布局与样式配置&#10;- 实现验证成功后直接关闭窗口而非跳转新界面&#10;-修复窗口居中显示逻辑&#10;- 移除未使用的tkinter导入与旧版主窗口代码">
-      <option name="closed" value="true" />
-      <created>1763409001551</created>
-      <option name="number" value="00009" />
-      <option name="presentableId" value="LOCAL-00009" />
-      <option name="project" value="LOCAL" />
-      <updated>1763409001551</updated>
+      <workItem from="1765892133258" duration="6224000" />
+      <workItem from="1766048142840" duration="3579000" />
+      <workItem from="1766229726274" duration="5353000" />
+      <workItem from="1768324988895" duration="274000" />
+      <workItem from="1768454723072" duration="3674000" />
+      <workItem from="1768820900107" duration="20000" />
     </task>
     <task id="LOCAL-00010" summary="refactor(gui):重构卡密验证界面与逻辑&#10;&#10;- 简化GUI类结构，移除多余窗口管理逻辑&#10;- 更新Redis键存储方式，使用带前缀的字符串键替代集合- 设置卡密默认过期时间为三天&#10;-优化验证窗口UI布局与样式配置&#10;- 实现验证成功后直接关闭窗口而非跳转新界面&#10;-修复窗口居中显示逻辑&#10;- 移除未使用的tkinter导入与旧版主窗口代码">
       <option name="closed" value="true" />
@@ -652,7 +667,23 @@
       <option name="project" value="LOCAL" />
       <updated>1765896498016</updated>
     </task>
-    <option name="localTasksCounter" value="57" />
+    <task id="LOCAL-00057" summary="commit">
+      <option name="closed" value="true" />
+      <created>1765906934435</created>
+      <option name="number" value="00057" />
+      <option name="presentableId" value="LOCAL-00057" />
+      <option name="project" value="LOCAL" />
+      <updated>1765906934435</updated>
+    </task>
+    <task id="LOCAL-00058" summary="commit">
+      <option name="closed" value="true" />
+      <created>1765906959861</created>
+      <option name="number" value="00058" />
+      <option name="presentableId" value="LOCAL-00058" />
+      <option name="project" value="LOCAL" />
+      <updated>1765906959861</updated>
+    </task>
+    <option name="localTasksCounter" value="59" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -718,6 +749,22 @@
     <MESSAGE value="commit" />
     <option name="LAST_COMMIT_MESSAGE" value="commit" />
   </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main1.py</url>
+          <line>15</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/main1.py</url>
+          <line>26</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/classai_edu$Doctests_in_main.coverage" NAME="Doctests in main Coverage Results" MODIFIED="1762759856334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$val.coverage" NAME="val Coverage Results" MODIFIED="1764346502948" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
@@ -725,11 +772,13 @@
     <SUITE FILE_PATH="coverage/classai_edu$predic.coverage" NAME="predic Coverage Results" MODIFIED="1763908920031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$train.coverage" NAME="train Coverage Results" MODIFIED="1763270360580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/classai_edu$demo__1_.coverage" NAME="demo (1) Coverage Results" MODIFIED="1765880373816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/classai_edu$main__1_.coverage" NAME="classai_main Coverage Results" MODIFIED="1763839793413" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend-edu" />
+    <SUITE FILE_PATH="coverage/classai_edu$main2.coverage" NAME="main2 Coverage Results" MODIFIED="1766238728334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/classai_edu$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1766235260129" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/classai_edu$datasets_split.coverage" NAME="datasets_split Coverage Results" MODIFIED="1768456970452" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$auth.coverage" NAME="auth Coverage Results" MODIFIED="1764687971468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_edu/controller" />
     <SUITE FILE_PATH="coverage/classai_edu$DivisionOfData.coverage" NAME="DivisionOfData Coverage Results" MODIFIED="1764971099950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$authorization.coverage" NAME="authorization Coverage Results" MODIFIED="1764683796936" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_edu/auth" />
-    <SUITE FILE_PATH="coverage/classai_edu$classai_main.coverage" NAME="classai_main Coverage Results" MODIFIED="1765221140657" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_edu" />
+    <SUITE FILE_PATH="coverage/classai_edu$classai_main.coverage" NAME="classai_main Coverage Results" MODIFIED="1768455138839" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_api" />
     <SUITE FILE_PATH="coverage/classai_edu$config.coverage" NAME="config Coverage Results" MODIFIED="1763832712064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend-edu/config" />
     <SUITE FILE_PATH="coverage/classai_edu$route_api.coverage" NAME="route_api Coverage Results" MODIFIED="1763909367016" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$demo.coverage" NAME="demo Coverage Results" MODIFIED="1765271271998" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />

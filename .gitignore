@@ -15,7 +15,7 @@ backend_edu/*.env
 # Frontend
 ####################
 node_modules/
-frontend_edu/node_modules/
+frontend_web/node_modules/
 frontend_edu/*.env
 
 ####################
