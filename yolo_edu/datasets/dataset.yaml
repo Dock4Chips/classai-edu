@@ -1,13 +1,20 @@
-train: ../active/train/images
-val: ../active/val/images
-test: ../active/test/images
+path: ../active
+
+train: train/images
+val: val/images
+test: test/images
+
 
 nc: 6
-names: ['Examiner', 'Learning_To_Copy', 'Looking_Around', 'Normal_Sitting', 'Talking', 'Using_Phone']
+names:
+  - staff              # 0：工作人员 / 管理人员
+  - learning_to_copy   # 1：试图抄袭
+  - looking_around     # 2：东张西望
+  - using_mobile       # 3：使用电子设备
+  - sharing_answers    # 4：分享答案
+  - sleeping           # 5：睡觉
 
-roboflow:
-  workspace: doha-xthas
-  project: exam-cheating-2-lkuvt
-  version: 4
-  license: CC BY 4.0
-  url: https://universe.roboflow.com/doha-xthas/exam-cheating-2-lkuvt/dataset/4
+
+# 1 和 4 的区别
+# 1是A查看B的答案,但是B不知道
+# 4是A查看B的答案,B知道
