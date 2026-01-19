@@ -14,13 +14,13 @@ ClassAI-Edu 是一个教育监控系统，使用 YOLOv8 目标检测来识别课
 
 运行后端服务器（端口 7869）：
 ```bash
-cd backend_edu
+cd backend_api
 python classai_main.py
 ```
 
 测试数据库连接：
 ```bash
-cd backend_edu
+cd backend_api
 python config/config.py
 ```
 
@@ -28,19 +28,19 @@ python config/config.py
 
 开发服务器（端口 3000）：
 ```bash
-cd frontend_edu
+cd frontend_web
 npm run dev
 ```
 
 生产构建：
 ```bash
-cd frontend_edu
+cd frontend_web
 npm run build
 ```
 
 代码检查：
 ```bash
-cd frontend_edu
+cd frontend_web
 npm run lint
 ```
 
@@ -49,7 +49,7 @@ npm run lint
 训练模型：
 ```bash
 cd yolo_edu
-python main.py
+python main1.py
 ```
 
 运行预测：
@@ -173,7 +173,7 @@ log.info("消息")
 
 后端控制器直接导入 YOLO 预测类：
 ```python
-# 在 backend_edu/controller/yolo_api.py 中
+# 在 backend_api/controller/yolo_api.py 中
 from yolo_edu.predict import GetPos, PreAct
 ```
 
