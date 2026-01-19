@@ -3,8 +3,6 @@ __pycache__/
 *.pyo
 .idea
 
-backend_api/*.env
-
 
 yolo_edu/datasets/active/
 *.zip
