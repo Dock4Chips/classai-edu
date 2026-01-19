@@ -7,7 +7,7 @@ from master_tools.db_tools import DBConfig, DBTools
 from master_tools.logger_tool import log
 from master_tools.minio_tools import Bucket
 
-env_path = Path(__file__).parent.parent / ".env.local"
+env_path = Path(__file__).parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
 # 连接 Redis

@@ -1,44 +1,16 @@
-####################
-# Python
-####################
 __pycache__/
 *.pyc
 *.pyo
 .idea
 
-####################
-# Backend
-####################
 backend_edu/*.env
 
-####################
-# Frontend
-####################
-node_modules/
-frontend_web/node_modules/
-frontend_edu/*.env
 
-####################
-# YOLO / Training outputs
-####################
 yolo_edu/datasets/active/
 *.zip
 
-####################
-# Datasets videos (DO NOT UPLOAD)
-####################
 yolo_edu/datasets/*.mp4
-
-####################
-# Course / resource libraries (DO NOT UPLOAD)
-####################
-req_opencv_lib/
-req_py_base_lib/
-req_yolo_lib/
-
+req_lib/**
 logs/*.log
 
-####################
-# OS
-####################
 .DS_Store
