@@ -1,0 +1,33 @@
+{
+  "categories": [
+    {
+      "id": 0,
+      "name": "learning_to_copy"
+    },
+    {
+      "id": 1,
+      "name": "looking_around"
+    },
+    {
+      "id": 2,
+      "name": "sharing_answers"
+    },
+    {
+      "id": 3,
+      "name": "sleeping"
+    },
+    {
+      "id": 4,
+      "name": "staff"
+    },
+    {
+      "id": 5,
+      "name": "using_mobile"
+    }
+  ],
+  "info": {
+    "year": 2026,
+    "version": "1.0",
+    "contributor": "Label Studio"
+  }
+}
