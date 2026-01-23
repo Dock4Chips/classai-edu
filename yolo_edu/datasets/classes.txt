@@ -1,6 +1,6 @@
-Examiner
-Learning_To_Copy
-Looking_Around
-Normal_Sitting
-Talking
-Using_Phone
+learning_to_copy
+looking_around
+sharing_answers
+sleeping
+staff
+using_mobile

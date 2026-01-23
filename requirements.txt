@@ -23,3 +23,4 @@ urllib3~=2.5.0
 minio~=7.2.20
 pillow~=11.3.0
 captcha~=0.7.1
+ttkthemes==3.3.0
