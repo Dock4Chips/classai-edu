@@ -4,23 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="chore(frontend): 移除前端动画组件并更新依赖配置&#10;&#10;- 删除 animated-background.tsx 组件文件&#10;- 删除 animations.tsx 动画工具组件&#10;- 删除 DetectionPage.tsx 检测页面组件&#10;- 更新 frontend_admin package.json 添加 axios、framer-motion、js-cookie 等依赖&#10;- 修改开发和启动脚本端口为 4000&#10;- 更新 api.ts 中公共端点路径配置&#10;- 修改数据集配置文件结构和类别定义">
+    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/controller/yolo_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/controller/yolo_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/demo.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main1.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/YOLO-tools/split_train_val.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/YOLO-tools/split_train_val.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/datasets/classes.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/dataset.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/datasets/dataset.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets_split.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/demo.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/predict.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/tool.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/val.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -314,31 +300,7 @@
       <workItem from="1768891489159" duration="4049000" />
       <workItem from="1768972762973" duration="3995000" />
       <workItem from="1769106619063" duration="314000" />
-      <workItem from="1769169773015" duration="7292000" />
-    </task>
-    <task id="LOCAL-00016" summary="refactor(exceptions): simplify exception handlers and remove unused imports&#10;&#10;- Remove unused Request import from exceptions module&#10;- Eliminate logging dependency in exception handlers&#10;- Simplify service exception handler signature&#10;- Update global exception handler to remove request context&#10;- Change default error message to &quot;服务器内部异常&quot;&#10;- Remove unused imports from secure API controller&#10;- Clean up result model by removing extra blank lines">
-      <option name="closed" value="true" />
-      <created>1763839033119</created>
-      <option name="number" value="00016" />
-      <option name="presentableId" value="LOCAL-00016" />
-      <option name="project" value="LOCAL" />
-      <updated>1763839033119</updated>
-    </task>
-    <task id="LOCAL-00017" summary="refactor(exceptions): simplify exception handlers and remove unused imports&#10;&#10;- Remove unused Request import from exceptions module&#10;- Eliminate logging dependency in exception handlers&#10;- Simplify service exception handler signature&#10;- Update global exception handler to remove request context&#10;- Change default error message to &quot;服务器内部异常&quot;&#10;- Remove unused imports from secure API controller&#10;- Clean up result model by removing extra blank lines">
-      <option name="closed" value="true" />
-      <created>1763839035684</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1763839035684</updated>
-    </task>
-    <task id="LOCAL-00018" summary="refactor(auth): improve token handling and cleanup imports&#10;&#10;- Reorder and clean up imports in authorization module&#10;- Fix encrypted user data decoding in token validation&#10;- Simplify exception messages for login expiration&#10;- Remove redundant newline characters and whitespace&#10;- Ensure consistent string encoding usage (&quot;utf-8&quot;)">
-      <option name="closed" value="true" />
-      <created>1763839878804</created>
-      <option name="number" value="00018" />
-      <option name="presentableId" value="LOCAL-00018" />
-      <option name="project" value="LOCAL" />
-      <updated>1763839878804</updated>
+      <workItem from="1769169773015" duration="7940000" />
     </task>
     <task id="LOCAL-00019" summary="refactor(auth): improve token handling and cleanup imports&#10;&#10;- Reorder and clean up imports in authorization module&#10;- Fix encrypted user data decoding in token validation&#10;- Simplify exception messages for login expiration&#10;- Remove redundant newline characters and whitespace&#10;- Ensure consistent string encoding usage (&quot;utf-8&quot;)">
       <option name="closed" value="true" />
@@ -708,7 +670,31 @@
       <option name="project" value="LOCAL" />
       <updated>1768854219837</updated>
     </task>
-    <option name="localTasksCounter" value="65" />
+    <task id="LOCAL-00065" summary="feat(yolo): 更新数据集类别定义并优化数据分割工具&#10;&#10;- 更新 classes.txt 中的行为类别名称为更准确的标识&#10;- 修改 dataset.yaml 中的数据路径配置&#10;- 重构数据分割脚本，支持训练集/验证集/测试集三分割功能&#10;- 移除过时的 CLAUDE.md、README.md 和相关工具脚本文件&#10;- 添加 ttkthemes 依赖包到 requirements.txt&#10;- 删除废弃的 demo.py、main1.py、main2.py、predict.py 等临时文件">
+      <option name="closed" value="true" />
+      <created>1769189416093</created>
+      <option name="number" value="00065" />
+      <option name="presentableId" value="LOCAL-00065" />
+      <option name="project" value="LOCAL" />
+      <updated>1769189416093</updated>
+    </task>
+    <task id="LOCAL-00066" summary="feat(yolo_edu): 添加核心模块和服务功能&#10;&#10;- 新增 core 模块，包含 YOLOConfig 和预测相关功能&#10;- 新增 services 模块，提供追踪、行为分析、批量处理等功能&#10;- 新增 utils 模块，提供绘图、导出、坐标转换等工具函数&#10;- 添加批量处理功能，支持图片和视频批量处理&#10;- 添加行为追踪功能，统计学生行为持续时间&#10;- 添加时序分析功能，分析行为序列和模式&#10;- 添加坐标转换工具，支持YOLO格式与像素坐标转换&#10;- 添加模型配置管理，统一管理模型路径和类别名称&#10;- 添加视频抽帧功能，支持按间隔抽取帧进行检测&#10;- 生成模型训练参数配置文件">
+      <option name="closed" value="true" />
+      <created>1769189427496</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1769189427496</updated>
+    </task>
+    <task id="LOCAL-00067" summary="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用">
+      <option name="closed" value="true" />
+      <created>1769189723223</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1769189723223</updated>
+    </task>
+    <option name="localTasksCounter" value="68" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -773,7 +759,10 @@
     <MESSAGE value="feat(auth): 重构认证模块并增强登录注册功能&#10;&#10;- 将登录和注册接口从Form参数改为Body参数接收数据&#10;- 登录时增加用户权限信息查询并整合进JWT Token&#10;- 增加详细的错误码区分不同验证失败场景&#10;- 前端实现完整的登录/注册切换界面及交互逻辑&#10;- 添加验证码图片获取与刷新功能&#10;- 完善表单输入字段的动画反馈与错误提示&#10;- 更新前端服务层以支持新的API调用方式&#10;- 优化授权类对datetime序列化的处理&#10;- 修复数据库查询相关日志中的SQL错误问题&#10;- 调整页面布局样式提升用户体验" />
     <MESSAGE value="commit" />
     <MESSAGE value="chore(frontend): 移除前端动画组件并更新依赖配置&#10;&#10;- 删除 animated-background.tsx 组件文件&#10;- 删除 animations.tsx 动画工具组件&#10;- 删除 DetectionPage.tsx 检测页面组件&#10;- 更新 frontend_admin package.json 添加 axios、framer-motion、js-cookie 等依赖&#10;- 修改开发和启动脚本端口为 4000&#10;- 更新 api.ts 中公共端点路径配置&#10;- 修改数据集配置文件结构和类别定义" />
-    <option name="LAST_COMMIT_MESSAGE" value="chore(frontend): 移除前端动画组件并更新依赖配置&#10;&#10;- 删除 animated-background.tsx 组件文件&#10;- 删除 animations.tsx 动画工具组件&#10;- 删除 DetectionPage.tsx 检测页面组件&#10;- 更新 frontend_admin package.json 添加 axios、framer-motion、js-cookie 等依赖&#10;- 修改开发和启动脚本端口为 4000&#10;- 更新 api.ts 中公共端点路径配置&#10;- 修改数据集配置文件结构和类别定义" />
+    <MESSAGE value="feat(yolo): 更新数据集类别定义并优化数据分割工具&#10;&#10;- 更新 classes.txt 中的行为类别名称为更准确的标识&#10;- 修改 dataset.yaml 中的数据路径配置&#10;- 重构数据分割脚本，支持训练集/验证集/测试集三分割功能&#10;- 移除过时的 CLAUDE.md、README.md 和相关工具脚本文件&#10;- 添加 ttkthemes 依赖包到 requirements.txt&#10;- 删除废弃的 demo.py、main1.py、main2.py、predict.py 等临时文件" />
+    <MESSAGE value="feat(yolo_edu): 添加核心模块和服务功能&#10;&#10;- 新增 core 模块，包含 YOLOConfig 和预测相关功能&#10;- 新增 services 模块，提供追踪、行为分析、批量处理等功能&#10;- 新增 utils 模块，提供绘图、导出、坐标转换等工具函数&#10;- 添加批量处理功能，支持图片和视频批量处理&#10;- 添加行为追踪功能，统计学生行为持续时间&#10;- 添加时序分析功能，分析行为序列和模式&#10;- 添加坐标转换工具，支持YOLO格式与像素坐标转换&#10;- 添加模型配置管理，统一管理模型路径和类别名称&#10;- 添加视频抽帧功能，支持按间隔抽取帧进行检测&#10;- 生成模型训练参数配置文件" />
+    <MESSAGE value="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/classai_edu$Doctests_in_main.coverage" NAME="Doctests in main Coverage Results" MODIFIED="1762759856334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
