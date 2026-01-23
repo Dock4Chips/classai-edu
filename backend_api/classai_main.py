@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
-from controller import api_router
+from routers import api_router
 from model.security import security
 from model.exceptions import handler_exception
 from model.result import ResContext

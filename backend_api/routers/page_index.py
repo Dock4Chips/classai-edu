@@ -1,10 +1,10 @@
 import json
 from fastapi import APIRouter, Depends, UploadFile, File, Form, Body
 from auth.authorization import Authorization
-from mapper.page_index_mapper import query_page_index, add_page, query_page_index_by_id, update_page, delete_page_by_id
+from repository.page_index_mapper import query_page_index, add_page, query_page_index_by_id, update_page, delete_page_by_id
 from model.exceptions import ServiceException
 from model.result import Res
-from service.page_index_service import PageIndexService
+from services.page_index_service import PageIndexService
 
 pub_page_index_router = APIRouter(
     prefix="/api/page/index",

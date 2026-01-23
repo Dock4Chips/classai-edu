@@ -90,7 +90,7 @@ def setup_logging(
     log_dir.mkdir(parents=True, exist_ok=True)
 
     # 从 sink 中获取模块名
-    module_name = Path(log_conf.get("sink")).stem.replace("service.", "")
+    module_name = Path(log_conf.get("sink")).stem.replace("services.", "")
     error_log_file = log_dir / f"error.{module_name}.log"
     logging_conf["error_handler"]["sink"] = error_log_file
 
@@ -122,7 +122,7 @@ class LoggingConfig:
 
     def setup_basic_logging(self):
         console_log_level = logging.DEBUG if sys.gettrace() else logging.INFO
-        server_log_file = self.log_dir / f"service.{self.module_name}.log"
+        server_log_file = self.log_dir / f"services.{self.module_name}.log"
         log_conf = {
             "sink": server_log_file
         }

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Body,Request
 from auth.authorization import Authorization
-from service.auth_service import AuthService
+from services.auth_service import AuthService
 from tools.security_tool import SecurityTool
 from model.result import Res
 

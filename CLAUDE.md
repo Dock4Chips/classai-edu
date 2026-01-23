@@ -178,7 +178,7 @@ Frontend:
 The backend controller imports YOLO prediction classes directly:
 
 ```python
-# In backend_api/controller/yolo_api.py
+# In backend_api/routers/yolo_api.py
 from yolo_edu.predict import GetPos, PreAct
 ```
 
