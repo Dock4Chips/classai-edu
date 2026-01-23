@@ -6,7 +6,7 @@ from random import choice
 
 from captcha.image import ImageCaptcha
 
-from mapper.user_mapper import (
+from repository.user_mapper import (
     query_user_only_username,
     query_user_role_permissions,
     insert_user,
