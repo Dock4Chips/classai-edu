@@ -4,8 +4,23 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="commit">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="chore(frontend): 移除前端动画组件并更新依赖配置&#10;&#10;- 删除 animated-background.tsx 组件文件&#10;- 删除 animations.tsx 动画工具组件&#10;- 删除 DetectionPage.tsx 检测页面组件&#10;- 更新 frontend_admin package.json 添加 axios、framer-motion、js-cookie 等依赖&#10;- 修改开发和启动脚本端口为 4000&#10;- 更新 api.ts 中公共端点路径配置&#10;- 修改数据集配置文件结构和类别定义">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/controller/yolo_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/controller/yolo_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/demo.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main1.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main2.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/YOLO-tools/split_train_val.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/YOLO-tools/split_train_val.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/classes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/datasets/classes.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/dataset.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/datasets/dataset.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets_split.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/demo.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/predict.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/tool.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/val.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,6 +60,7 @@
     "Python tests.Doctests in main.executor": "Run",
     "Python.1.executor": "Run",
     "Python.2.executor": "Run",
+    "Python.augment_data.executor": "Run",
     "Python.auth.executor": "Run",
     "Python.authorization.executor": "Run",
     "Python.classai_main (1).executor": "Run",
@@ -66,6 +82,7 @@
     "Python.predict.executor": "Run",
     "Python.route_api.executor": "Run",
     "Python.sanjiaozhou.executor": "Debug",
+    "Python.split_train_val.executor": "Run",
     "Python.train.executor": "Run",
     "Python.tttt.executor": "Debug",
     "Python.val.executor": "Run",
@@ -76,7 +93,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/dock4chips/Script-P/classai-edu",
+    "last_opened_file_path": "/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -84,6 +101,7 @@
     "nodejs_package_manager_path": "npm",
     "npm.dev (1).executor": "Run",
     "npm.dev-admin.executor": "Run",
+    "npm.dev-web.executor": "Run",
     "npm.dev.executor": "Run",
     "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
     "ts.external.directory.path": "/Users/dock4chips/Script-P/classai-edu/frontend_admin/node_modules/typescript/lib",
@@ -92,22 +110,22 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/yolo_edu/datasets" />
+      <recent name="$PROJECT_DIR$/script" />
+      <recent name="$PROJECT_DIR$/frontend_admin/lib" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/master_tools" />
-      <recent name="$PROJECT_DIR$/frontend_edu" />
-      <recent name="$PROJECT_DIR$/backend_edu" />
-      <recent name="$PROJECT_DIR$/yolo_edu/datasets/active" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/req_lib" />
-      <recent name="$PROJECT_DIR$/backend_edu/enum" />
-      <recent name="$PROJECT_DIR$/backend_edu/config" />
-      <recent name="$PROJECT_DIR$/backend-edu/controller" />
-      <recent name="$PROJECT_DIR$/backend-edu/config" />
+      <recent name="$PROJECT_DIR$/script/sql" />
+      <recent name="$PROJECT_DIR$/script/docker" />
+      <recent name="$PROJECT_DIR$/frontend_admin/components" />
+      <recent name="$PROJECT_DIR$/frontend_web/components/home" />
+      <recent name="$PROJECT_DIR$/frontend_admin/components/ui" />
     </key>
   </component>
-  <component name="RunManager" selected="npm.dev-web">
-    <configuration name="classai_main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.config">
+    <configuration name="augment_data" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="classai-edu" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -116,12 +134,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/backend_api" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/yolo_edu/YOLO-tools" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/backend_api/classai_main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/YOLO-tools/augment_data.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -130,7 +148,30 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="datasets_split" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="config" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="classai-edu" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/yolo_edu/core" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/core/config.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="classai-edu" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -144,7 +185,30 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/datasets_split.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/main.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="split_train_val" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="classai-edu" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/yolo_edu/YOLO-tools" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/YOLO-tools/split_train_val.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -182,14 +246,18 @@
     <list>
       <item itemvalue="npm.dev-admin" />
       <item itemvalue="npm.dev-web" />
-      <item itemvalue="Python.classai_main" />
-      <item itemvalue="Python.datasets_split" />
+      <item itemvalue="Python.config" />
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python.split_train_val" />
+      <item itemvalue="Python.augment_data" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.config" />
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.split_train_val" />
+        <item itemvalue="Python.augment_data" />
         <item itemvalue="npm.dev-web" />
-        <item itemvalue="Python.classai_main" />
-        <item itemvalue="Python.datasets_split" />
       </list>
     </recent_temporary>
   </component>
@@ -242,39 +310,11 @@
       <workItem from="1768324988895" duration="274000" />
       <workItem from="1768454723072" duration="3674000" />
       <workItem from="1768820900107" duration="20000" />
-      <workItem from="1768847191775" duration="514000" />
-    </task>
-    <task id="LOCAL-00012" summary="调整训练集参数和训练量">
-      <option name="closed" value="true" />
-      <created>1763825971985</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1763825971985</updated>
-    </task>
-    <task id="LOCAL-00013" summary="feat(gui): remove unused GUI implementation and dependencies&#10;&#10;- Removed entire demo.py file containing old GUI implementation&#10;- Removed entire main.py file containing duplicate GUI code&#10;- Removed unused pyautogui dependency from requirements.txt&#10;- Removed unused ttkbootstrap dependency from requirements.txt&#10;- Cleaned up redundant configuration file config.py&#10;- Eliminated deprecated GUI-related imports and modules">
-      <option name="closed" value="true" />
-      <created>1763826147847</created>
-      <option name="number" value="00013" />
-      <option name="presentableId" value="LOCAL-00013" />
-      <option name="project" value="LOCAL" />
-      <updated>1763826147847</updated>
-    </task>
-    <task id="LOCAL-00014" summary="refactor(main): wrap training code in main guard&#10;&#10;- Encapsulated model training logic within if-name-main guard&#10;- Ensured proper module execution when script is run directly&#10;- Maintained all existing training parameters and configurations&#10;- Preserved logging of training results&#10;- Improved code structure for better import behavior">
-      <option name="closed" value="true" />
-      <created>1763826233294</created>
-      <option name="number" value="00014" />
-      <option name="presentableId" value="LOCAL-00014" />
-      <option name="project" value="LOCAL" />
-      <updated>1763826233294</updated>
-    </task>
-    <task id="LOCAL-00015" summary="feat(backend): initialize backend auth config and structure&#10;&#10;- Add authentication configuration with secret key, algorithm, and token expiry&#10;- Update IDE module configuration to include backend source folder&#10;- Rename main application file from main.py to classai_main.py&#10;- Configure FastAPI app to disable docs and integrate exception handling&#10;- Remove obsolete weather API configuration&#10;- Set up basic logging configuration in logger tool&#10;- Clear outdated logs and remove unused dependencies list">
-      <option name="closed" value="true" />
-      <created>1763838897764</created>
-      <option name="number" value="00015" />
-      <option name="presentableId" value="LOCAL-00015" />
-      <option name="project" value="LOCAL" />
-      <updated>1763838897764</updated>
+      <workItem from="1768847191775" duration="7063000" />
+      <workItem from="1768891489159" duration="4049000" />
+      <workItem from="1768972762973" duration="3995000" />
+      <workItem from="1769106619063" duration="314000" />
+      <workItem from="1769169773015" duration="7292000" />
     </task>
     <task id="LOCAL-00016" summary="refactor(exceptions): simplify exception handlers and remove unused imports&#10;&#10;- Remove unused Request import from exceptions module&#10;- Eliminate logging dependency in exception handlers&#10;- Simplify service exception handler signature&#10;- Update global exception handler to remove request context&#10;- Change default error message to &quot;服务器内部异常&quot;&#10;- Remove unused imports from secure API controller&#10;- Clean up result model by removing extra blank lines">
       <option name="closed" value="true" />
@@ -636,7 +676,39 @@
       <option name="project" value="LOCAL" />
       <updated>1768847217306</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="commit">
+      <option name="closed" value="true" />
+      <created>1768847952223</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1768847952223</updated>
+    </task>
+    <task id="LOCAL-00062" summary="commit">
+      <option name="closed" value="true" />
+      <created>1768848102504</created>
+      <option name="number" value="00062" />
+      <option name="presentableId" value="LOCAL-00062" />
+      <option name="project" value="LOCAL" />
+      <updated>1768848102504</updated>
+    </task>
+    <task id="LOCAL-00063" summary="commit">
+      <option name="closed" value="true" />
+      <created>1768848126063</created>
+      <option name="number" value="00063" />
+      <option name="presentableId" value="LOCAL-00063" />
+      <option name="project" value="LOCAL" />
+      <updated>1768848126063</updated>
+    </task>
+    <task id="LOCAL-00064" summary="chore(frontend): 移除前端动画组件并更新依赖配置&#10;&#10;- 删除 animated-background.tsx 组件文件&#10;- 删除 animations.tsx 动画工具组件&#10;- 删除 DetectionPage.tsx 检测页面组件&#10;- 更新 frontend_admin package.json 添加 axios、framer-motion、js-cookie 等依赖&#10;- 修改开发和启动脚本端口为 4000&#10;- 更新 api.ts 中公共端点路径配置&#10;- 修改数据集配置文件结构和类别定义">
+      <option name="closed" value="true" />
+      <created>1768854219837</created>
+      <option name="number" value="00064" />
+      <option name="presentableId" value="LOCAL-00064" />
+      <option name="project" value="LOCAL" />
+      <updated>1768854219837</updated>
+    </task>
+    <option name="localTasksCounter" value="65" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -700,23 +772,8 @@
     <MESSAGE value="feat(env): 添加MinIO配置到生产环境文件&#10;&#10;- 新增MinIO服务地址、端口、管理员账号和密码配置&#10;- 添加默认存储桶名称配置项&#10;- 修改数据库名称为classai_edu&#10;- 更新生产环境配置以支持文件存储服务集成" />
     <MESSAGE value="feat(auth): 重构认证模块并增强登录注册功能&#10;&#10;- 将登录和注册接口从Form参数改为Body参数接收数据&#10;- 登录时增加用户权限信息查询并整合进JWT Token&#10;- 增加详细的错误码区分不同验证失败场景&#10;- 前端实现完整的登录/注册切换界面及交互逻辑&#10;- 添加验证码图片获取与刷新功能&#10;- 完善表单输入字段的动画反馈与错误提示&#10;- 更新前端服务层以支持新的API调用方式&#10;- 优化授权类对datetime序列化的处理&#10;- 修复数据库查询相关日志中的SQL错误问题&#10;- 调整页面布局样式提升用户体验" />
     <MESSAGE value="commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="commit" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main1.py</url>
-          <line>15</line>
-          <option name="timeStamp" value="9" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/main1.py</url>
-          <line>26</line>
-          <option name="timeStamp" value="10" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="chore(frontend): 移除前端动画组件并更新依赖配置&#10;&#10;- 删除 animated-background.tsx 组件文件&#10;- 删除 animations.tsx 动画工具组件&#10;- 删除 DetectionPage.tsx 检测页面组件&#10;- 更新 frontend_admin package.json 添加 axios、framer-motion、js-cookie 等依赖&#10;- 修改开发和启动脚本端口为 4000&#10;- 更新 api.ts 中公共端点路径配置&#10;- 修改数据集配置文件结构和类别定义" />
+    <option name="LAST_COMMIT_MESSAGE" value="chore(frontend): 移除前端动画组件并更新依赖配置&#10;&#10;- 删除 animated-background.tsx 组件文件&#10;- 删除 animations.tsx 动画工具组件&#10;- 删除 DetectionPage.tsx 检测页面组件&#10;- 更新 frontend_admin package.json 添加 axios、framer-motion、js-cookie 等依赖&#10;- 修改开发和启动脚本端口为 4000&#10;- 更新 api.ts 中公共端点路径配置&#10;- 修改数据集配置文件结构和类别定义" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/classai_edu$Doctests_in_main.coverage" NAME="Doctests in main Coverage Results" MODIFIED="1762759856334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
@@ -725,21 +782,23 @@
     <SUITE FILE_PATH="coverage/classai_edu$predic.coverage" NAME="predic Coverage Results" MODIFIED="1763908920031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$train.coverage" NAME="train Coverage Results" MODIFIED="1763270360580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/classai_edu$demo__1_.coverage" NAME="demo (1) Coverage Results" MODIFIED="1765880373816" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/classai_edu$augment_data.coverage" NAME="augment_data Coverage Results" MODIFIED="1769106687216" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu/YOLO-tools" />
     <SUITE FILE_PATH="coverage/classai_edu$main2.coverage" NAME="main2 Coverage Results" MODIFIED="1766238728334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/classai_edu$split_train_val.coverage" NAME="split_train_val Coverage Results" MODIFIED="1769170370505" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu/YOLO-tools" />
     <SUITE FILE_PATH="coverage/classai_edu$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1766235260129" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/classai_edu$datasets_split.coverage" NAME="datasets_split Coverage Results" MODIFIED="1768456970452" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$auth.coverage" NAME="auth Coverage Results" MODIFIED="1764687971468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_edu/controller" />
     <SUITE FILE_PATH="coverage/classai_edu$DivisionOfData.coverage" NAME="DivisionOfData Coverage Results" MODIFIED="1764971099950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$authorization.coverage" NAME="authorization Coverage Results" MODIFIED="1764683796936" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_edu/auth" />
-    <SUITE FILE_PATH="coverage/classai_edu$classai_main.coverage" NAME="classai_main Coverage Results" MODIFIED="1768847390202" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_api" />
-    <SUITE FILE_PATH="coverage/classai_edu$config.coverage" NAME="config Coverage Results" MODIFIED="1763832712064" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend-edu/config" />
+    <SUITE FILE_PATH="coverage/classai_edu$classai_main.coverage" NAME="classai_main Coverage Results" MODIFIED="1768848145908" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_api" />
+    <SUITE FILE_PATH="coverage/classai_edu$config.coverage" NAME="config Coverage Results" MODIFIED="1769189327642" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu/core" />
     <SUITE FILE_PATH="coverage/classai_edu$route_api.coverage" NAME="route_api Coverage Results" MODIFIED="1763909367016" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$demo.coverage" NAME="demo Coverage Results" MODIFIED="1765271271998" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$data_pro.coverage" NAME="data_pro Coverage Results" MODIFIED="1764399964362" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$tool.coverage" NAME="tool Coverage Results" MODIFIED="1765000463072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$Doctest_train_yolo_model.coverage" NAME="Doctest train_yolo_model Coverage Results" MODIFIED="1762759656348" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$2.coverage" NAME="2 Coverage Results" MODIFIED="1762792514424" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu/open-cv" />
-    <SUITE FILE_PATH="coverage/classai_edu$main.coverage" NAME="main Coverage Results" MODIFIED="1765225206602" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
+    <SUITE FILE_PATH="coverage/classai_edu$main.coverage" NAME="main Coverage Results" MODIFIED="1769170744167" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$val_main.coverage" NAME="val_main Coverage Results" MODIFIED="1762590001280" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$tttt.coverage" NAME="tttt Coverage Results" MODIFIED="1763399918001" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/classai_edu$req_base.coverage" NAME="req_base Coverage Results" MODIFIED="1765815597033" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

@@ -9,7 +9,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(BASE_DIR)
 
-from yolo_edu.predict import GetPos, PreAct
+from yolo_edu.core.predict import GetPos, PreAct
 
 pro_yolo_router = APIRouter(
     prefix="/api/yolo/img",
