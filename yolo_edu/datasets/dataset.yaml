@@ -7,12 +7,12 @@ test: test/images
 
 nc: 6
 names:
-  - staff              # 0：工作人员 / 管理人员
-  - learning_to_copy   # 1：试图抄袭
-  - looking_around     # 2：东张西望
-  - using_mobile       # 3：使用电子设备
-  - sharing_answers    # 4：分享答案
-  - sleeping           # 5：睡觉
+  - learning_to_copy   # 0：试图抄袭（A 看 B，B 不知情）
+  - looking_around     # 1：东张西望
+  - sharing_answers    # 2：分享答案（A 看 B，B 知情）
+  - sleeping           # 3：睡觉
+  - staff              # 4：工作人员 / 管理人员
+  - using_mobile       # 5：使用电子设备
 
 
 # 1 和 4 的区别

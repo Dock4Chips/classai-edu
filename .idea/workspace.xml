@@ -4,9 +4,121 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用">
+    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用&#10;- 移除过时的CLAUDE.md文件&#10;- 添加新的README.md文档包含完整项目说明">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CLAUDE.md" beforeDir="false" afterPath="$PROJECT_DIR$/CLAUDE.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/services/page_index_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/services/page_index_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/model/classai_8n.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/YOLO-tools/To_onnx.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/YOLO-tools/To_onnx.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/YOLO-tools/detect_and_move.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/YOLO-tools/detect_and_move.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/core/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/core/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/core/val.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/core/val.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/dataset.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/datasets/dataset.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/BoxF1_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/BoxPR_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/BoxP_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/BoxR_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/args.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/confusion_matrix.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/confusion_matrix_normalized.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/results.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/results.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/train_batch0.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/train_batch1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/train_batch1170.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/train_batch1171.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/train_batch1172.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/train_batch2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/val_batch0_labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/val_batch0_pred.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/val_batch1_labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/val_batch1_pred.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/val_batch2_labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/val_batch2_pred.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/weights/best.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/weights/last.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/BoxF1_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/BoxPR_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/BoxP_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/BoxR_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/args.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/confusion_matrix.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/confusion_matrix_normalized.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/results.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/results.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/train_batch0.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/train_batch1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/train_batch2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/train_batch29830.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/train_batch29831.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/train_batch29832.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/val_batch0_labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/val_batch0_pred.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/val_batch1_labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/val_batch1_pred.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/val_batch2_labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/val_batch2_pred.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/weights/best.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/weights/last.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/BoxF1_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/BoxPR_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/BoxP_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/BoxR_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/args.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/confusion_matrix.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/confusion_matrix_normalized.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/results.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/results.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/train_batch0.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/train_batch1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/train_batch2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/train_batch5890.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/train_batch5891.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/train_batch5892.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/val_batch0_labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/val_batch0_pred.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/val_batch1_labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/val_batch1_pred.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/val_batch2_labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/val_batch2_pred.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/weights/best.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/weights/last.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/args.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/results.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/train_batch0.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/train_batch1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/train_batch2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/weights/best.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/weights/last.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/BoxF1_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/BoxPR_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/BoxP_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/BoxR_curve.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/args.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/confusion_matrix.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/confusion_matrix_normalized.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/results.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/results.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/train_batch0.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/train_batch1.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/train_batch2.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/train_batch5890.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/train_batch5891.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/train_batch5892.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/val_batch0_labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/val_batch0_pred.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/val_batch1_labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/val_batch1_pred.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/val_batch2_labels.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/val_batch2_pred.jpg" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/weights/best.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/weights/last.pt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/utils/draw.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/utils/draw.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +158,7 @@
     "Python tests.Doctests in main.executor": "Run",
     "Python.1.executor": "Run",
     "Python.2.executor": "Run",
+    "Python.analyzer.executor": "Run",
     "Python.augment_data.executor": "Run",
     "Python.auth.executor": "Run",
     "Python.authorization.executor": "Run",
@@ -57,10 +170,13 @@
     "Python.datasets_split.executor": "Run",
     "Python.demo (1).executor": "Run",
     "Python.demo.executor": "Run",
+    "Python.detect.executor": "Run",
     "Python.dmeo.executor": "Run",
     "Python.main (1).executor": "Run",
     "Python.main.executor": "Run",
     "Python.main2.executor": "Run",
+    "Python.main_1.executor": "Run",
+    "Python.main_2.executor": "Run",
     "Python.minio_tools.executor": "Debug",
     "Python.predic (1).executor": "Run",
     "Python.predic.executor": "Debug",
@@ -69,6 +185,9 @@
     "Python.route_api.executor": "Run",
     "Python.sanjiaozhou.executor": "Debug",
     "Python.split_train_val.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.torch.executor": "Run",
+    "Python.torch_info.executor": "Run",
     "Python.train.executor": "Run",
     "Python.tttt.executor": "Debug",
     "Python.val.executor": "Run",
@@ -79,7 +198,7 @@
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
     "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets",
+    "last_opened_file_path": "/Users/dock4chips/Script-P/classai-edu/model",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -96,22 +215,22 @@
 }]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/model" />
+      <recent name="$PROJECT_DIR$/yolo_edu/datasets/results" />
+      <recent name="$PROJECT_DIR$/yolo_edu" />
       <recent name="$PROJECT_DIR$/yolo_edu/datasets" />
       <recent name="$PROJECT_DIR$/script" />
-      <recent name="$PROJECT_DIR$/frontend_admin/lib" />
-      <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/master_tools" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/yolo_edu/datasets/results" />
+      <recent name="$PROJECT_DIR$/yolo_edu" />
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/script/sql" />
       <recent name="$PROJECT_DIR$/script/docker" />
-      <recent name="$PROJECT_DIR$/frontend_admin/components" />
-      <recent name="$PROJECT_DIR$/frontend_web/components/home" />
-      <recent name="$PROJECT_DIR$/frontend_admin/components/ui" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.config">
-    <configuration name="augment_data" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="Python.analyzer">
+    <configuration name="analyzer" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="classai-edu" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -120,12 +239,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/yolo_edu/YOLO-tools" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/yolo_edu/core" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/YOLO-tools/augment_data.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/core/analyzer.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -157,6 +276,29 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="detect" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="classai-edu" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/yolo_edu/core" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/core/detect.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="classai-edu" />
       <option name="ENV_FILES" value="" />
@@ -180,7 +322,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="split_train_val" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="val" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="classai-edu" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -189,12 +331,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/yolo_edu/YOLO-tools" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/yolo_edu/core" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/YOLO-tools/split_train_val.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/core/val.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -216,34 +358,21 @@
       </EXTENSION>
       <method v="2" />
     </configuration>
-    <configuration name="dev-web" type="js.build_tools.npm" temporary="true">
-      <package-json value="$PROJECT_DIR$/frontend_web/package.json" />
-      <command value="run" />
-      <scripts>
-        <script value="dev" />
-      </scripts>
-      <node-interpreter value="project" />
-      <envs />
-      <EXTENSION ID="com.intellij.lang.javascript.buildTools.npm.rc.StartBrowserRunConfigurationExtension">
-        <browser name="98ca6316-2f89-46d9-a9e5-fa9e2b0625b3" />
-      </EXTENSION>
-      <method v="2" />
-    </configuration>
     <list>
       <item itemvalue="npm.dev-admin" />
-      <item itemvalue="npm.dev-web" />
+      <item itemvalue="Python.analyzer" />
       <item itemvalue="Python.config" />
+      <item itemvalue="Python.detect" />
       <item itemvalue="Python.main" />
-      <item itemvalue="Python.split_train_val" />
-      <item itemvalue="Python.augment_data" />
+      <item itemvalue="Python.val" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.analyzer" />
+        <item itemvalue="Python.detect" />
+        <item itemvalue="Python.val" />
         <item itemvalue="Python.config" />
         <item itemvalue="Python.main" />
-        <item itemvalue="Python.split_train_val" />
-        <item itemvalue="Python.augment_data" />
-        <item itemvalue="npm.dev-web" />
       </list>
     </recent_temporary>
   </component>
@@ -300,15 +429,9 @@
       <workItem from="1768891489159" duration="4049000" />
       <workItem from="1768972762973" duration="3995000" />
       <workItem from="1769106619063" duration="314000" />
-      <workItem from="1769169773015" duration="7940000" />
-    </task>
-    <task id="LOCAL-00019" summary="refactor(auth): improve token handling and cleanup imports&#10;&#10;- Reorder and clean up imports in authorization module&#10;- Fix encrypted user data decoding in token validation&#10;- Simplify exception messages for login expiration&#10;- Remove redundant newline characters and whitespace&#10;- Ensure consistent string encoding usage (&quot;utf-8&quot;)">
-      <option name="closed" value="true" />
-      <created>1763840000543</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1763840000543</updated>
+      <workItem from="1769169773015" duration="40836000" />
+      <workItem from="1769493774257" duration="1509000" />
+      <workItem from="1769496042416" duration="19457000" />
     </task>
     <task id="LOCAL-00020" summary="commit">
       <option name="closed" value="true" />
@@ -694,7 +817,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769189723223</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用&#10;- 移除过时的CLAUDE.md文件&#10;- 添加新的README.md文档包含完整项目说明">
+      <option name="closed" value="true" />
+      <created>1769190268851</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1769190268851</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -737,7 +868,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="chore(project): 清理并重构项目配置与依赖管理- 移除冗余的 demo.py 文件内容，简化预测逻辑&#10;- 更新 requirements.txt 以重新组织项目依赖&#10;- 注释掉 predic.py 中的图像和视频展示代码块&#10;-修正 main.py 中模型路径的注释描述&#10;- 移除 val.py 中未使用的 sympy 导入&#10;- 更新 IDE 配置文件以反映新的运行设置和断点位置&#10;- 添加 ProjectRootManager 组件到 .idea/misc.xml 以明确 Python SDK&#10;- 清理工作区中不再需要的运行配置项- 更新日志记录相关模块的时间戳与调试信息- 调整 coverage 测试套件时间戳以匹配最新执行状态" />
     <MESSAGE value="chore(project): 清理并重构项目配置与依赖管理- 移除冗余的 demo.py 文件内容，简化预测逻辑&#10;- 更新 requirements.txt以重新组织项目依赖&#10;- 注释掉 predic.py 中的图像和视频展示代码块&#10;-修正 main.py 中模型路径的注释描述&#10;- 移除 val.py 中未使用的 sympy 导入&#10;- 更新 IDE 配置文件以反映新的运行设置和断点位置&#10;- 添加 ProjectRootManager 组件到 .idea/misc.xml 以明确 Python SDK- 清理工作区中不再需要的运行配置项&#10;- 更新日志记录相关模块的时间戳与调试信息&#10;- 调整 coverage 测试套件时间戳以匹配最新执行状态" />
     <MESSAGE value="refactor(gui):重构卡密验证界面与逻辑&#10;&#10;- 简化GUI类结构，移除多余窗口管理逻辑&#10;- 更新Redis键存储方式，使用带前缀的字符串键替代集合- 设置卡密默认过期时间为三天&#10;-优化验证窗口UI布局与样式配置&#10;- 实现验证成功后直接关闭窗口而非跳转新界面&#10;-修复窗口居中显示逻辑&#10;- 移除未使用的tkinter导入与旧版主窗口代码" />
     <MESSAGE value="调整训练集参数和训练量" />
@@ -762,11 +892,13 @@
     <MESSAGE value="feat(yolo): 更新数据集类别定义并优化数据分割工具&#10;&#10;- 更新 classes.txt 中的行为类别名称为更准确的标识&#10;- 修改 dataset.yaml 中的数据路径配置&#10;- 重构数据分割脚本，支持训练集/验证集/测试集三分割功能&#10;- 移除过时的 CLAUDE.md、README.md 和相关工具脚本文件&#10;- 添加 ttkthemes 依赖包到 requirements.txt&#10;- 删除废弃的 demo.py、main1.py、main2.py、predict.py 等临时文件" />
     <MESSAGE value="feat(yolo_edu): 添加核心模块和服务功能&#10;&#10;- 新增 core 模块，包含 YOLOConfig 和预测相关功能&#10;- 新增 services 模块，提供追踪、行为分析、批量处理等功能&#10;- 新增 utils 模块，提供绘图、导出、坐标转换等工具函数&#10;- 添加批量处理功能，支持图片和视频批量处理&#10;- 添加行为追踪功能，统计学生行为持续时间&#10;- 添加时序分析功能，分析行为序列和模式&#10;- 添加坐标转换工具，支持YOLO格式与像素坐标转换&#10;- 添加模型配置管理，统一管理模型路径和类别名称&#10;- 添加视频抽帧功能，支持按间隔抽取帧进行检测&#10;- 生成模型训练参数配置文件" />
     <MESSAGE value="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用" />
+    <MESSAGE value="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用&#10;- 移除过时的CLAUDE.md文件&#10;- 添加新的README.md文档包含完整项目说明" />
+    <option name="LAST_COMMIT_MESSAGE" value="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用&#10;- 移除过时的CLAUDE.md文件&#10;- 添加新的README.md文档包含完整项目说明" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/classai_edu$Doctests_in_main.coverage" NAME="Doctests in main Coverage Results" MODIFIED="1762759856334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
-    <SUITE FILE_PATH="coverage/classai_edu$val.coverage" NAME="val Coverage Results" MODIFIED="1764346502948" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
+    <SUITE FILE_PATH="coverage/classai_edu$val.coverage" NAME="val Coverage Results" MODIFIED="1769522016184" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu/core" />
+    <SUITE FILE_PATH="coverage/classai_edu$detect.coverage" NAME="detect Coverage Results" MODIFIED="1769541581237" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu/core" />
     <SUITE FILE_PATH="coverage/classai_edu$minio_tools.coverage" NAME="minio_tools Coverage Results" MODIFIED="1764247979491" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/master_tools" />
     <SUITE FILE_PATH="coverage/classai_edu$predic.coverage" NAME="predic Coverage Results" MODIFIED="1763908920031" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$train.coverage" NAME="train Coverage Results" MODIFIED="1763270360580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -775,20 +907,25 @@
     <SUITE FILE_PATH="coverage/classai_edu$main2.coverage" NAME="main2 Coverage Results" MODIFIED="1766238728334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/classai_edu$split_train_val.coverage" NAME="split_train_val Coverage Results" MODIFIED="1769170370505" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu/YOLO-tools" />
     <SUITE FILE_PATH="coverage/classai_edu$main__1_.coverage" NAME="main (1) Coverage Results" MODIFIED="1766235260129" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/classai_edu$main_2.coverage" NAME="main_2 Coverage Results" MODIFIED="1769350447370" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$datasets_split.coverage" NAME="datasets_split Coverage Results" MODIFIED="1768456970452" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$auth.coverage" NAME="auth Coverage Results" MODIFIED="1764687971468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_edu/controller" />
     <SUITE FILE_PATH="coverage/classai_edu$DivisionOfData.coverage" NAME="DivisionOfData Coverage Results" MODIFIED="1764971099950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$authorization.coverage" NAME="authorization Coverage Results" MODIFIED="1764683796936" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_edu/auth" />
-    <SUITE FILE_PATH="coverage/classai_edu$classai_main.coverage" NAME="classai_main Coverage Results" MODIFIED="1768848145908" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_api" />
-    <SUITE FILE_PATH="coverage/classai_edu$config.coverage" NAME="config Coverage Results" MODIFIED="1769189327642" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu/core" />
+    <SUITE FILE_PATH="coverage/classai_edu$classai_main.coverage" NAME="classai_main Coverage Results" MODIFIED="1769248423225" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_api" />
+    <SUITE FILE_PATH="coverage/classai_edu$config.coverage" NAME="config Coverage Results" MODIFIED="1769520523629" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu/core" />
     <SUITE FILE_PATH="coverage/classai_edu$route_api.coverage" NAME="route_api Coverage Results" MODIFIED="1763909367016" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$demo.coverage" NAME="demo Coverage Results" MODIFIED="1765271271998" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
+    <SUITE FILE_PATH="coverage/classai_edu$main_1.coverage" NAME="main_1 Coverage Results" MODIFIED="1769351075450" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$data_pro.coverage" NAME="data_pro Coverage Results" MODIFIED="1764399964362" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$tool.coverage" NAME="tool Coverage Results" MODIFIED="1765000463072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$Doctest_train_yolo_model.coverage" NAME="Doctest train_yolo_model Coverage Results" MODIFIED="1762759656348" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$2.coverage" NAME="2 Coverage Results" MODIFIED="1762792514424" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu/open-cv" />
-    <SUITE FILE_PATH="coverage/classai_edu$main.coverage" NAME="main Coverage Results" MODIFIED="1769170744167" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
+    <SUITE FILE_PATH="coverage/classai_edu$torch.coverage" NAME="torch_info Coverage Results" MODIFIED="1769496248709" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
+    <SUITE FILE_PATH="coverage/classai_edu$main.coverage" NAME="main Coverage Results" MODIFIED="1769496427730" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
+    <SUITE FILE_PATH="coverage/classai_edu$analyzer.coverage" NAME="analyzer Coverage Results" MODIFIED="1769543911355" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu/core" />
     <SUITE FILE_PATH="coverage/classai_edu$val_main.coverage" NAME="val_main Coverage Results" MODIFIED="1762590001280" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
+    <SUITE FILE_PATH="coverage/classai_edu$test.coverage" NAME="test Coverage Results" MODIFIED="1769449576695" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/classai_edu$tttt.coverage" NAME="tttt Coverage Results" MODIFIED="1763399918001" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/classai_edu$req_base.coverage" NAME="req_base Coverage Results" MODIFIED="1765815597033" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/classai_edu$count_file.coverage" NAME="count_file Coverage Results" MODIFIED="1763817856153" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/master_tools" />

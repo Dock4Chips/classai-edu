@@ -5,7 +5,7 @@ import numpy as np
 
 from config.config import bucket, MINIO_BUCKET_NAME
 from model.exceptions import ServiceException
-from yolo_edu.predict import PreAct
+from yolo_edu.core.predict import PreAct
 from master_tools.logger_tool import log
 
 class PageIndexService:

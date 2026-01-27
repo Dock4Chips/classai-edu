@@ -37,59 +37,53 @@ class DrawUtils:
 
     @classmethod
     def draw_bbox(cls, image, bbox, label, conf=None, color=None):
-        """
-        在图像上绘制边界框
-
-        Args:
-            image: 输入图像
-            bbox: 边界框 (x1, y1, x2, y2)
-            label: 标签文本
-            conf: 置信度
-            color: 边界框颜色
-
-        Returns:
-            绘制后的图像
-        """
         if color is None:
             color = cls.get_color(label)
 
         x1, y1, x2, y2 = map(int, bbox)
+        h, w = image.shape[:2]
 
-        # 绘制矩形框
-        cv2.rectangle(image, (x1, y1), (x2, y2), color, 2)
+        # ===== YOLO 原生参数 =====
+        lw = max(round((h + w) / 2 * 0.003), 2)
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        font_scale = lw / 3
+        thickness = max(lw - 1, 1)
+        pad = 3
+        txt_color = (255, 255, 255)  # YOLO 原生：白色
+        # ========================
 
-        # 准备标签文本
-        text = f"{label}"
+        # 框
+        cv2.rectangle(image, (x1, y1), (x2, y2), color, lw, lineType=cv2.LINE_AA)
+
+        text = label
         if conf is not None:
             text += f" {conf:.2f}"
 
-        # 计算文本大小
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        font_scale = 0.6
-        thickness = 2
-        (text_width, text_height), baseline = cv2.getTextSize(text, font, font_scale, thickness)
+        (tw, th), _ = cv2.getTextSize(text, font, font_scale, thickness)
 
-        # 绘制文本背景
+        # 标签背景（和框同色）
         cv2.rectangle(
             image,
-            (x1, y1 - text_height - 10),
-            (x1 + text_width, y1),
+            (x1, y1 - th - pad * 2),
+            (x1 + tw + pad * 2, y1),
             color,
             -1
         )
 
-        # 绘制文本
+        # 文本（白色）
         cv2.putText(
             image,
             text,
-            (x1, y1 - 5),
+            (x1 + pad, y1 - pad),
             font,
             font_scale,
-            (255, 255, 255),
-            thickness
+            txt_color,
+            thickness,
+            lineType=cv2.LINE_AA
         )
 
         return image
+
 
     @classmethod
     def draw_crosshair(cls, image, center, size=20, color=(0, 255, 0)):

@@ -1,14 +1,8 @@
-"""
-YOLO 配置管理
-集中管理模型路径、类别名称等配置
-"""
-
 import os
 from pathlib import Path
 
 # 项目根目录
 BASE_DIR = Path(__file__).parent.parent.parent
-print(BASE_DIR)
 
 # 模型路径配置
 class YOLOConfig:
@@ -16,35 +10,21 @@ class YOLOConfig:
 
     # 模型文件路径
     MODEL_PATH_8N = str(BASE_DIR / "model" / "classai_8n.pt")
-    MODEL_PATH_8M = str(BASE_DIR / "model" / "classai_8m.pt")
+    MODEL_PATH_8M = str(BASE_DIR / "model" / "classai_11n.pt")
 
     # 默认使用的模型
     DEFAULT_MODEL = MODEL_PATH_8N
 
-    # 预训练模型（用于训练）
-    PRETRAINED_YOLOV8M = "yolov8m.pt"
-    PRETRAINED_YOLOV8N = "yolov8n.pt"
-
     # 类别配置
     NC = 6  # 类别数量
     CLASS_NAMES = [
-        'staff',              # 0：工作人员
-        'learning_to_copy',   # 1：试图抄袭
-        'looking_around',     # 2：东张西望
-        'using_mobile',       # 3：使用电子设备
-        'sharing_answers',    # 4：分享答案
-        'sleeping'            # 5：睡觉
+        'learning_to_copy',
+        'looking_around',
+        'sharing_answers',
+        'sleeping',
+        'staff',
+        'using_mobile'
     ]
-
-    # 类别中文映射
-    CLASS_NAMES_ZH = {
-        'staff': '工作人员',
-        'learning_to_copy': '试图抄袭',
-        'looking_around': '东张西望',
-        'using_mobile': '使用电子设备',
-        'sharing_answers': '分享答案',
-        'sleeping': '睡觉'
-    }
 
     # 检测默认参数
     DEFAULT_CONF = 0.5  # 默认置信度阈值
