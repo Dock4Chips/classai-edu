@@ -11,7 +11,7 @@
 from ultralytics import YOLO
 
 # 加载训练好的模型
-model = YOLO('runs/best_model/exp_dick6/weights/best.pt')
+model = YOLO('yolo11n/best_model/exp_dick6/weights/classai_8n.pt')
 
 # 导出为 ONNX 格式
 model.export(format='onnx', imgsz=640, simplify=True)

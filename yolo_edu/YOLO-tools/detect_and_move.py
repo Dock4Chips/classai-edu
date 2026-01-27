@@ -13,14 +13,13 @@ import sys
 import logging
 import warnings
 import cv2
-import torch
+from yolo_edu import torch_info
 import tkinter as tk
-from tkinter import filedialog, simpledialog, messagebox
+from tkinter import filedialog, messagebox
 import shutil
 from ultralytics import YOLO
 from multiprocessing import get_context, Manager
 from tqdm import tqdm
-import numpy as np
 import psutil
 import time
 import gc  # 用于垃圾回收
@@ -42,7 +41,7 @@ warnings.filterwarnings("ignore", category=UserWarning, module="torchvision.io.i
 #                            配置参数（按需修改）                             #
 ##############################################################################
 
-MODEL_PATH = "/weights/best.pt"  # 模型路径
+MODEL_PATH = "/weights/classai_8n.pt"  # 模型路径
 DESTINATION_FOLDER = "打标文件/images"  # 目标文件夹路径
 SUPPORTED_IMAGE_FORMATS = {".jpg", ".jpeg", ".png", ".bmp"}  # 支持的图片格式
 CONFIDENCE_THRESHOLD = 0.1  # 置信度阈值 (0-1)
