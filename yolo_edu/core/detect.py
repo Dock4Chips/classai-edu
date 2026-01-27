@@ -1,0 +1,82 @@
+import cv2
+import numpy as np
+from ultralytics import YOLO
+from yolo_edu.core import YOLOConfig
+from yolo_edu.utils.display import show_cv2_img, show_cv2_frames
+from yolo_edu.utils.draw import DrawUtils
+
+class Det:
+    def __init__(self, model_path: str = YOLOConfig.DEFAULT_MODEL,
+                 conf: float = YOLOConfig.DEFAULT_CONF):
+        self.model = YOLO(model_path, task="detect")
+        self.conf = conf
+
+    def _infer_and_draw(self, image, conf=None):
+        if conf is None:
+            conf = self.conf
+        results = self.model(source=image, save=False, conf=conf)
+        vis_img = image.copy()
+        det_list = []
+        boxes = results[0].boxes
+        if boxes is not None:
+            for box in boxes:
+                cls_id = int(box.cls[0])
+                cls_name = results[0].names[cls_id]
+                confidence = float(box.conf[0])
+                bbox_xyxy = box.xyxy[0].cpu().numpy().tolist()
+                det_list.append({
+                    "class_id": cls_id,
+                    "class_name": cls_name,
+                    "confidence": confidence,
+                    "bbox_xyxy": bbox_xyxy,
+                    "bbox_xywhn": box.xywhn[0].cpu().numpy().tolist(),
+                })
+                vis_img = DrawUtils.draw_bbox(
+                    image=vis_img,
+                    bbox=bbox_xyxy,
+                    label=cls_name,
+                    conf=confidence,
+                    color=DrawUtils.get_color(cls_name)
+                )
+        return det_list, vis_img
+
+    def detect_img_task(self, img_path, conf=None):
+        image = cv2.imread(img_path)
+        if image is None:
+            raise ValueError(f"无法读取图片: {img_path}")
+        return self._infer_and_draw(image, conf)
+
+    def detect_cap_task(self, video_path, conf=None):
+        cap = cv2.VideoCapture(video_path)
+        if not cap.isOpened():
+            raise RuntimeError("无法打开视频")
+
+        all_detections = []
+        frame_list = []
+        frame_idx = 0
+
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            det_list, vis_frame = self._infer_and_draw(frame, conf)
+            all_detections.append({"frame": frame_idx, "detections": det_list})
+            frame_list.append(vis_frame)
+            frame_idx += 1
+
+        cap.release()
+        return np.array(frame_list), all_detections
+
+
+if __name__ == '__main__':
+    detector = Det()
+
+    img_path = r'/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets/active/val/images/0aa31c2b-data_rbg_frame2242.jpg'
+    cap_path = r'/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets/cheating-test-v1.mp4'
+
+    dets, vis_img = detector.detect_img_task(img_path)
+    show_cv2_img(vis_img)
+
+    # 检测视频
+    frames, all_dets = detector.detect_cap_task(cap_path)
+    show_cv2_frames(frames)
