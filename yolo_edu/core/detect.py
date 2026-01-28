@@ -65,6 +65,11 @@ class Det:
             frame_idx += 1
 
         cap.release()
+
+        # 处理空视频的情况
+        if len(frame_list) == 0:
+            return np.array([]), all_detections
+
         return np.array(frame_list), all_detections
 
 
