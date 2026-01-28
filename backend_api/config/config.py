@@ -57,7 +57,7 @@ bucket = Bucket(minio_address=minio_endpoint,
 
 db = DBTools(mysql_client)
 def query():
-    return db.execute_sql('select * from users')
+    return db.execute_sql('select * from sys_user')
 
 if __name__ == '__main__':
     # 测试连接 True 表示成功连接

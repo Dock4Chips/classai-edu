@@ -21,7 +21,7 @@ export class ApiClient {
         // ✅ 请求拦截器
         this.instance.interceptors.request.use(
             (config: InternalAxiosRequestConfig) => {
-                const publicEndpoints = ['/auth', '/logout', '/api/auth/captcha','/api/page/index/list'];
+                const publicEndpoints = ['/auth', '/logout', '/api/auth/captcha','/api/class/index/banner'];
                 const isPublic = publicEndpoints.some(
                     (endpoint) => config.url && config.url.includes(endpoint)
                 );
@@ -93,29 +93,6 @@ export class ApiClient {
         return this.instance.delete(endpoint);
     }
 
-    // ✅ POST with streaming support
-    async postStream(endpoint: string, data?: any): Promise<ReadableStreamDefaultReader<Uint8Array> | null> {
-        try {
-            const token = this.getToken();
-            if (!token) {
-                return null
-            }
-
-            const response = await fetch(`${this.baseURL}${endpoint}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(data),
-            });
-
-            return response.body?.getReader() || null;
-        } catch (error) {
-            console.error('流式请求失败:', error);
-            throw error;
-        }
-    }
 }
 
 export interface Results {

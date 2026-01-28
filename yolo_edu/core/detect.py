@@ -40,6 +40,11 @@ class Det:
                 )
         return det_list, vis_img
 
+    def detect_img_task_np(self, img: np.ndarray, conf=None):
+        if img is None:
+            raise ValueError("image is None")
+        return self._infer_and_draw(img, conf)
+
     def detect_img_task(self, img_path, conf=None):
         image = cv2.imread(img_path)
         if image is None:
