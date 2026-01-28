@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 
 from yolo_edu.core.detect import Det
+from yolo_edu.utils.display import show_cv2_frames
+from yolo_edu.utils.draw import DrawUtils
 
 
 def compute_iou(box1, box2):
@@ -17,14 +19,23 @@ def compute_iou(box1, box2):
     return iou
 
 class Track:
-    def __init__(self, track_id, bbox):
+    def __init__(self, track_id, bbox, class_name):
         self.track_id = track_id
         self.bbox = bbox
+        self.class_name = class_name  # 添加类别信息
         self.history = [self._center(bbox)]
+        self.age = 0  # 未匹配帧数计数
+        self.max_age = 10  # 最大未匹配帧数
 
     def update(self, bbox):
         self.bbox = bbox
         self.history.append(self._center(bbox))
+        self.age = 0  # 重置未匹配计数
+
+    def mark_missing(self):
+        """标记轨迹为未匹配状态"""
+        self.age += 1
+        return self.age > self.max_age  # 返回是否应该被删除
 
     @staticmethod
     def _center(bbox):
@@ -53,46 +64,57 @@ class Tracker:
             dets, vis_frame = self.detector._infer_and_draw(frame, conf)
             matched = set()
 
+            # 先标记所有轨迹为未匹配状态
+            for track in tracks:
+                track.mark_missing()
+
             for det in dets:
                 bbox = det["bbox_xyxy"]
+                det_class = det["class_name"]  # 获取检测类别
                 best_iou = 0
                 best_track = None
 
                 for track in tracks:
+                    # 只匹配相同类别的轨迹
+                    if track.class_name != det_class:
+                        continue
+
                     iou = compute_iou(bbox, track.bbox)
                     if iou > best_iou:
                         best_iou = iou
                         best_track = track
 
-                if best_iou > self.iou_thresh:
+                if best_iou > self.iou_thresh and best_track is not None:
                     best_track.update(bbox)
                     matched.add(best_track.track_id)
                 else:
-                    tracks.append(Track(next_track_id, bbox))
+                    # 创建新轨迹
+                    tracks.append(Track(next_track_id, bbox, det_class))
                     next_track_id += 1
 
-            # 绘制轨迹和 ID
+            # 删除过期的轨迹（超过max_age未匹配）
+            tracks = [t for t in tracks if t.age <= t.max_age]
+
+            # 绘制轨迹和 ID（包括类别信息）
             for track in tracks:
+                color = DrawUtils.get_color(track.class_name) if hasattr(DrawUtils, 'get_color') else (0, 255, 255)
                 for i in range(1, len(track.history)):
-                    cv2.line(vis_frame, track.history[i-1], track.history[i], (0,255,255), 2)
-                cv2.putText(vis_frame, f"ID {track.track_id}", track.history[-1],
-                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0,255,255), 2)
+                    cv2.line(vis_frame, track.history[i-1], track.history[i], color, 2)
+                cv2.putText(vis_frame, f"ID {track.track_id} {track.class_name}", track.history[-1],
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
 
             frame_list.append(vis_frame)
-            cv2.imshow("Tracking", vis_frame)
-            if cv2.waitKey(1) & 0xFF == ord("q"):
-                break
 
         cap.release()
-        cv2.destroyAllWindows()
         return np.array(frame_list)
 
 
 
 if __name__ == '__main__':
-    cap_path = r'/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets/cheating-test-v1.mp4'
 
+    cap_path = r'/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets/cheating-test-v1.mp4'
 
     detector = Det()
     tracker = Tracker(detector)
-    tracker.track_and_draw_trajectory(cap_path)
+    frames = tracker.track_and_draw_trajectory(cap_path)
+    show_cv2_frames(frames)

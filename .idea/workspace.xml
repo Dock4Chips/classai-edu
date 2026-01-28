@@ -4,121 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用&#10;- 移除过时的CLAUDE.md文件&#10;- 添加新的README.md文档包含完整项目说明">
+    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="feat(core): 添加检测分析核心功能模块&#10;&#10;- 新增Analyzer类用于行为序列分析、告警系统和考勤统计功能&#10;- 添加Det类实现YOLO模型检测功能，支持图像和视频检测任务&#10;- 实现检测结果可视化绘制功能，包括边界框标注和置信度显示&#10;- 添加视频捕获和帧处理功能，支持实时检测和批量分析&#10;- 集成训练参数配置文件，包含YOLOv8和YOLOv11模型配置&#10;- 添加训练结果CSV数据记录，包含损失函数和评估指标跟踪&#10;- 实现OpenCV显示工具，支持图像和视频流展示功能">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/services/page_index_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/services/page_index_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/model/classai_8n.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/YOLO-tools/To_onnx.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/YOLO-tools/To_onnx.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/YOLO-tools/detect_and_move.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/YOLO-tools/detect_and_move.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/core/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/core/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/core/val.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/core/val.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/dataset.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/datasets/dataset.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/BoxF1_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/BoxPR_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/BoxP_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/BoxR_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/args.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/confusion_matrix.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/confusion_matrix_normalized.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/results.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/results.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/train_batch0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/train_batch1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/train_batch1170.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/train_batch1171.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/train_batch1172.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/train_batch2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/val_batch0_labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/val_batch0_pred.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/val_batch1_labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/val_batch1_pred.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/val_batch2_labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/val_batch2_pred.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/weights/best.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v1/yolov8_8n/weights/last.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/BoxF1_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/BoxPR_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/BoxP_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/BoxR_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/args.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/confusion_matrix.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/confusion_matrix_normalized.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/results.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/results.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/train_batch0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/train_batch1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/train_batch2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/train_batch29830.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/train_batch29831.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/train_batch29832.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/val_batch0_labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/val_batch0_pred.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/val_batch1_labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/val_batch1_pred.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/val_batch2_labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/val_batch2_pred.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/weights/best.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v2/yolov8_8n/weights/last.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/BoxF1_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/BoxPR_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/BoxP_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/BoxR_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/args.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/confusion_matrix.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/confusion_matrix_normalized.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/results.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/results.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/train_batch0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/train_batch1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/train_batch2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/train_batch5890.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/train_batch5891.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/train_batch5892.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/val_batch0_labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/val_batch0_pred.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/val_batch1_labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/val_batch1_pred.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/val_batch2_labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/val_batch2_pred.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/weights/best.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/datasets/results/v3/detect/yolov8_8m/weights/last.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/args.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/results.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/train_batch0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/train_batch1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/train_batch2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/weights/best.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/classai_model/weights/last.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/BoxF1_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/BoxPR_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/BoxP_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/BoxR_curve.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/args.yaml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/confusion_matrix.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/confusion_matrix_normalized.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/results.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/results.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/train_batch0.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/train_batch1.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/train_batch2.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/train_batch5890.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/train_batch5891.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/train_batch5892.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/val_batch0_labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/val_batch0_pred.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/val_batch1_labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/val_batch1_pred.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/val_batch2_labels.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/val_batch2_pred.jpg" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/weights/best.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/runs/detect/yolov8_8m/weights/last.pt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/utils/draw.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/utils/draw.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/core/detect.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/core/detect.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/core/tracker.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/core/tracker.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/services/__init__.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/services/batch.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/services/behavior.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/services/realtime.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/services/reporter.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/services/tracker.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/yolo_edu/utils/display.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/utils/display.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,6 +84,7 @@
     "Python.test.executor": "Run",
     "Python.torch.executor": "Run",
     "Python.torch_info.executor": "Run",
+    "Python.tracker.executor": "Run",
     "Python.train.executor": "Run",
     "Python.tttt.executor": "Debug",
     "Python.val.executor": "Run",
@@ -229,7 +126,7 @@
       <recent name="$PROJECT_DIR$/script/docker" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.analyzer">
+  <component name="RunManager" selected="Python.tracker">
     <configuration name="analyzer" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="classai-edu" />
       <option name="ENV_FILES" value="" />
@@ -299,7 +196,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="tracker" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="classai-edu" />
       <option name="ENV_FILES" value="" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -308,12 +205,12 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/yolo_edu" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/yolo_edu/core" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/main.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/yolo_edu/core/tracker.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -360,19 +257,19 @@
     </configuration>
     <list>
       <item itemvalue="npm.dev-admin" />
+      <item itemvalue="Python.tracker" />
       <item itemvalue="Python.analyzer" />
       <item itemvalue="Python.config" />
       <item itemvalue="Python.detect" />
-      <item itemvalue="Python.main" />
       <item itemvalue="Python.val" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.tracker" />
         <item itemvalue="Python.analyzer" />
         <item itemvalue="Python.detect" />
         <item itemvalue="Python.val" />
         <item itemvalue="Python.config" />
-        <item itemvalue="Python.main" />
       </list>
     </recent_temporary>
   </component>
@@ -431,23 +328,8 @@
       <workItem from="1769106619063" duration="314000" />
       <workItem from="1769169773015" duration="40836000" />
       <workItem from="1769493774257" duration="1509000" />
-      <workItem from="1769496042416" duration="19457000" />
-    </task>
-    <task id="LOCAL-00020" summary="commit">
-      <option name="closed" value="true" />
-      <created>1763914815346</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1763914815346</updated>
-    </task>
-    <task id="LOCAL-00021" summary="commit">
-      <option name="closed" value="true" />
-      <created>1763914818539</created>
-      <option name="number" value="00021" />
-      <option name="presentableId" value="LOCAL-00021" />
-      <option name="project" value="LOCAL" />
-      <updated>1763914818539</updated>
+      <workItem from="1769496042416" duration="19795000" />
+      <workItem from="1769562471727" duration="1879000" />
     </task>
     <task id="LOCAL-00022" summary="feat(auth): implement authentication and authorization system&#10;&#10;- Added public and protected routers with custom OAuth2 bearer token handling&#10;- Implemented login, registration, and captcha generation endpoints&#10;- Created secure user info endpoint with token validation dependency&#10;- Updated authorization logic to include custom token validation and error handling&#10;- Modified logging retention periods for server and error logs&#10;- Refactored YOLO model path references to correctly locate model files&#10;- Removed obsolete login and secure API route files&#10;- Added simpel-captcha dependency for captcha generation functionality">
       <option name="closed" value="true" />
@@ -825,7 +707,23 @@
       <option name="project" value="LOCAL" />
       <updated>1769190268851</updated>
     </task>
-    <option name="localTasksCounter" value="69" />
+    <task id="LOCAL-00069" summary="refactor(yolo): 重构YOLO教育检测系统配置和模型设置&#10;&#10;- 更新模型配置文件，移除预训练模型定义并调整默认模型路径&#10;- 重新排列类别名称顺序并更新数据集配置文件中的类别索引&#10;- 修改检测工具脚本中的模型路径配置&#10;- 优化绘图模块中的边界框绘制方法，采用YOLO原生参数风格&#10;- 更新主训练脚本中的设备设置为MPS加速器&#10;- 调整后端服务中的预测模块导入路径&#10;- 移除过时的结果CSV文件和args.yaml配置文件&#10;- 清理配置文件中的冗余注释和代码结构">
+      <option name="closed" value="true" />
+      <created>1769544212650</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1769544212650</updated>
+    </task>
+    <task id="LOCAL-00070" summary="feat(core): 添加检测分析核心功能模块&#10;&#10;- 新增Analyzer类用于行为序列分析、告警系统和考勤统计功能&#10;- 添加Det类实现YOLO模型检测功能，支持图像和视频检测任务&#10;- 实现检测结果可视化绘制功能，包括边界框标注和置信度显示&#10;- 添加视频捕获和帧处理功能，支持实时检测和批量分析&#10;- 集成训练参数配置文件，包含YOLOv8和YOLOv11模型配置&#10;- 添加训练结果CSV数据记录，包含损失函数和评估指标跟踪&#10;- 实现OpenCV显示工具，支持图像和视频流展示功能">
+      <option name="closed" value="true" />
+      <created>1769544235642</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1769544235642</updated>
+    </task>
+    <option name="localTasksCounter" value="71" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -868,8 +766,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="chore(project): 清理并重构项目配置与依赖管理- 移除冗余的 demo.py 文件内容，简化预测逻辑&#10;- 更新 requirements.txt以重新组织项目依赖&#10;- 注释掉 predic.py 中的图像和视频展示代码块&#10;-修正 main.py 中模型路径的注释描述&#10;- 移除 val.py 中未使用的 sympy 导入&#10;- 更新 IDE 配置文件以反映新的运行设置和断点位置&#10;- 添加 ProjectRootManager 组件到 .idea/misc.xml 以明确 Python SDK- 清理工作区中不再需要的运行配置项&#10;- 更新日志记录相关模块的时间戳与调试信息&#10;- 调整 coverage 测试套件时间戳以匹配最新执行状态" />
-    <MESSAGE value="refactor(gui):重构卡密验证界面与逻辑&#10;&#10;- 简化GUI类结构，移除多余窗口管理逻辑&#10;- 更新Redis键存储方式，使用带前缀的字符串键替代集合- 设置卡密默认过期时间为三天&#10;-优化验证窗口UI布局与样式配置&#10;- 实现验证成功后直接关闭窗口而非跳转新界面&#10;-修复窗口居中显示逻辑&#10;- 移除未使用的tkinter导入与旧版主窗口代码" />
     <MESSAGE value="调整训练集参数和训练量" />
     <MESSAGE value="feat(gui): remove unused GUI implementation and dependencies&#10;&#10;- Removed entire demo.py file containing old GUI implementation&#10;- Removed entire main.py file containing duplicate GUI code&#10;- Removed unused pyautogui dependency from requirements.txt&#10;- Removed unused ttkbootstrap dependency from requirements.txt&#10;- Cleaned up redundant configuration file config.py&#10;- Eliminated deprecated GUI-related imports and modules" />
     <MESSAGE value="refactor(main): wrap training code in main guard&#10;&#10;- Encapsulated model training logic within if-name-main guard&#10;- Ensured proper module execution when script is run directly&#10;- Maintained all existing training parameters and configurations&#10;- Preserved logging of training results&#10;- Improved code structure for better import behavior" />
@@ -893,7 +789,9 @@
     <MESSAGE value="feat(yolo_edu): 添加核心模块和服务功能&#10;&#10;- 新增 core 模块，包含 YOLOConfig 和预测相关功能&#10;- 新增 services 模块，提供追踪、行为分析、批量处理等功能&#10;- 新增 utils 模块，提供绘图、导出、坐标转换等工具函数&#10;- 添加批量处理功能，支持图片和视频批量处理&#10;- 添加行为追踪功能，统计学生行为持续时间&#10;- 添加时序分析功能，分析行为序列和模式&#10;- 添加坐标转换工具，支持YOLO格式与像素坐标转换&#10;- 添加模型配置管理，统一管理模型路径和类别名称&#10;- 添加视频抽帧功能，支持按间隔抽取帧进行检测&#10;- 生成模型训练参数配置文件" />
     <MESSAGE value="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用" />
     <MESSAGE value="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用&#10;- 移除过时的CLAUDE.md文件&#10;- 添加新的README.md文档包含完整项目说明" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor(backend): 调整目录结构和导入路径&#10;&#10;- 将controller目录重命名为routers&#10;- 将service目录重命名为services&#10;- 更新所有相关的导入语句以反映新的目录结构&#10;- 修改日志工具中的目录名称替换逻辑&#10;- 更新文档中的文件路径引用&#10;- 移除过时的CLAUDE.md文件&#10;- 添加新的README.md文档包含完整项目说明" />
+    <MESSAGE value="refactor(yolo): 重构YOLO教育检测系统配置和模型设置&#10;&#10;- 更新模型配置文件，移除预训练模型定义并调整默认模型路径&#10;- 重新排列类别名称顺序并更新数据集配置文件中的类别索引&#10;- 修改检测工具脚本中的模型路径配置&#10;- 优化绘图模块中的边界框绘制方法，采用YOLO原生参数风格&#10;- 更新主训练脚本中的设备设置为MPS加速器&#10;- 调整后端服务中的预测模块导入路径&#10;- 移除过时的结果CSV文件和args.yaml配置文件&#10;- 清理配置文件中的冗余注释和代码结构" />
+    <MESSAGE value="feat(core): 添加检测分析核心功能模块&#10;&#10;- 新增Analyzer类用于行为序列分析、告警系统和考勤统计功能&#10;- 添加Det类实现YOLO模型检测功能，支持图像和视频检测任务&#10;- 实现检测结果可视化绘制功能，包括边界框标注和置信度显示&#10;- 添加视频捕获和帧处理功能，支持实时检测和批量分析&#10;- 集成训练参数配置文件，包含YOLOv8和YOLOv11模型配置&#10;- 添加训练结果CSV数据记录，包含损失函数和评估指标跟踪&#10;- 实现OpenCV显示工具，支持图像和视频流展示功能" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(core): 添加检测分析核心功能模块&#10;&#10;- 新增Analyzer类用于行为序列分析、告警系统和考勤统计功能&#10;- 添加Det类实现YOLO模型检测功能，支持图像和视频检测任务&#10;- 实现检测结果可视化绘制功能，包括边界框标注和置信度显示&#10;- 添加视频捕获和帧处理功能，支持实时检测和批量分析&#10;- 集成训练参数配置文件，包含YOLOv8和YOLOv11模型配置&#10;- 添加训练结果CSV数据记录，包含损失函数和评估指标跟踪&#10;- 实现OpenCV显示工具，支持图像和视频流展示功能" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/classai_edu$Doctests_in_main.coverage" NAME="Doctests in main Coverage Results" MODIFIED="1762759856334" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
@@ -919,6 +817,7 @@
     <SUITE FILE_PATH="coverage/classai_edu$main_1.coverage" NAME="main_1 Coverage Results" MODIFIED="1769351075450" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$data_pro.coverage" NAME="data_pro Coverage Results" MODIFIED="1764399964362" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$tool.coverage" NAME="tool Coverage Results" MODIFIED="1765000463072" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
+    <SUITE FILE_PATH="coverage/classai_edu$tracker.coverage" NAME="tracker Coverage Results" MODIFIED="1769564213874" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu/core" />
     <SUITE FILE_PATH="coverage/classai_edu$Doctest_train_yolo_model.coverage" NAME="Doctest train_yolo_model Coverage Results" MODIFIED="1762759656348" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$2.coverage" NAME="2 Coverage Results" MODIFIED="1762792514424" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu/open-cv" />
     <SUITE FILE_PATH="coverage/classai_edu$torch.coverage" NAME="torch_info Coverage Results" MODIFIED="1769496248709" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
