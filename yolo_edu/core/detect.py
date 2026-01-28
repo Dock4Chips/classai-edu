@@ -51,26 +51,51 @@ class Det:
         if not cap.isOpened():
             raise RuntimeError("无法打开视频")
 
-        all_detections = []
         frame_list = []
-        frame_idx = 0
 
         while True:
             ret, frame = cap.read()
             if not ret:
                 break
             det_list, vis_frame = self._infer_and_draw(frame, conf)
-            all_detections.append({"frame": frame_idx, "detections": det_list})
             frame_list.append(vis_frame)
-            frame_idx += 1
 
         cap.release()
 
         # 处理空视频的情况
         if len(frame_list) == 0:
-            return np.array([]), all_detections
+            return np.array([])
 
-        return np.array(frame_list), all_detections
+        return np.array(frame_list)
+
+    def get_detections(self, video_path, conf=None):
+        """
+        获取原始检测结果数据（用于分析）
+
+        Args:
+            video_path: 视频路径
+            conf: 置信度阈值
+
+        Returns:
+            List[Dict]: 检测结果列表
+        """
+        cap = cv2.VideoCapture(video_path)
+        if not cap.isOpened():
+            raise RuntimeError("无法打开视频")
+
+        all_detections = []
+        frame_idx = 0
+
+        while True:
+            ret, frame = cap.read()
+            if not ret:
+                break
+            det_list, _ = self._infer_and_draw(frame, conf)
+            all_detections.append({"frame": frame_idx, "detections": det_list})
+            frame_idx += 1
+
+        cap.release()
+        return all_detections
 
 
 if __name__ == '__main__':
@@ -83,5 +108,5 @@ if __name__ == '__main__':
     show_cv2_img(vis_img)
 
     # 检测视频
-    frames, all_dets = detector.detect_cap_task(cap_path)
+    frames = detector.detect_cap_task(cap_path)
     show_cv2_frames(frames)

@@ -5,6 +5,12 @@ yolo_edu.core - YOLO 核心功能模块
 """
 
 from .config import YOLOConfig
-from .predict import PreAct, GetPos
+from .detect import Det
+from .tracker import Tracker, KalmanTrack
 
-__all__ = ['YOLOConfig', 'PreAct', 'GetPos']
+__all__ = [
+    'YOLOConfig',
+    'Det',
+    'Tracker',
+    'KalmanTrack',
+]
