@@ -10,7 +10,6 @@ from repository.user_mapper import (
     query_user_only_username,
     query_user_role_permissions,
     insert_user,
-    insert_user_role,
 )
 from config import redis_client
 from model.exceptions import ServiceException
@@ -93,12 +92,14 @@ class AuthService:
 
         pwd_md5 = hashlib.md5(password.encode('utf-8')).hexdigest()
 
-        insert_user({"user_name": username, "password": pwd_md5})
+        # 直接插入用户并指定角色（role_id=2 为学生角色）
+        insert_user({
+            "user_name": username,
+            "password": pwd_md5,
+            "role_id": 2
+        })
 
         new_user = query_user_only_username(username)
-        user_id = new_user[0]['user_id']
-
-        insert_user_role({"user_id": user_id, "role_id": 2})
 
         return AuthService._generate_token(new_user[0])
 

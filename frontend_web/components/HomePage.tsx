@@ -12,7 +12,7 @@ import {MagneticButton} from '@/components/ui/magnetic-button';
 import {Carousel} from '@/components/ui/carousel';
 import {useEffect, useState} from 'react';
 import {Results} from "@/lib/api";
-import {PageIndex} from "@/lib/service/page_index";
+import {ClassIndexBanner} from "@/lib/service/class_index_banner";
 
 
 export default function HomePage() {
@@ -22,11 +22,11 @@ export default function HomePage() {
     }, []);
 
     const fetchData = async () => {
-        const results = await PageIndex.PageList();
+        const results = await ClassIndexBanner.getBanners();
         if (results.code === 200 && results.data) {
             const data = results.data.map((item: Results) => ({
                 id: item.id,
-                image_url: item.image_url,
+                image_url: item.resource_url,
                 num_boxes: item.num_boxes,
                 cls_counts: JSON.parse(item.cls_counts),
                 status: 'completed'
