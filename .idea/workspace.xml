@@ -4,26 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="refactor(tracker): 重构跟踪模块并移除高级服务功能&#10;&#10;- 在Track类中添加类别信息存储和未匹配帧数管理&#10;- 实现轨迹生命周期管理，包括创建、更新和删除逻辑&#10;- 添加类别匹配验证，确保只有同类目标才能进行轨迹关联&#10;- 集成可视化工具用于轨迹绘制和显示功能&#10;- 移除services包中的批量处理、行为分析、实时检测等高级功能模块&#10;- 移除报告生成和热力图生成功能相关的代码文件&#10;- 优化轨迹匹配算法，提高跟踪准确性和稳定性">
-      <change afterPath="$PROJECT_DIR$/frontend_web/lib/service/class_index_banner.ts" afterDir="false" />
+    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="feat(banner): 添加首页横幅管理功能&#10;&#10;- 创建 class_index_banner 数据表用于存储 AI 检测结果&#10;- 实现横幅增删改查的基础数据库操作方法&#10;- 集成 MinIO 文件上传功能支持图片资源管理&#10;- 添加 YOLO 模型检测处理流程&#10;- 提供完整的 RESTful API 接口包括权限控制&#10;- 实现图片检测结果序列化和数据持久化&#10;- 添加文件上传、检测、存储一体化处理流程">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/config/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/config/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/repository/page_index_mapper.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/repository/user_mapper.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/repository/user_mapper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/auth/authorization.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/auth/authorization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/config/security_context.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/config/security_context.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/repository/user_mapper.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/backend_api/routers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/routers/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/routers/page_index.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/routers/yolo_api.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/services/auth_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/services/auth_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/services/page_index_service.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/tools/db_fields.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/tools/db_fields.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend_web/components/HomePage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/HomePage.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/routers/auth.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/services/auth_service.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/tools/security_tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/tools/security_tool.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend_admin/lib/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_admin/lib/api.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend_web/lib/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/lib/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend_web/lib/service/page_index.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend_web/lib/service/yolo_api.ts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/sql/classai_edu.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/sql/new_sql.sql" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/core/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/core/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yolo_edu/core/detect.py" beforeDir="false" afterPath="$PROJECT_DIR$/yolo_edu/core/detect.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/master_tools/db_tools.py" beforeDir="false" afterPath="$PROJECT_DIR$/master_tools/db_tools.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -56,70 +48,70 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python tests.Doctest train_yolo_model.executor": "Run",
-    "Python tests.Doctests in main.executor": "Run",
-    "Python.1.executor": "Run",
-    "Python.2.executor": "Run",
-    "Python.analyzer.executor": "Run",
-    "Python.augment_data.executor": "Run",
-    "Python.auth.executor": "Run",
-    "Python.authorization.executor": "Run",
-    "Python.class_index_banner_repository.executor": "Run",
-    "Python.classai_main (1).executor": "Run",
-    "Python.classai_main.executor": "Debug",
-    "Python.config.executor": "Run",
-    "Python.count_file.executor": "Run",
-    "Python.data_pro.executor": "Run",
-    "Python.datasets_split.executor": "Run",
-    "Python.demo (1).executor": "Run",
-    "Python.demo.executor": "Run",
-    "Python.detect.executor": "Run",
-    "Python.dmeo.executor": "Run",
-    "Python.main (1).executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.main2.executor": "Run",
-    "Python.main_1.executor": "Run",
-    "Python.main_2.executor": "Run",
-    "Python.minio_tools.executor": "Debug",
-    "Python.predic (1).executor": "Run",
-    "Python.predic.executor": "Debug",
-    "Python.predict (1).executor": "Run",
-    "Python.predict.executor": "Run",
-    "Python.route_api.executor": "Run",
-    "Python.sanjiaozhou.executor": "Debug",
-    "Python.split_train_val.executor": "Run",
-    "Python.test.executor": "Run",
-    "Python.torch.executor": "Run",
-    "Python.torch_info.executor": "Run",
-    "Python.tracker.executor": "Run",
-    "Python.train.executor": "Run",
-    "Python.tttt.executor": "Debug",
-    "Python.val.executor": "Run",
-    "Python.val_main.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "/Users/dock4chips/Script-P/classai-edu/model",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "npm.dev (1).executor": "Run",
-    "npm.dev-admin.executor": "Run",
-    "npm.dev-web.executor": "Run",
-    "npm.dev.executor": "Run",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "ts.external.directory.path": "/Users/dock4chips/Script-P/classai-edu/frontend_admin/node_modules/typescript/lib",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python tests.Doctest train_yolo_model.executor&quot;: &quot;Run&quot;,
+    &quot;Python tests.Doctests in main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.analyzer.executor&quot;: &quot;Run&quot;,
+    &quot;Python.augment_data.executor&quot;: &quot;Run&quot;,
+    &quot;Python.auth.executor&quot;: &quot;Run&quot;,
+    &quot;Python.authorization.executor&quot;: &quot;Run&quot;,
+    &quot;Python.class_index_banner_repository.executor&quot;: &quot;Run&quot;,
+    &quot;Python.classai_main (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.classai_main.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.config.executor&quot;: &quot;Run&quot;,
+    &quot;Python.count_file.executor&quot;: &quot;Run&quot;,
+    &quot;Python.data_pro.executor&quot;: &quot;Run&quot;,
+    &quot;Python.datasets_split.executor&quot;: &quot;Run&quot;,
+    &quot;Python.demo (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.demo.executor&quot;: &quot;Run&quot;,
+    &quot;Python.detect.executor&quot;: &quot;Run&quot;,
+    &quot;Python.dmeo.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main_1.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main_2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.minio_tools.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.predic (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.predic.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.predict (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.predict.executor&quot;: &quot;Run&quot;,
+    &quot;Python.route_api.executor&quot;: &quot;Run&quot;,
+    &quot;Python.sanjiaozhou.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.split_train_val.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test.executor&quot;: &quot;Run&quot;,
+    &quot;Python.torch.executor&quot;: &quot;Run&quot;,
+    &quot;Python.torch_info.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tracker.executor&quot;: &quot;Run&quot;,
+    &quot;Python.train.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tttt.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.val.executor&quot;: &quot;Run&quot;,
+    &quot;Python.val_main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/dock4chips/Script-P/classai-edu/model&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;npm.dev (1).executor&quot;: &quot;Run&quot;,
+    &quot;npm.dev-admin.executor&quot;: &quot;Run&quot;,
+    &quot;npm.dev-web.executor&quot;: &quot;Run&quot;,
+    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;/Users/dock4chips/Script-P/classai-edu/frontend_admin/node_modules/typescript/lib&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/model" />
@@ -329,23 +321,8 @@
       <workItem from="1769562471727" duration="9227000" />
       <workItem from="1769582045105" duration="222000" />
       <workItem from="1769583437734" duration="1389000" />
-      <workItem from="1769610791964" duration="12050000" />
-    </task>
-    <task id="LOCAL-00024" summary="feat(frontend): 重构首页并增强视觉效果&#10;&#10;- 更新认证接口路径从 /api/login 到 /api/auth&#10;- 修改验证码接口路径为 /api/auth/captcha&#10;- 重构 HomePage 组件，移除旧导航栏结构&#10;- 引入多种动画组件如 SpotlightCard、AnimatedContent 等&#10;- 添加 AuroraBackground 和 BeamsBackground 背景效果&#10;- 实现检测结果轮播图展示功能&#10;- 增加磁性按钮和渐变文字等交互元素&#10;- 更新图标引用和相关样式配置&#10;- 调整后端服务端口从 8989 到 7869&#10;- 优化日志模块命名规则及文件路径处理逻辑">
-      <option name="closed" value="true" />
-      <created>1763974110614</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1763974110614</updated>
-    </task>
-    <task id="LOCAL-00025" summary="feat(frontend): 重构首页并增强视觉效果&#10;&#10;- 更新认证接口路径从 /api/login 到 /api/auth&#10;- 修改验证码接口路径为 /api/auth/captcha&#10;- 重构 HomePage 组件，移除旧导航栏结构&#10;- 引入多种动画组件如 SpotlightCard、AnimatedContent 等&#10;- 添加 AuroraBackground 和 BeamsBackground 背景效果&#10;- 实现检测结果轮播图展示功能&#10;- 增加磁性按钮和渐变文字等交互元素&#10;- 更新图标引用和相关样式配置&#10;- 调整后端服务端口从 8989 到 7869&#10;- 优化日志模块命名规则及文件路径处理逻辑">
-      <option name="closed" value="true" />
-      <created>1763991900124</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1763991900124</updated>
+      <workItem from="1769610791964" duration="12109000" />
+      <workItem from="1769672105013" duration="17352000" />
     </task>
     <task id="LOCAL-00026" summary="feat(login): 重构登录页面并增强视觉效果&#10;&#10;- 导入新的图标组件 Crosshair, Zap, ShieldCheck&#10;- 更新浮动标签徽章样式并添加图标&#10;- 重新设计登录表单布局和装饰元素&#10;- 添加动态背景效果和网格图案&#10;- 实现卡片玻璃态效果和动画边框&#10;- 优化步骤指示器和头部样式&#10;- 改进表单输入和按钮交互效果&#10;- 增强社交登录区域视觉设计&#10;- 更新页脚安全状态显示样式&#10;- 调整整体动画过渡效果和延迟时间">
       <option name="closed" value="true" />
@@ -723,7 +700,23 @@
       <option name="project" value="LOCAL" />
       <updated>1769567916173</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="feat(router): 更新路由配置并添加班级首页横幅功能&#10;&#10;- 替换 yolo_api 和 page_index 路由为 class_index_banner 路由&#10;- 在核心模块中添加 RealTimeDetector 导入支持&#10;- 更新前端 API 配置将页面索引接口更改为班级横幅接口&#10;- 移除前端 postStream 方法以简化 API 客户端&#10;- 修改用户注册逻辑直接插入用户并指定角色 ID&#10;- 创建新的 ClassIndexBanner 服务类处理横幅相关操作&#10;- 删除旧的数据库脚本文件&#10;- 更新数据库查询从 users 表到 sys_user 表&#10;- 修改数据库字段映射从 create_by/update_by 到 created_by/updated_by&#10;- 在检测模块中添加 numpy 图像检测方法&#10;- 更新首页组件使用新的横幅服务和资源 URL 字段">
+      <option name="closed" value="true" />
+      <created>1769627614658</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1769627614658</updated>
+    </task>
+    <task id="LOCAL-00074" summary="feat(banner): 添加首页横幅管理功能&#10;&#10;- 创建 class_index_banner 数据表用于存储 AI 检测结果&#10;- 实现横幅增删改查的基础数据库操作方法&#10;- 集成 MinIO 文件上传功能支持图片资源管理&#10;- 添加 YOLO 模型检测处理流程&#10;- 提供完整的 RESTful API 接口包括权限控制&#10;- 实现图片检测结果序列化和数据持久化&#10;- 添加文件上传、检测、存储一体化处理流程">
+      <option name="closed" value="true" />
+      <created>1769627625029</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1769627625029</updated>
+    </task>
+    <option name="localTasksCounter" value="75" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -766,8 +759,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feat(gui): remove unused GUI implementation and dependencies&#10;&#10;- Removed entire demo.py file containing old GUI implementation&#10;- Removed entire main.py file containing duplicate GUI code&#10;- Removed unused pyautogui dependency from requirements.txt&#10;- Removed unused ttkbootstrap dependency from requirements.txt&#10;- Cleaned up redundant configuration file config.py&#10;- Eliminated deprecated GUI-related imports and modules" />
-    <MESSAGE value="refactor(main): wrap training code in main guard&#10;&#10;- Encapsulated model training logic within if-name-main guard&#10;- Ensured proper module execution when script is run directly&#10;- Maintained all existing training parameters and configurations&#10;- Preserved logging of training results&#10;- Improved code structure for better import behavior" />
     <MESSAGE value="feat(backend): initialize backend auth config and structure&#10;&#10;- Add authentication configuration with secret key, algorithm, and token expiry&#10;- Update IDE module configuration to include backend source folder&#10;- Rename main application file from main.py to classai_main.py&#10;- Configure FastAPI app to disable docs and integrate exception handling&#10;- Remove obsolete weather API configuration&#10;- Set up basic logging configuration in logger tool&#10;- Clear outdated logs and remove unused dependencies list" />
     <MESSAGE value="refactor(exceptions): simplify exception handlers and remove unused imports&#10;&#10;- Remove unused Request import from exceptions module&#10;- Eliminate logging dependency in exception handlers&#10;- Simplify service exception handler signature&#10;- Update global exception handler to remove request context&#10;- Change default error message to &quot;服务器内部异常&quot;&#10;- Remove unused imports from secure API controller&#10;- Clean up result model by removing extra blank lines" />
     <MESSAGE value="refactor(auth): improve token handling and cleanup imports&#10;&#10;- Reorder and clean up imports in authorization module&#10;- Fix encrypted user data decoding in token validation&#10;- Simplify exception messages for login expiration&#10;- Remove redundant newline characters and whitespace&#10;- Ensure consistent string encoding usage (&quot;utf-8&quot;)" />
@@ -791,7 +782,9 @@
     <MESSAGE value="refactor(yolo): 重构YOLO教育检测系统配置和模型设置&#10;&#10;- 更新模型配置文件，移除预训练模型定义并调整默认模型路径&#10;- 重新排列类别名称顺序并更新数据集配置文件中的类别索引&#10;- 修改检测工具脚本中的模型路径配置&#10;- 优化绘图模块中的边界框绘制方法，采用YOLO原生参数风格&#10;- 更新主训练脚本中的设备设置为MPS加速器&#10;- 调整后端服务中的预测模块导入路径&#10;- 移除过时的结果CSV文件和args.yaml配置文件&#10;- 清理配置文件中的冗余注释和代码结构" />
     <MESSAGE value="feat(core): 添加检测分析核心功能模块&#10;&#10;- 新增Analyzer类用于行为序列分析、告警系统和考勤统计功能&#10;- 添加Det类实现YOLO模型检测功能，支持图像和视频检测任务&#10;- 实现检测结果可视化绘制功能，包括边界框标注和置信度显示&#10;- 添加视频捕获和帧处理功能，支持实时检测和批量分析&#10;- 集成训练参数配置文件，包含YOLOv8和YOLOv11模型配置&#10;- 添加训练结果CSV数据记录，包含损失函数和评估指标跟踪&#10;- 实现OpenCV显示工具，支持图像和视频流展示功能" />
     <MESSAGE value="refactor(tracker): 重构跟踪模块并移除高级服务功能&#10;&#10;- 在Track类中添加类别信息存储和未匹配帧数管理&#10;- 实现轨迹生命周期管理，包括创建、更新和删除逻辑&#10;- 添加类别匹配验证，确保只有同类目标才能进行轨迹关联&#10;- 集成可视化工具用于轨迹绘制和显示功能&#10;- 移除services包中的批量处理、行为分析、实时检测等高级功能模块&#10;- 移除报告生成和热力图生成功能相关的代码文件&#10;- 优化轨迹匹配算法，提高跟踪准确性和稳定性" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactor(tracker): 重构跟踪模块并移除高级服务功能&#10;&#10;- 在Track类中添加类别信息存储和未匹配帧数管理&#10;- 实现轨迹生命周期管理，包括创建、更新和删除逻辑&#10;- 添加类别匹配验证，确保只有同类目标才能进行轨迹关联&#10;- 集成可视化工具用于轨迹绘制和显示功能&#10;- 移除services包中的批量处理、行为分析、实时检测等高级功能模块&#10;- 移除报告生成和热力图生成功能相关的代码文件&#10;- 优化轨迹匹配算法，提高跟踪准确性和稳定性" />
+    <MESSAGE value="feat(router): 更新路由配置并添加班级首页横幅功能&#10;&#10;- 替换 yolo_api 和 page_index 路由为 class_index_banner 路由&#10;- 在核心模块中添加 RealTimeDetector 导入支持&#10;- 更新前端 API 配置将页面索引接口更改为班级横幅接口&#10;- 移除前端 postStream 方法以简化 API 客户端&#10;- 修改用户注册逻辑直接插入用户并指定角色 ID&#10;- 创建新的 ClassIndexBanner 服务类处理横幅相关操作&#10;- 删除旧的数据库脚本文件&#10;- 更新数据库查询从 users 表到 sys_user 表&#10;- 修改数据库字段映射从 create_by/update_by 到 created_by/updated_by&#10;- 在检测模块中添加 numpy 图像检测方法&#10;- 更新首页组件使用新的横幅服务和资源 URL 字段" />
+    <MESSAGE value="feat(banner): 添加首页横幅管理功能&#10;&#10;- 创建 class_index_banner 数据表用于存储 AI 检测结果&#10;- 实现横幅增删改查的基础数据库操作方法&#10;- 集成 MinIO 文件上传功能支持图片资源管理&#10;- 添加 YOLO 模型检测处理流程&#10;- 提供完整的 RESTful API 接口包括权限控制&#10;- 实现图片检测结果序列化和数据持久化&#10;- 添加文件上传、检测、存储一体化处理流程" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(banner): 添加首页横幅管理功能&#10;&#10;- 创建 class_index_banner 数据表用于存储 AI 检测结果&#10;- 实现横幅增删改查的基础数据库操作方法&#10;- 集成 MinIO 文件上传功能支持图片资源管理&#10;- 添加 YOLO 模型检测处理流程&#10;- 提供完整的 RESTful API 接口包括权限控制&#10;- 实现图片检测结果序列化和数据持久化&#10;- 添加文件上传、检测、存储一体化处理流程" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -802,9 +795,9 @@
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/backend_api/services/auth_service.py</url>
-          <line>79</line>
-          <option name="timeStamp" value="6" />
+          <url>file://$PROJECT_DIR$/backend_api/routers/sys_user_router.py</url>
+          <line>25</line>
+          <option name="timeStamp" value="12" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -827,7 +820,7 @@
     <SUITE FILE_PATH="coverage/classai_edu$auth.coverage" NAME="auth Coverage Results" MODIFIED="1764687971468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_edu/controller" />
     <SUITE FILE_PATH="coverage/classai_edu$DivisionOfData.coverage" NAME="DivisionOfData Coverage Results" MODIFIED="1764971099950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$authorization.coverage" NAME="authorization Coverage Results" MODIFIED="1764683796936" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_edu/auth" />
-    <SUITE FILE_PATH="coverage/classai_edu$classai_main.coverage" NAME="classai_main Coverage Results" MODIFIED="1769627295818" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_api" />
+    <SUITE FILE_PATH="coverage/classai_edu$classai_main.coverage" NAME="classai_main Coverage Results" MODIFIED="1769710172202" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_api" />
     <SUITE FILE_PATH="coverage/classai_edu$config.coverage" NAME="config Coverage Results" MODIFIED="1769520523629" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu/core" />
     <SUITE FILE_PATH="coverage/classai_edu$route_api.coverage" NAME="route_api Coverage Results" MODIFIED="1763909367016" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$demo.coverage" NAME="demo Coverage Results" MODIFIED="1765271271998" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
