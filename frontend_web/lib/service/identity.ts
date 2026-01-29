@@ -1,7 +1,7 @@
 import {apiClient, Results} from '../api'
 import {LoginType} from '../../enums/login_type'
 
-export class AuthService {
+export class IdentityService {
 
     /**
      * 获取验证码图片

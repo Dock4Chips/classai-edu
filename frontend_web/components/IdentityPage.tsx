@@ -9,7 +9,7 @@ import {FloatingParticles} from '@/components/ui/floating-particles';
 import {Input} from '@/components/ui/input';
 import {Button} from '@/components/ui/button';
 import {Card} from '@/components/ui/card';
-import {AuthService} from "@/lib/service/auth";
+import {IdentityService} from "@/lib/service/identity";
 import {LoginType} from "@/enums/login_type";
 import {apiClient} from "@/lib/api";
 import {useRouter} from 'next/navigation';
@@ -33,7 +33,7 @@ export default function IdentityPage() {
     }, []);
 
     const fetchCaptchaImage = async () => {
-        const results = await AuthService.captchaImage();
+        const results = await IdentityService.captchaImage();
         if (results.code === 200) {
             setCaptchaImage(results.data.image);
             setUuidImg(results.data.uuid_img);
@@ -45,7 +45,7 @@ export default function IdentityPage() {
 
     const handleLogin = async () => {
         setIsLoading(true);
-        const results = await AuthService.login(LoginType.PASSWORD, username, password, captcha, uuidImg);
+        const results = await IdentityService.login(LoginType.PASSWORD, username, password, captcha, uuidImg);
         setIsLoading(false);
         if (results.code === 200) {
             apiClient.setToken(results.data);
@@ -63,7 +63,7 @@ export default function IdentityPage() {
             notification.error('两次输入的密码不一致');
             return;
         }
-        const results = await AuthService.register(username, password);
+        const results = await IdentityService.register(username, password);
         setIsLoading(false);
         if (results.code === 200) {
             apiClient.setToken(results.data);
