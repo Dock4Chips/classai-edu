@@ -2,7 +2,7 @@
 
 import {motion, AnimatePresence} from 'framer-motion';
 import {useEffect, useState} from 'react';
-import {Eye, EyeOff, ArrowRight, User, Lock, RefreshCw, Crosshair, Zap, ShieldCheck, AlertCircle} from 'lucide-react';
+import {Eye, EyeOff, ArrowRight, User, Lock, RefreshCw, Crosshair, Zap, ShieldCheck} from 'lucide-react';
 import {GradientText} from '@/components/ui/gradient-text';
 import {AuroraBackground} from '@/components/ui/aurora-background';
 import {FloatingParticles} from '@/components/ui/floating-particles';
@@ -10,10 +10,12 @@ import {Input} from '@/components/ui/input';
 import {Button} from '@/components/ui/button';
 import {Card} from '@/components/ui/card';
 import {AuthService} from "@/lib/service/auth";
+import {LoginType} from "@/enums/login_type";
 import {apiClient} from "@/lib/api";
 import {useRouter} from 'next/navigation';
+import {notification} from '@/utils/notification';
 
-export default function AuthPage() {
+export default function IdentityPage() {
     const router = useRouter();
     const [isSignUp, setIsSignUp] = useState(false);
     const [username, setUsername] = useState('');
@@ -25,8 +27,6 @@ export default function AuthPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [errorMsg, setErrorMsg] = useState('');
-    const [errorCode, setErrorCode] = useState<number | null>(null);
 
     useEffect(() => {
         void fetchCaptchaImage();
@@ -37,36 +37,30 @@ export default function AuthPage() {
         if (results.code === 200) {
             setCaptchaImage(results.data.image);
             setUuidImg(results.data.uuid_img);
-        }else {
-            setErrorMsg(results.msg || '登录失败，请重试');
-            setErrorCode(results.code);
+            return;
         }
+        notification.error(results.msg);
+        void fetchCaptchaImage();
     };
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setErrorCode(null);
+    const handleLogin = async () => {
         setIsLoading(true);
-        const results = await AuthService.login(username, password, captcha, uuidImg);
+        const results = await AuthService.login(LoginType.PASSWORD, username, password, captcha, uuidImg);
         setIsLoading(false);
         if (results.code === 200) {
             apiClient.setToken(results.data);
             router.push('/');
-        } else {
-            setErrorMsg(results.msg || '登录失败，请重试');
-            setErrorCode(results.code);
-            void fetchCaptchaImage();
+            return;
         }
+        notification.error(results.msg);
+        void fetchCaptchaImage();
     };
 
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setErrorCode(null);
+    const handleRegister = async () => {
         setIsLoading(true);
         if (password !== confirmPassword) {
-            setErrorMsg('密码和确认密码不匹配');
-            setErrorCode(7806); // 自定义错误码用于密码确认
             setIsLoading(false);
+            notification.error('两次输入的密码不一致');
             return;
         }
         const results = await AuthService.register(username, password);
@@ -74,10 +68,9 @@ export default function AuthPage() {
         if (results.code === 200) {
             apiClient.setToken(results.data);
             router.push('/');
-        } else {
-            setErrorMsg(results.msg || '注册失败，请重试');
-            setErrorCode(results.code);
+            return
         }
+        notification.error(results.msg);
     };
 
 
@@ -389,147 +382,68 @@ export default function AuthPage() {
                                     </motion.div>
 
                                     {/* Login Form */}
-                                    <form onSubmit={handleLogin} className="space-y-5">
-                                        {/* Username - 错误码 7803 时抖动 */}
+                                    <div className="space-y-5">
+                                        {/* Username */}
                                         <motion.div
                                             initial={{opacity: 0, y: 20}}
-                                            animate={errorCode === 7803 ? {
-                                                opacity: 1,
-                                                y: 0,
-                                                x: [0, -10, 10, -10, 10, 0]
-                                            } : {
-                                                opacity: 1,
-                                                y: 0
-                                            }}
-                                            transition={errorCode === 7803 ? {
-                                                duration: 0.4,
-                                                delay: 0.1,
-                                                x: {duration: 0.5}
-                                            } : {
-                                                duration: 0.4,
-                                                delay: 0.1
-                                            }}
+                                            animate={{opacity: 1, y: 0}}
+                                            transition={{duration: 0.4, delay: 0.1}}
                                         >
-                                            <div className={errorCode === 7803 ? 'animate-pulse' : ''}>
-                                                <Input
-                                                    type="text"
-                                                    value={username}
-                                                    onChange={(e) => {
-                                                        setUsername(e.target.value);
-                                                        if (errorCode) setErrorCode(null);
-                                                    }}
-                                                    placeholder="Enter your username"
-                                                    label="Username"
-                                                    leftIcon={<User size={18}/>}
-                                                    className={errorCode === 7803 ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
-                                                    autoFocus
-                                                    required
-                                                />
-                                                {errorCode === 7803 && (
-                                                    <motion.div
-                                                        initial={{opacity: 0, y: -5}}
-                                                        animate={{opacity: 1, y: 0}}
-                                                        className="flex items-center gap-1.5 mt-1.5 text-xs text-red-600"
-                                                    >
-                                                        <AlertCircle size={12}/>
-                                                        <span>{errorMsg}</span>
-                                                    </motion.div>
-                                                )}
-                                            </div>
+                                            <Input
+                                                type="text"
+                                                value={username}
+                                                onChange={(e) => setUsername(e.target.value)}
+                                                placeholder="Enter your username"
+                                                label="Username"
+                                                leftIcon={<User size={18}/>}
+                                                autoFocus
+                                                required
+                                            />
                                         </motion.div>
 
-                                        {/* Password - 错误码 7804 时抖动 */}
+                                        {/* Password */}
                                         <motion.div
                                             initial={{opacity: 0, y: 20}}
-                                            animate={errorCode === 7804 ? {
-                                                opacity: 1,
-                                                y: 0,
-                                                x: [0, -10, 10, -10, 10, 0]
-                                            } : {
-                                                opacity: 1,
-                                                y: 0
-                                            }}
-                                            transition={errorCode === 7804 ? {
-                                                duration: 0.4,
-                                                delay: 0.2,
-                                                x: {duration: 0.5, delay: 0.1}
-                                            } : {
-                                                duration: 0.4,
-                                                delay: 0.2
-                                            }}
+                                            animate={{opacity: 1, y: 0}}
+                                            transition={{duration: 0.4, delay: 0.2}}
                                         >
-                                            <div className={errorCode === 7804 ? 'animate-pulse' : ''}>
-                                                <Input
-                                                    type={showPassword ? 'text' : 'password'}
-                                                    value={password}
-                                                    onChange={(e) => {
-                                                        setPassword(e.target.value);
-                                                        if (errorCode) setErrorCode(null);
-                                                    }}
-                                                    placeholder="Enter your password"
-                                                    label="Password"
-                                                    leftIcon={<Lock size={18}/>}
-                                                    className={errorCode === 7804 ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
-                                                    rightIcon={
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setShowPassword(!showPassword)}
-                                                            className="text-gray-400 hover:text-gray-600 transition-colors p-1"
-                                                        >
-                                                            {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
-                                                        </button>
-                                                    }
-                                                    required
-                                                />
-                                                {errorCode === 7804 && (
-                                                    <motion.div
-                                                        initial={{opacity: 0, y: -5}}
-                                                        animate={{opacity: 1, y: 0}}
-                                                        className="flex items-center gap-1.5 mt-1.5 text-xs text-red-600"
+                                            <Input
+                                                type={showPassword ? 'text' : 'password'}
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                placeholder="Enter your password"
+                                                label="Password"
+                                                leftIcon={<Lock size={18}/>}
+                                                rightIcon={
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        className="text-gray-400 hover:text-gray-600 transition-colors p-1"
                                                     >
-                                                        <AlertCircle size={12}/>
-                                                        <span>{errorMsg}</span>
-                                                    </motion.div>
-                                                )}
-                                            </div>
+                                                        {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+                                                    </button>
+                                                }
+                                                required
+                                            />
                                         </motion.div>
 
-                                        {/* Captcha - 错误码 7801、7802 或 7807 时抖动 */}
+                                        {/* Captcha */}
                                         <motion.div
                                             initial={{opacity: 0, y: 20}}
-                                            animate={(errorCode === 7801 || errorCode === 7802 || errorCode === 7807) ? {
-                                                opacity: 1,
-                                                y: 0,
-                                                x: [0, -10, 10, -10, 10, 0]
-                                            } : {
-                                                opacity: 1,
-                                                y: 0
-                                            }}
-                                            transition={(errorCode === 7801 || errorCode === 7802 || errorCode === 7807) ? {
-                                                duration: 0.4,
-                                                delay: 0.3,
-                                                x: {duration: 0.5, delay: 0.2}
-                                            } : {
-                                                duration: 0.4,
-                                                delay: 0.3
-                                            }}
+                                            animate={{opacity: 1, y: 0}}
+                                            transition={{duration: 0.4, delay: 0.3}}
                                             className="space-y-2"
                                         >
                                             <label className="block text-sm font-medium text-gray-700">
                                                 Verification Code
                                             </label>
                                             <div className="flex gap-3">
-                                                <div
-                                                    className={`flex-1 ${(errorCode === 7801 || errorCode === 7802 || errorCode === 7807) ? 'animate-pulse' : ''}`}>
+                                                <div className="flex-1">
                                                     <Input
                                                         type="text"
                                                         value={captcha}
-                                                        onChange={(e) => {
-                                                            setCaptcha(e.target.value);
-                                                            if (errorCode) setErrorCode(null);
-                                                        }}
+                                                        onChange={(e) => setCaptcha(e.target.value)}
                                                         placeholder="Enter code"
-                                                        className={(errorCode === 7801 || errorCode === 7802 || errorCode === 7807) ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
                                                         required
                                                     />
                                                 </div>
@@ -558,16 +472,6 @@ export default function AuthPage() {
                                                     </button>
                                                 </div>
                                             </div>
-                                            {(errorCode === 7801 || errorCode === 7802 || errorCode === 7807) && (
-                                                <motion.div
-                                                    initial={{opacity: 0, y: -5}}
-                                                    animate={{opacity: 1, y: 0}}
-                                                    className="flex items-center gap-1.5 mt-1.5 text-xs text-red-600"
-                                                >
-                                                    <AlertCircle size={12}/>
-                                                    <span>{errorMsg}</span>
-                                                </motion.div>
-                                            )}
                                         </motion.div>
 
                                         {/* Submit Button */}
@@ -577,7 +481,8 @@ export default function AuthPage() {
                                             transition={{duration: 0.4, delay: 0.4}}
                                         >
                                             <Button
-                                                type="submit"
+                                                type="button"
+                                                onClick={handleLogin}
                                                 variant="outline"
                                                 size="md"
                                                 loading={isLoading}
@@ -587,7 +492,7 @@ export default function AuthPage() {
                                                 Sign in
                                             </Button>
                                         </motion.div>
-                                    </form>
+                                    </div>
 
                                     {/* Divider */}
                                     <motion.div
@@ -692,159 +597,96 @@ export default function AuthPage() {
                                     </motion.div>
 
                                     {/* Sign Up Form */}
-                                    <form onSubmit={handleRegister} className="space-y-5">
-                                      {/* Username - 错误码 7805 时抖动 */}
-                                      <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={errorCode === 7805 ? {
-                                          opacity: 1,
-                                          y: 0,
-                                          x: [0, -10, 10, -10, 10, 0]
-                                        } : {
-                                          opacity: 1,
-                                          y: 0
-                                        }}
-                                        transition={errorCode === 7805 ? {
-                                          duration: 0.4,
-                                          delay: 0.1,
-                                          x: { duration: 0.5 }
-                                        } : {
-                                          duration: 0.4,
-                                          delay: 0.1
-                                        }}
-                                      >
-                                        <div className={errorCode === 7805 ? 'animate-pulse' : ''}>
-                                          <Input
-                                            type="text"
-                                            value={username}
-                                            onChange={(e) => {
-                                              setUsername(e.target.value);
-                                              if (errorCode) setErrorCode(null);
-                                            }}
-                                            placeholder="Choose a username"
-                                            label="Username"
-                                            leftIcon={<User size={18} />}
-                                            className={errorCode === 7805 ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
-                                            autoFocus
-                                            required
-                                          />
-                                          {errorCode === 7805 && (
-                                            <motion.div
-                                              initial={{ opacity: 0, y: -5 }}
-                                              animate={{ opacity: 1, y: 0 }}
-                                              className="flex items-center gap-1.5 mt-1.5 text-xs text-red-600"
-                                            >
-                                              <AlertCircle size={12} />
-                                              <span>{errorMsg}</span>
-                                            </motion.div>
-                                          )}
-                                        </div>
-                                      </motion.div>
-
-                                      {/* Password - 错误码 7804 时抖动 */}
-                                      {/* Password - 注册时只需填写，无错误状态 */}
-                                      <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.4, delay: 0.2 }}
-                                      >
-                                        <Input
-                                          type={showPassword ? 'text' : 'password'}
-                                          value={password}
-                                          onChange={(e) => {
-                                            setPassword(e.target.value);
-                                          }}
-                                          placeholder="Create a password"
-                                          label="Password"
-                                          leftIcon={<Lock size={18} />}
-                                          rightIcon={
-                                            <button
-                                              type="button"
-                                              onClick={() => setShowPassword(!showPassword)}
-                                              className="text-gray-400 hover:text-gray-600 transition-colors p-1"
-                                            >
-                                              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                            </button>
-                                          }
-                                          required
-                                        />
-                                      </motion.div>
-
-
-                                      {/* Confirm Password - 错误码 7806 时抖动 */}
-                                      <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={errorCode === 7806 ? {
-                                          opacity: 1,
-                                          y: 0,
-                                          x: [0, -10, 10, -10, 10, 0]
-                                        } : {
-                                          opacity: 1,
-                                          y: 0
-                                        }}
-                                        transition={errorCode === 7806 ? {
-                                          duration: 0.4,
-                                          delay: 0.3,
-                                          x: { duration: 0.5, delay: 0.2 }
-                                        } : {
-                                          duration: 0.4,
-                                          delay: 0.3
-                                        }}
-                                      >
-                                        <div className={errorCode === 7806 ? 'animate-pulse' : ''}>
-                                          <Input
-                                            type={showConfirmPassword ? 'text' : 'password'}
-                                            value={confirmPassword}
-                                            onChange={(e) => {
-                                              setConfirmPassword(e.target.value);
-                                              if (errorCode) setErrorCode(null);
-                                            }}
-                                            placeholder="Confirm your password"
-                                            label="Confirm Password"
-                                            leftIcon={<Lock size={18} />}
-                                            className={errorCode === 7806 ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''}
-                                            rightIcon={
-                                              <button
-                                                type="button"
-                                                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                                className="text-gray-400 hover:text-gray-600 transition-colors p-1"
-                                              >
-                                                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                              </button>
-                                            }
-                                            required
-                                          />
-                                          {errorCode === 7806 && (
-                                            <motion.div
-                                              initial={{ opacity: 0, y: -5 }}
-                                              animate={{ opacity: 1, y: 0 }}
-                                              className="flex items-center gap-1.5 mt-1.5 text-xs text-red-600"
-                                            >
-                                              <AlertCircle size={12} />
-                                              <span>{errorMsg}</span>
-                                            </motion.div>
-                                          )}
-                                        </div>
-                                      </motion.div>
-
-                                      {/* Submit Button */}
-                                      <motion.div
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ duration: 0.4, delay: 0.4 }}
-                                      >
-                                        <Button
-                                          type="submit"
-                                          variant="outline"
-                                          size="md"
-                                          loading={isLoading}
-                                          rightIcon={!isLoading && <ArrowRight size={18} />}
-                                          className="w-full font-bold"
+                                    <div className="space-y-5">
+                                        {/* Username */}
+                                        <motion.div
+                                            initial={{opacity: 0, y: 20}}
+                                            animate={{opacity: 1, y: 0}}
+                                            transition={{duration: 0.4, delay: 0.1}}
                                         >
-                                          Create Account
-                                        </Button>
-                                      </motion.div>
-                                    </form>
+                                            <Input
+                                                type="text"
+                                                value={username}
+                                                onChange={(e) => setUsername(e.target.value)}
+                                                placeholder="Choose a username"
+                                                label="Username"
+                                                leftIcon={<User size={18}/>}
+                                                autoFocus
+                                                required
+                                            />
+                                        </motion.div>
+
+                                        {/* Password */}
+                                        <motion.div
+                                            initial={{opacity: 0, y: 20}}
+                                            animate={{opacity: 1, y: 0}}
+                                            transition={{duration: 0.4, delay: 0.2}}
+                                        >
+                                            <Input
+                                                type={showPassword ? 'text' : 'password'}
+                                                value={password}
+                                                onChange={(e) => setPassword(e.target.value)}
+                                                placeholder="Create a password"
+                                                label="Password"
+                                                leftIcon={<Lock size={18}/>}
+                                                rightIcon={
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowPassword(!showPassword)}
+                                                        className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                                    >
+                                                        {showPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+                                                    </button>
+                                                }
+                                                required
+                                            />
+                                        </motion.div>
+
+                                        {/* Confirm Password */}
+                                        <motion.div
+                                            initial={{opacity: 0, y: 20}}
+                                            animate={{opacity: 1, y: 0}}
+                                            transition={{duration: 0.4, delay: 0.3}}
+                                        >
+                                            <Input
+                                                type={showConfirmPassword ? 'text' : 'password'}
+                                                value={confirmPassword}
+                                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                                placeholder="Confirm your password"
+                                                label="Confirm Password"
+                                                leftIcon={<Lock size={18}/>}
+                                                rightIcon={
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                                        className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+                                                    >
+                                                        {showConfirmPassword ? <EyeOff size={18}/> : <Eye size={18}/>}
+                                                    </button>
+                                                }
+                                                required
+                                            />
+                                        </motion.div>
+
+                                        {/* Submit Button */}
+                                        <motion.div
+                                            initial={{opacity: 0, y: 20}}
+                                            animate={{opacity: 1, y: 0}}
+                                            transition={{duration: 0.4, delay: 0.4}}
+                                        >
+                                            <Button
+                                                type="button"
+                                                onClick={handleRegister}
+                                                variant="outline"
+                                                size="md"
+                                                loading={isLoading}
+                                                rightIcon={!isLoading && <ArrowRight size={18}/>}
+                                                className="w-full font-bold"
+                                            >
+                                                Create Account
+                                            </Button>
+                                        </motion.div>
+                                    </div>
 
                                     {/* Divider */}
                                     <motion.div
