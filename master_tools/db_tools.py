@@ -81,6 +81,68 @@ class DBTools:
         """
         self.db_config = db_config
 
+    def page(
+            self,
+            table: str,
+            page: int,
+            page_size: int,
+            filters: Optional[Dict[str, Any]] = None,
+            remove_fields: Optional[List[str]] = None,
+            order_by: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """
+        通用分页查询
+        :param table: 表名
+        :param page: 当前页码（从1开始）
+        :param page_size: 每页条数
+        :param filters: 查询条件字典（None 或字段=值）
+        :param remove_fields: 查询结果中需要移除的字段列表
+        :param order_by: 排序规则
+        :return: 分页结果（records / total / page / page_size）
+        """
+        filters = filters or {}
+        remove_fields = remove_fields or []
+        offset = (page - 1) * page_size
+        where_clauses = []
+        params = {}
+        for key, value in filters.items():
+            if value is None:
+                continue
+            if isinstance(value, str) and "%" in value:
+                where_clauses.append(f"{key} LIKE :{key}")
+            else:
+                where_clauses.append(f"{key} = :{key}")
+            params[key] = value
+        where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
+        order_sql = f"ORDER BY {order_by}" if order_by else ""
+        total_sql = f"""
+            SELECT COUNT(1) AS total
+            FROM {table}
+            {where_sql}
+        """
+        total = self.query(total_sql, params)[0]["total"]
+        page_sql = f"""
+            SELECT *
+            FROM {table}
+            {where_sql}
+            {order_sql}
+            LIMIT :limit OFFSET :offset
+        """
+        params.update({
+            "limit": page_size,
+            "offset": offset
+        })
+        records = self.query(page_sql, params)
+        for row in records:
+            for f in remove_fields:
+                row.pop(f, None)
+        return {
+            "records": records,
+            "total": total,
+            "page": page,
+            "page_size": page_size
+        }
+
     def query(self, sql: str, params: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """
         执行查询SQL
@@ -93,15 +155,15 @@ class DBTools:
                 with session.connection() as conn:
                     query = text(sql)
                     result_proxy = conn.execute(query, params or {})
-                    
+
                     results = []
                     for row in result_proxy:
                         row_dict = dict(row._mapping)
                         results.append(row_dict)
-                    
+
                     log.debug(f"成功执行查询SQL: {sql}, 返回{len(results)}条记录")
                     return results
-                    
+
             except Exception as e:
                 log.error(f"执行查询SQL失败: {sql}, 错误: {str(e)}")
                 raise
@@ -119,11 +181,11 @@ class DBTools:
                     query = text(sql)
                     result_proxy = conn.execute(query, params or {})
                     session.commit()
-                    
+
                     affected_rows = result_proxy.rowcount
                     log.debug(f"成功执行写操作SQL: {sql}, 影响行数: {affected_rows}")
                     return affected_rows
-                    
+
             except Exception as e:
                 session.rollback()
                 log.error(f"执行写操作SQL失败: {sql}, 错误: {str(e)}")
@@ -159,14 +221,14 @@ class DBTools:
         """
         if not conditions:
             return self.get_all(table)
-            
+
         where_clauses = []
         for key in conditions.keys():
             where_clauses.append(f"{key} = :{key}")
-            
+
         where_clause = " AND ".join(where_clauses)
         sql = f"SELECT * FROM {table} WHERE {where_clause}"
-        
+
         return self.query(sql, conditions)
 
     def insert(self, table: str, data: Dict[str, Any]) -> int:
@@ -236,15 +298,15 @@ class DBTools:
         """
         if not data_list:
             return 0
-            
+
         # 获取所有字段名（使用第一条记录的键）
         columns = list(data_list[0].keys())
         columns_str = ", ".join(columns)
-        
+
         # 构建VALUES部分
         values_parts = []
         all_params = {}
-        
+
         for i, data in enumerate(data_list):
             # 为每条记录创建带索引的参数名
             placeholders = []
@@ -252,12 +314,12 @@ class DBTools:
                 param_name = f"{col}_{i}"
                 placeholders.append(f":{param_name}")
                 all_params[param_name] = data.get(col)
-                
+
             values_parts.append(f"({', '.join(placeholders)})")
-            
+
         values_str = ", ".join(values_parts)
         sql = f"INSERT INTO {table} ({columns_str}) VALUES {values_str}"
-        
+
         return self.execute(sql, all_params)
 
     def execute_sql(self, sql: str, params: Optional[Dict[str, Any]] = None) -> Union[List[Dict[str, Any]], int]:
@@ -290,23 +352,23 @@ if __name__ == '__main__':
 
     # 获取数据库工具类
     db = DBTools(db_config)
-    
+
     # 示例：使用DBTools（无需定义实体类）
-    
+
     # 查询用户
     users = db.query("SELECT * FROM user WHERE age > :min_age LIMIT 10", {"min_age": 18})
     for user in users:
         print(f"用户ID: {user['id']}, 用户名: {user['username']}")
-    
+
     # 通过ID查询用户
     user = db.get_by_id("user", "id", 1)
     if user:
         print(f"查询到用户: {user['username']}, 邮箱: {user['email']}")
-    
+
     # 按条件筛选用户
     users_by_age = db.filter("user", {"age": 25})
     print(f"25岁的用户有 {len(users_by_age)} 个")
-    
+
     # 插入用户
     new_user_id = db.insert("user", {
         "username": "王五",
@@ -319,24 +381,24 @@ if __name__ == '__main__':
         "updated_at": datetime.now()
     })
     print(f"新插入用户ID: {new_user_id}")
-    
+
     # 更新用户
     affected = db.update("user", "id", 1, {
         "username": "张三（已更新）",
         "updated_at": datetime.now()
     })
     print(f"更新影响行数: {affected}")
-    
+
     # 删除用户
     # db.delete("user", "id", 3)
-    
+
     # 批量插入
     # batch_data = [
     #     {"username": "批量1", "age": 20, "password": "pwd1", "phone": "13800001", "email": "batch1@example.com", "avatar": "/default.png", "created_at": datetime.now(), "updated_at": datetime.now()},
     #     {"username": "批量2", "age": 21, "password": "pwd2", "phone": "13800002", "email": "batch2@example.com", "avatar": "/default.png", "created_at": datetime.now(), "updated_at": datetime.now()}
     # ]
     # db.batch_insert("user", batch_data)
-    
+
     # 使用原生SQL查询
     results = db.execute_sql(
         "SELECT * FROM user WHERE username LIKE :name AND deleted_at IS NULL",

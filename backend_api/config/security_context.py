@@ -28,6 +28,20 @@ class UserContext:
         return int(user_id)
 
     @staticmethod
+    def get_role_id() -> int:
+        """
+        获取当前登录用户的角色ID
+        :return: 角色ID
+        """
+        user = _current_user.get()
+        if not user:
+            raise ServiceException(code=401, msg="未登录")
+        role_id = user.get("role_id")
+        if role_id is None:
+            raise ServiceException(code=401, msg="Token 不包含角色ID")
+        return int(role_id)
+
+    @staticmethod
     def get_user_info() -> Dict[str, Any]:
         user = _current_user.get()
         if not user:

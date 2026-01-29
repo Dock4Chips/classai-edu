@@ -1,6 +1,4 @@
-import json
-import base64
-from cryptography.fernet import Fernet
+import uuid
 from datetime import datetime, timedelta, timezone
 from fastapi import Depends
 from jose import jwt, JWTError
@@ -12,9 +10,6 @@ from fastapi import Request
 from fastapi.security.utils import get_authorization_scheme_param
 
 from model.exceptions import ServiceException
-
-fernet_key = base64.urlsafe_b64encode(SECRET_KEY.encode("utf-8")[:32])
-f = Fernet(fernet_key)
 
 
 def serialize_datetime(obj):
@@ -38,42 +33,47 @@ class Authorization:
 
 
     @classmethod
-    def create_token(cls, user_info: dict, expires_delta: int = ACCESS_TOKEN_EXPIRE_MINUTES):
-        to_encode = user_info.copy()
+    def create_token(cls, user_id: int, role_id: int, expires_delta: int = ACCESS_TOKEN_EXPIRE_MINUTES):
         expire = datetime.now(timezone.utc) + timedelta(minutes=expires_delta)
-        to_encode.update({"exp": int(expire.timestamp())})
-        to_encode_serializable = json.loads(json.dumps(to_encode, default=serialize_datetime))
-        encoded_jwt = jwt.encode(to_encode_serializable, SECRET_KEY, algorithm=ALGORITHM)
-        user_json = json.dumps(user_info, default=serialize_datetime)
-        encrypted_user = f.encrypt(user_json.encode("utf-8"))
-        redis_client.set(f"Authorization:{encoded_jwt}", encrypted_user, ex=expires_delta * 60)
-
+        payload = {
+            "user_id": user_id,
+            "role_id": role_id,
+            "iss": "classai-edu",
+            "iat": int(datetime.now(timezone.utc).timestamp()),
+            "exp": int(expire.timestamp()),
+            "jti": str(uuid.uuid4())
+        }
+        encoded_jwt = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
+        redis_client.set(f"token:jti:{payload['jti']}", user_id, ex=expires_delta * 60)
         return encoded_jwt
 
     @classmethod
     def val_token(cls, token: str = Depends(oauth2_scheme)):
         try:
-            jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-            encrypted_user = redis_client.get(f"Authorization:{token}")
-            if not encrypted_user:
-                raise ServiceException(code=401, msg="未登录或登录信息已失效")
-            decrypted_user = f.decrypt(encrypted_user)
-            user_info = json.loads(decrypted_user)
-            return user_info
-        except JWTError:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            jti = payload.get("jti")
+            if not redis_client.exists(f"token:jti:{jti}"):
+                raise ServiceException(code=401, msg="Token已被吊销")
+            return {
+                "user_id": payload.get("user_id"),
+                "role_id": payload.get("role_id"),
+                "jti": jti
+            }
+        except JWTError as e:
+            log.error(f"JWT decode error: {e}")
             raise ServiceException(code=401, msg="无效的token")
 
     @classmethod
     def logout(cls, token: str):
-        redis_client.delete(f"Authorization:{token}")
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            jti = payload.get("jti")
+            if jti:
+                redis_client.delete(f"token:jti:{jti}")
+        except JWTError:
+            pass
 
 
 if __name__ == '__main__':
-    user_info = {
-        "sub": "admin",
-        "role": "admin",
-        "email": "admin@example.com",
-        "user_id":1
-    }
-    token = Authorization.create_token(user_info)
+    token = Authorization.create_token(user_id=1, role_id=1)
     log.info(token)

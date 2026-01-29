@@ -21,7 +21,7 @@ export class ApiClient {
         // ✅ 请求拦截器
         this.instance.interceptors.request.use(
             (config: InternalAxiosRequestConfig) => {
-                const publicEndpoints = ['/auth', '/logout', '/api/auth/captcha','/api/class/index/banner'];
+                const publicEndpoints = ['/strategies', '/logout', '/api/strategies/captcha','/api/class/index/banner'];
                 const isPublic = publicEndpoints.some(
                     (endpoint) => config.url && config.url.includes(endpoint)
                 );
