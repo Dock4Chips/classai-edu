@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from routers import api_router
 from model.security import security
-from model.exceptions import handler_exception
+from config.exception_handler import handler_exception
 from model.result import ResContext
 
 app = FastAPI(

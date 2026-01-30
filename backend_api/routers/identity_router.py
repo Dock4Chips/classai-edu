@@ -4,17 +4,16 @@ import string
 import uuid
 from random import choice
 from typing import Dict, Any
-
+from fastapi.security.utils import get_authorization_scheme_param
 from captcha.image import ImageCaptcha
 from fastapi import APIRouter, Depends, Request, Body
-
 from auth.authorization import Authorization
 from config import redis_client
 from enums.login_type import LoginType
 from master_tools.logger_tool import log
 from model.exceptions import ServiceException
 from model.result import Res
-from repository.adentity_repository import get_user_by_username, create_user
+from repository.identity_repository import get_user_by_username, create_user
 from services.strategies.login_registry import LOGIN_STRATEGY_MAP
 
 pub_identity_router = APIRouter(
@@ -55,14 +54,16 @@ async def get_captcha(request: Request):
 
 
 @pub_identity_router.post('/login')
-async def identity_login(login_type: LoginType = Body(..., embed=True),
+async def identity_login(request: Request,
+                         login_type: LoginType = Body(..., embed=True),
                          data: Dict[str, Any] = Body(...)):
 
     login_func = LOGIN_STRATEGY_MAP.get(login_type)
     if not login_func:
         raise ServiceException(msg="不支持的登录方式")
 
-    result = login_func(data)
+    # 传入 request 参数
+    result = login_func(data, request)
     return Res.ok(result)
 
 @pub_identity_router.post('/register')
@@ -79,10 +80,22 @@ async def identity_register(data: Dict[str, Any] = Body(...)):
 
     user_id = new_user['user_id']
     role_id = new_user['role_id']
-    token = Authorization.create_token(user_id=user_id, role_id=role_id)
+    user_name = new_user['user_name']
+    token = Authorization.create_token(user_id=user_id, role_id=role_id, user_name=user_name)
 
     return Res.ok({
         "token": token,
         "user_id": user_id,
         "role_id": role_id
     })
+
+
+@pro_identity_router.post('/logout')
+async def identity_logout(request: Request):
+    """登出接口"""
+    authorization = request.headers.get("Authorization")
+    if authorization:
+        scheme, token = get_authorization_scheme_param(authorization)
+        if scheme.lower() == "bearer" and token:
+            Authorization.logout(token)
+    return Res.ok("登出成功")

@@ -4,15 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="feat(auth): 添加身份认证和用户管理系统&#10;&#10;- 实现了用户注册、登录功能，支持密码、GitHub、Google多种登录方式&#10;- 集成验证码系统，防止恶意登录尝试&#10;- 添加用户管理API，包括用户列表、详情查看、更新和删除功能&#10;- 实现头像上传功能，集成MinIO对象存储服务&#10;- 添加密码修改功能，包含原密码验证机制&#10;- 构建基于策略模式的登录系统，支持扩展多种认证方式&#10;- 集成JWT令牌管理和Redis缓存机制&#10;- 实现数据库用户操作的基础CRUD功能">
+    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="feat(homepage): 添加首页组件并重构身份验证服务&#10;&#10;- 添加了 HomePage 组件，包含英雄区域和动态轮播图&#10;- 将 auth.ts 重命名为 identity.ts 并更新类名为 IdentityService&#10;- 更新 IdentityPage 中的导入路径和服务调用&#10;- 在 HomePage 中集成 ClassIndexBanner 数据获取功能&#10;- 添加了教室行为检测的动画效果和交互界面&#10;- 集成了多源检测功能展示和实时状态卡片">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/auth/authorization.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/auth/authorization.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/classai_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/classai_main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/config/security_context.py" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/backend_api/model/exceptions.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/model/exceptions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend_web/app/auth/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/app/identity/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend_web/app/layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/app/layout.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend_web/components/AuthPage.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/components/IdentityPage.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend_web/lib/api.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/lib/api.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend_web/lib/service/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/lib/service/auth.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend_web/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend_web/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/model/result.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/model/result.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/model/security.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/model/security.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/repository/adentity_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/repository/identity_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/routers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/routers/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/routers/identity_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/routers/identity_router.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/routers/sys_user_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/routers/sys_user_router.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/services/strategies/password_login.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/services/strategies/password_login.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/tools/security_tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/tools/security_tool.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/script/sql/classai_edu.sql" beforeDir="false" afterPath="$PROJECT_DIR$/script/sql/classai_edu.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,70 +51,70 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python tests.Doctest train_yolo_model.executor&quot;: &quot;Run&quot;,
-    &quot;Python tests.Doctests in main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.1.executor&quot;: &quot;Run&quot;,
-    &quot;Python.2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.analyzer.executor&quot;: &quot;Run&quot;,
-    &quot;Python.augment_data.executor&quot;: &quot;Run&quot;,
-    &quot;Python.auth.executor&quot;: &quot;Run&quot;,
-    &quot;Python.authorization.executor&quot;: &quot;Run&quot;,
-    &quot;Python.class_index_banner_repository.executor&quot;: &quot;Run&quot;,
-    &quot;Python.classai_main (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.classai_main.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.config.executor&quot;: &quot;Run&quot;,
-    &quot;Python.count_file.executor&quot;: &quot;Run&quot;,
-    &quot;Python.data_pro.executor&quot;: &quot;Run&quot;,
-    &quot;Python.datasets_split.executor&quot;: &quot;Run&quot;,
-    &quot;Python.demo (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.demo.executor&quot;: &quot;Run&quot;,
-    &quot;Python.detect.executor&quot;: &quot;Run&quot;,
-    &quot;Python.dmeo.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main_1.executor&quot;: &quot;Run&quot;,
-    &quot;Python.main_2.executor&quot;: &quot;Run&quot;,
-    &quot;Python.minio_tools.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.predic (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.predic.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.predict (1).executor&quot;: &quot;Run&quot;,
-    &quot;Python.predict.executor&quot;: &quot;Run&quot;,
-    &quot;Python.route_api.executor&quot;: &quot;Run&quot;,
-    &quot;Python.sanjiaozhou.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.split_train_val.executor&quot;: &quot;Run&quot;,
-    &quot;Python.test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.torch.executor&quot;: &quot;Run&quot;,
-    &quot;Python.torch_info.executor&quot;: &quot;Run&quot;,
-    &quot;Python.tracker.executor&quot;: &quot;Run&quot;,
-    &quot;Python.train.executor&quot;: &quot;Run&quot;,
-    &quot;Python.tttt.executor&quot;: &quot;Debug&quot;,
-    &quot;Python.val.executor&quot;: &quot;Run&quot;,
-    &quot;Python.val_main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/dock4chips/Script-P/classai-edu/model&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;npm.dev (1).executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev-admin.executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev-web.executor&quot;: &quot;Run&quot;,
-    &quot;npm.dev.executor&quot;: &quot;Run&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;/Users/dock4chips/Script-P/classai-edu/frontend_admin/node_modules/typescript/lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python tests.Doctest train_yolo_model.executor": "Run",
+    "Python tests.Doctests in main.executor": "Run",
+    "Python.1.executor": "Run",
+    "Python.2.executor": "Run",
+    "Python.analyzer.executor": "Run",
+    "Python.augment_data.executor": "Run",
+    "Python.auth.executor": "Run",
+    "Python.authorization.executor": "Run",
+    "Python.class_index_banner_repository.executor": "Run",
+    "Python.classai_main (1).executor": "Run",
+    "Python.classai_main.executor": "Debug",
+    "Python.config.executor": "Run",
+    "Python.count_file.executor": "Run",
+    "Python.data_pro.executor": "Run",
+    "Python.datasets_split.executor": "Run",
+    "Python.demo (1).executor": "Run",
+    "Python.demo.executor": "Run",
+    "Python.detect.executor": "Run",
+    "Python.dmeo.executor": "Run",
+    "Python.main (1).executor": "Run",
+    "Python.main.executor": "Run",
+    "Python.main2.executor": "Run",
+    "Python.main_1.executor": "Run",
+    "Python.main_2.executor": "Run",
+    "Python.minio_tools.executor": "Debug",
+    "Python.predic (1).executor": "Run",
+    "Python.predic.executor": "Debug",
+    "Python.predict (1).executor": "Run",
+    "Python.predict.executor": "Run",
+    "Python.route_api.executor": "Run",
+    "Python.sanjiaozhou.executor": "Debug",
+    "Python.split_train_val.executor": "Run",
+    "Python.test.executor": "Run",
+    "Python.torch.executor": "Run",
+    "Python.torch_info.executor": "Run",
+    "Python.tracker.executor": "Run",
+    "Python.train.executor": "Run",
+    "Python.tttt.executor": "Debug",
+    "Python.val.executor": "Run",
+    "Python.val_main.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
+    "last_opened_file_path": "/Users/dock4chips/Script-P/classai-edu/model",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "npm.dev (1).executor": "Run",
+    "npm.dev-admin.executor": "Run",
+    "npm.dev-web.executor": "Run",
+    "npm.dev.executor": "Run",
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.grazie",
+    "ts.external.directory.path": "/Users/dock4chips/Script-P/classai-edu/frontend_admin/node_modules/typescript/lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/model" />
@@ -244,9 +250,9 @@
     <list>
       <item itemvalue="npm.dev-admin" />
       <item itemvalue="npm.dev" />
+      <item itemvalue="Python.analyzer" />
       <item itemvalue="Python.class_index_banner_repository" />
       <item itemvalue="Python.classai_main" />
-      <item itemvalue="Python.analyzer" />
       <item itemvalue="Python.tracker" />
     </list>
     <recent_temporary>
@@ -319,31 +325,9 @@
       <workItem from="1769582045105" duration="222000" />
       <workItem from="1769583437734" duration="1389000" />
       <workItem from="1769610791964" duration="12109000" />
-      <workItem from="1769672105013" duration="21062000" />
-    </task>
-    <task id="LOCAL-00028" summary="feat(yolo): 更新模型并优化验证脚本&#10;&#10;- 将YOLO模型从yolov8n.pt升级到yolov8m.pt以提升精度&#10;- 重构验证脚本val.py，增加图像预测与结果可视化功能&#10;- 注释掉旧的日志配置并调整模型加载路径&#10;- 移除冗余的验证逻辑，改用predict方法进行推理测试&#10;- 添加OpenCV图像处理代码，支持边界框、标签和置信度显示&#10;- 更新日志记录方式，使用更通用的日志工具函数&#10;- 清理无用代码并增强脚本可读性和维护性">
-      <option name="closed" value="true" />
-      <created>1764400165563</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1764400165563</updated>
-    </task>
-    <task id="LOCAL-00029" summary="feat(backend): 集成MinIO对象存储并实现图片上传与展示功能&#10;&#10;- 在.env.local中添加MinIO相关配置项，包括地址、端口、管理员账号等&#10;- 更新config.py以支持通过环境变量初始化MinIO客户端连接&#10;- 在controller层新增页面索引路由/pub_page_index_router和受保护路由/pro_page_index_router&#10;- 实现首页轮播图数据接口/server/api/page/index/list，用于前端获取检测结果列表&#10;- 增加基于YOLO模型的图片上传处理接口/server/api/page/index/add_page，完成目标检测后存入MinIO&#10;- 修改Carousel组件支持空状态占位符显示，优化用户体验&#10;- 调整HomeController逻辑，从模拟数据切换为调用真实API获取首页展示数据&#10;- 扩展minio_tools工具类，新增upload_data_to_bucket方法支持内存数据上传&#10;- 更新requirements.txt引入pillow依赖库&#10;- 优化YOLO预测模块predict.py，提供pre_act_local方法返回绘图结果&#10;- 更新前端请求白名单路径，允许访问新的公开接口/server/api/page/index/list">
-      <option name="closed" value="true" />
-      <created>1764523904586</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1764523904586</updated>
-    </task>
-    <task id="LOCAL-00030" summary="feat(backend): 实现轮播图管理功能并集成MinIO存储&#10;&#10;- 新增轮播图增删改查接口，支持图片上传与处理&#10;- 集成YOLO模型实现图片目标检测并生成结果统计&#10;- 使用MinIO进行图片存储，支持文件上传与删除操作&#10;- 重构页面索引服务逻辑，提取图片处理与上传方法&#10;- 更新认证路由前缀并添加用户信息获取接口&#10;- 优化数据库操作，新增更新与删除轮播图记录方法&#10;- 调整API路由结构，统一使用/api作为基础路径&#10;- 引入SecurityTool工具类获取当前用户ID信息&#10;- 修复minio_tools中io导入位置以避免循环依赖&#10;- 添加HTTP中间件支持安全上下文处理">
-      <option name="closed" value="true" />
-      <created>1764679132470</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1764679132470</updated>
+      <workItem from="1769672105013" duration="21914000" />
+      <workItem from="1769739262858" duration="180000" />
+      <workItem from="1769775530188" duration="12813000" />
     </task>
     <task id="LOCAL-00031" summary="feat(page): 实现轮播图管理功能&#10;&#10;- 新增轮播图的添加、更新、删除接口&#10;- 优化数据库插入与更新逻辑，自动过滤 None 字段&#10;- 修复 SQL 语法错误及字段默认值问题&#10;- 统一异常处理并增强日志记录&#10;- 前端新增对应的页面服务调用方法&#10;- 调整权限校验与请求路径配置&#10;- 修复 cls_counts 字段序列化问题&#10;- 完善删除与更新时的文件清理逻辑">
       <option name="closed" value="true" />
@@ -713,7 +697,31 @@
       <option name="project" value="LOCAL" />
       <updated>1769712156606</updated>
     </task>
-    <option name="localTasksCounter" value="77" />
+    <task id="LOCAL-00077" summary="feat(auth): 添加身份认证和用户管理系统&#10;&#10;- 实现了用户注册、登录功能，支持密码、GitHub、Google多种登录方式&#10;- 集成验证码系统，防止恶意登录尝试&#10;- 添加用户管理API，包括用户列表、详情查看、更新和删除功能&#10;- 实现头像上传功能，集成MinIO对象存储服务&#10;- 添加密码修改功能，包含原密码验证机制&#10;- 构建基于策略模式的登录系统，支持扩展多种认证方式&#10;- 集成JWT令牌管理和Redis缓存机制&#10;- 实现数据库用户操作的基础CRUD功能">
+      <option name="closed" value="true" />
+      <created>1769715718655</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1769715718655</updated>
+    </task>
+    <task id="LOCAL-00078" summary="feat(notification): 添加通知系统和登录类型枚举&#10;&#10;- 新增 LoginType 枚举，支持密码、GitHub 和 Google 登录方式&#10;- 实现完整的通知系统，支持成功、错误、警告和信息类型&#10;- 创建带动画效果的通知卡片组件，包含渐变背景和图标&#10;- 实现通知的添加、移除和自动消失功能&#10;- 提供便捷的 notification API 方法&#10;- 使用 portal 将通知渲染到 body 元素&#10;- 添加进度条显示通知持续时间">
+      <option name="closed" value="true" />
+      <created>1769715740589</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1769715740589</updated>
+    </task>
+    <task id="LOCAL-00079" summary="feat(homepage): 添加首页组件并重构身份验证服务&#10;&#10;- 添加了 HomePage 组件，包含英雄区域和动态轮播图&#10;- 将 auth.ts 重命名为 identity.ts 并更新类名为 IdentityService&#10;- 更新 IdentityPage 中的导入路径和服务调用&#10;- 在 HomePage 中集成 ClassIndexBanner 数据获取功能&#10;- 添加了教室行为检测的动画效果和交互界面&#10;- 集成了多源检测功能展示和实时状态卡片">
+      <option name="closed" value="true" />
+      <created>1769715877993</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1769715877993</updated>
+    </task>
+    <option name="localTasksCounter" value="80" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -756,8 +764,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="refactor(auth): improve token handling and cleanup imports&#10;&#10;- Reorder and clean up imports in authorization module&#10;- Fix encrypted user data decoding in token validation&#10;- Simplify exception messages for login expiration&#10;- Remove redundant newline characters and whitespace&#10;- Ensure consistent string encoding usage (&quot;utf-8&quot;)" />
-    <MESSAGE value="feat(auth): implement authentication and authorization system&#10;&#10;- Added public and protected routers with custom OAuth2 bearer token handling&#10;- Implemented login, registration, and captcha generation endpoints&#10;- Created secure user info endpoint with token validation dependency&#10;- Updated authorization logic to include custom token validation and error handling&#10;- Modified logging retention periods for server and error logs&#10;- Refactored YOLO model path references to correctly locate model files&#10;- Removed obsolete login and secure API route files&#10;- Added simpel-captcha dependency for captcha generation functionality" />
     <MESSAGE value="feat(frontend): 重构首页并增强视觉效果&#10;&#10;- 更新认证接口路径从 /api/login 到 /api/auth&#10;- 修改验证码接口路径为 /api/auth/captcha&#10;- 重构 HomePage 组件，移除旧导航栏结构&#10;- 引入多种动画组件如 SpotlightCard、AnimatedContent 等&#10;- 添加 AuroraBackground 和 BeamsBackground 背景效果&#10;- 实现检测结果轮播图展示功能&#10;- 增加磁性按钮和渐变文字等交互元素&#10;- 更新图标引用和相关样式配置&#10;- 调整后端服务端口从 8989 到 7869&#10;- 优化日志模块命名规则及文件路径处理逻辑" />
     <MESSAGE value="feat(login): 重构登录页面并增强视觉效果&#10;&#10;- 导入新的图标组件 Crosshair, Zap, ShieldCheck&#10;- 更新浮动标签徽章样式并添加图标&#10;- 重新设计登录表单布局和装饰元素&#10;- 添加动态背景效果和网格图案&#10;- 实现卡片玻璃态效果和动画边框&#10;- 优化步骤指示器和头部样式&#10;- 改进表单输入和按钮交互效果&#10;- 增强社交登录区域视觉设计&#10;- 更新页脚安全状态显示样式&#10;- 调整整体动画过渡效果和延迟时间" />
     <MESSAGE value="feat(backend): 集成MinIO对象存储并重构认证路由&#10;&#10;- 在配置文件中新增MinIO连接配置及bucket初始化逻辑&#10;- 更新认证接口前缀从 /api/auth 到 /server/api/auth&#10;- 更新YOLO图像接口前缀并添加token验证依赖&#10;- 修改数据库查询表名从 user 到 sys_user&#10;- 添加minio依赖并升级urllib3版本&#10;- 创建minio_tools工具类用于文件上传下载和管理&#10;- 新增页面索引控制器和服务占位函数&#10;- 调整环境变量MYSQL_DB值为classai_edu&#10;- 优化项目运行配置和调试设置" />
@@ -781,7 +787,9 @@
     <MESSAGE value="feat(banner): 添加首页横幅管理功能&#10;&#10;- 创建 class_index_banner 数据表用于存储 AI 检测结果&#10;- 实现横幅增删改查的基础数据库操作方法&#10;- 集成 MinIO 文件上传功能支持图片资源管理&#10;- 添加 YOLO 模型检测处理流程&#10;- 提供完整的 RESTful API 接口包括权限控制&#10;- 实现图片检测结果序列化和数据持久化&#10;- 添加文件上传、检测、存储一体化处理流程" />
     <MESSAGE value="refactor(auth): 重构身份验证系统并更新路由配置&#10;&#10;- 将认证路由从 auth.py 模块迁移到 identity_router 模块&#10;- 添加系统用户路由支持并更新路由器初始化逻辑&#10;- 更改前端公共端点配置从 /auth 到 /strategies 路径&#10;- 重构授权类 JWT 令牌生成和验证机制&#10;- 移除旧的认证服务实现并更新用户上下文管理&#10;- 在安全工具中添加角色ID获取功能&#10;- 为数据库工具添加通用分页查询方法&#10;- 更新工作区配置以反映重构后的项目结构" />
     <MESSAGE value="feat(auth): 添加身份认证和用户管理系统&#10;&#10;- 实现了用户注册、登录功能，支持密码、GitHub、Google多种登录方式&#10;- 集成验证码系统，防止恶意登录尝试&#10;- 添加用户管理API，包括用户列表、详情查看、更新和删除功能&#10;- 实现头像上传功能，集成MinIO对象存储服务&#10;- 添加密码修改功能，包含原密码验证机制&#10;- 构建基于策略模式的登录系统，支持扩展多种认证方式&#10;- 集成JWT令牌管理和Redis缓存机制&#10;- 实现数据库用户操作的基础CRUD功能" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(auth): 添加身份认证和用户管理系统&#10;&#10;- 实现了用户注册、登录功能，支持密码、GitHub、Google多种登录方式&#10;- 集成验证码系统，防止恶意登录尝试&#10;- 添加用户管理API，包括用户列表、详情查看、更新和删除功能&#10;- 实现头像上传功能，集成MinIO对象存储服务&#10;- 添加密码修改功能，包含原密码验证机制&#10;- 构建基于策略模式的登录系统，支持扩展多种认证方式&#10;- 集成JWT令牌管理和Redis缓存机制&#10;- 实现数据库用户操作的基础CRUD功能" />
+    <MESSAGE value="feat(notification): 添加通知系统和登录类型枚举&#10;&#10;- 新增 LoginType 枚举，支持密码、GitHub 和 Google 登录方式&#10;- 实现完整的通知系统，支持成功、错误、警告和信息类型&#10;- 创建带动画效果的通知卡片组件，包含渐变背景和图标&#10;- 实现通知的添加、移除和自动消失功能&#10;- 提供便捷的 notification API 方法&#10;- 使用 portal 将通知渲染到 body 元素&#10;- 添加进度条显示通知持续时间" />
+    <MESSAGE value="feat(homepage): 添加首页组件并重构身份验证服务&#10;&#10;- 添加了 HomePage 组件，包含英雄区域和动态轮播图&#10;- 将 auth.ts 重命名为 identity.ts 并更新类名为 IdentityService&#10;- 更新 IdentityPage 中的导入路径和服务调用&#10;- 在 HomePage 中集成 ClassIndexBanner 数据获取功能&#10;- 添加了教室行为检测的动画效果和交互界面&#10;- 集成了多源检测功能展示和实时状态卡片" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(homepage): 添加首页组件并重构身份验证服务&#10;&#10;- 添加了 HomePage 组件，包含英雄区域和动态轮播图&#10;- 将 auth.ts 重命名为 identity.ts 并更新类名为 IdentityService&#10;- 更新 IdentityPage 中的导入路径和服务调用&#10;- 在 HomePage 中集成 ClassIndexBanner 数据获取功能&#10;- 添加了教室行为检测的动画效果和交互界面&#10;- 集成了多源检测功能展示和实时状态卡片" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -792,9 +800,9 @@
           <option name="timeStamp" value="2" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/backend_api/routers/sys_user_router.py</url>
-          <line>25</line>
-          <option name="timeStamp" value="12" />
+          <url>file://$PROJECT_DIR$/backend_api/routers/identity_router.py</url>
+          <line>95</line>
+          <option name="timeStamp" value="24" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -817,7 +825,7 @@
     <SUITE FILE_PATH="coverage/classai_edu$auth.coverage" NAME="auth Coverage Results" MODIFIED="1764687971468" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_edu/controller" />
     <SUITE FILE_PATH="coverage/classai_edu$DivisionOfData.coverage" NAME="DivisionOfData Coverage Results" MODIFIED="1764971099950" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
     <SUITE FILE_PATH="coverage/classai_edu$authorization.coverage" NAME="authorization Coverage Results" MODIFIED="1764683796936" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_edu/auth" />
-    <SUITE FILE_PATH="coverage/classai_edu$classai_main.coverage" NAME="classai_main Coverage Results" MODIFIED="1769714100625" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_api" />
+    <SUITE FILE_PATH="coverage/classai_edu$classai_main.coverage" NAME="classai_main Coverage Results" MODIFIED="1769792616298" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/backend_api" />
     <SUITE FILE_PATH="coverage/classai_edu$config.coverage" NAME="config Coverage Results" MODIFIED="1769520523629" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu/core" />
     <SUITE FILE_PATH="coverage/classai_edu$route_api.coverage" NAME="route_api Coverage Results" MODIFIED="1763909367016" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo-edu" />
     <SUITE FILE_PATH="coverage/classai_edu$demo.coverage" NAME="demo Coverage Results" MODIFIED="1765271271998" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/yolo_edu" />
