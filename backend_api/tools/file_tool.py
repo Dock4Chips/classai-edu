@@ -9,6 +9,7 @@ from fastapi import UploadFile
 
 from config.config import bucket, MINIO_BUCKET_NAME
 from master_tools.logger_tool import log
+from model.exceptions import ServiceException
 
 
 async def upload_file_to_minio(file: UploadFile) -> str:
@@ -44,7 +45,7 @@ def upload_np_image_to_minio(img: np.ndarray, suffix: str = ".jpg") -> str:
     object_name = f"{date_path}/{uuid.uuid4()}{suffix}"
     success, buffer = cv2.imencode(suffix, img)
     if not success:
-        raise Exception("图片编码失败")
+        raise ServiceException(msg="图片编码失败")
     bucket.upload_data_to_bucket(
         bucket_name=MINIO_BUCKET_NAME,
         object_name=object_name,
