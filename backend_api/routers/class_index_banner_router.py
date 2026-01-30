@@ -7,7 +7,6 @@ import cv2
 import numpy as np
 from fastapi import APIRouter, Depends, UploadFile, File
 from auth.authorization import Authorization
-from config.config import bucket, MINIO_BUCKET_NAME
 from model.exceptions import ServiceException
 from model.result import Res
 from repository.class_index_banner_repository import (
@@ -17,8 +16,8 @@ from repository.class_index_banner_repository import (
     update_banner,
     delete_banner
 )
+from tools.file_tool import upload_np_image_to_minio, delete_minio_file
 from yolo_edu.core import Det, YOLOConfig
-from master_tools.logger_tool import log
 
 pub_class_index_banner_router = APIRouter(prefix='/api/class/index/banner')
 
@@ -41,36 +40,6 @@ async def _frame_to_np(file: UploadFile) -> np.ndarray:
         raise ServiceException(msg="图片读取失败")
 
     return img
-
-
-def _upload_to_minio(img: np.ndarray, suffix: str = ".jpg") -> str:
-    """上传图片到MinIO并返回URL"""
-    date_path = datetime.now().strftime("%Y/%m/%d")
-    object_name = f"{date_path}/{uuid.uuid4()}{suffix}"
-
-    success, buffer = cv2.imencode(suffix, img)
-    if not success:
-        raise ServiceException(msg="图片编码失败")
-
-    bucket.upload_data_to_bucket(
-        bucket_name=MINIO_BUCKET_NAME,
-        object_name=object_name,
-        data=buffer,
-        content_type="image/jpeg"
-    )
-
-    return bucket.minioClient.presigned_get_object(MINIO_BUCKET_NAME, object_name)
-
-
-def _delete_minio_file(image_url: Optional[str]):
-    """从MinIO删除文件"""
-    if not image_url:
-        return
-    try:
-        object_key = image_url.split("?")[0].split(f"{MINIO_BUCKET_NAME}/")[1]
-        bucket.minioClient.remove_object(MINIO_BUCKET_NAME, object_key)
-    except Exception as e:
-        log.error(f"删除MinIO文件失败: {e}")
 
 
 def _serialize_detection(det_list: List[Dict]) -> Dict[str, any]:
@@ -116,7 +85,7 @@ def _process_image_detection(img: np.ndarray) -> Tuple[np.ndarray, str, Dict]:
     """
     detector = Det(model_path=YOLOConfig.DEFAULT_MODEL)
     det_list, vis_img = detector.detect_img_task_np(img)
-    image_url = _upload_to_minio(vis_img)
+    image_url = upload_np_image_to_minio(vis_img)
     serialized = _serialize_detection(det_list)
     height, width = vis_img.shape[:2]
     serialized["width"] = width
@@ -168,7 +137,7 @@ async def edit_banner(id: int, file: UploadFile = File(...)):
     old_record = get_banner_by_id(id)
     if not old_record:
         raise ServiceException(msg="记录不存在")
-    _delete_minio_file(old_record.get("resource_url"))
+    delete_minio_file(old_record.get("resource_url"))
     img = await _frame_to_np(file)
     _, image_url, serialized = _process_image_detection(img)
     update_data = {
@@ -191,6 +160,6 @@ async def remove_banner(id: int):
     old_record = get_banner_by_id(id)
     if not old_record:
         raise ServiceException(msg="记录不存在")
-    _delete_minio_file(old_record.get("resource_url"))
+    delete_minio_file(old_record.get("resource_url"))
     delete_banner(id)
     return Res.ok("删除成功")
