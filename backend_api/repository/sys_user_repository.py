@@ -7,17 +7,14 @@ from tools.db_fields import db_fill
 db = DBTools(mysql_client)
 
 
-def get_user_by_id(id: int):
-    return db.get_by_id('sys_user', 'id', id)
+def get_user_by_id(user_id: int):
+    return db.query('SELECT * FROM sys_user WHERE user_id = :user_id AND is_deleted = 0',
+                    {'user_id': user_id})
 
 
 def get_user_by_username(user_name: str):
-    return db.query('select * from sys_user where user_name = :user_name', {'user_name': user_name})
-
-
-def get_user_by_user_id(user_id: int):
-    return db.query('SELECT * FROM sys_user WHERE user_id = :user_id AND is_deleted = 0',
-                    {'user_id': user_id})
+    return db.query('SELECT * FROM sys_user WHERE user_name = :user_name AND is_deleted = 0',
+                    {'user_name': user_name})
 
 
 def page_list_user(page: int,page_size: int,filters: Dict[str, Any] | None = None,remove_fields: list | None = None) -> Dict[str, Any]:
@@ -30,9 +27,10 @@ def create_user(data: dict):
 
 
 @db_fill
-def update_user(id: int, data: dict):
-    db.update('sys_user', 'id', id, data)
+def update_user(user_id: int, data: dict):
+    db.update('sys_user', 'user_id', user_id, data)
 
 
-def delete_user(id: int):
-    db.delete('sys_user', 'id', id)
+def delete_user(user_id: int):
+    """软删除用户"""
+    db.update('sys_user', 'user_id', user_id, {'is_deleted': 1})
