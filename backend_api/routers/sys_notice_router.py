@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, Query, Body
-
 from auth.authorization import Authorization
 from model.exceptions import ServiceException
 from model.result import Res
