@@ -11,7 +11,7 @@ from config.config import bucket, MINIO_BUCKET_NAME
 from model.exceptions import ServiceException
 from model.result import Res
 from repository.class_index_banner_repository import (
-    query_banners,
+    list_banners,
     create_banner,
     get_banner_by_id,
     update_banner,
@@ -116,13 +116,8 @@ def _process_image_detection(img: np.ndarray) -> Tuple[np.ndarray, str, Dict]:
     """
     detector = Det(model_path=YOLOConfig.DEFAULT_MODEL)
     det_list, vis_img = detector.detect_img_task_np(img)
-
-    # 上传可视化图片
     image_url = _upload_to_minio(vis_img)
-
-    # 序列化检测结果
     serialized = _serialize_detection(det_list)
-
     height, width = vis_img.shape[:2]
     serialized["width"] = width
     serialized["height"] = height
@@ -133,12 +128,14 @@ def _process_image_detection(img: np.ndarray) -> Tuple[np.ndarray, str, Dict]:
 
 
 @pub_class_index_banner_router.get('')
-async def list_class_index_banner():
-    return Res.ok(query_banners())
+async def list_banner():
+    """查询Banner列表"""
+    return Res.ok(list_banners())
 
 
 @pro_class_index_banner_router.post('')
-async def add_class_index_banner(file: UploadFile = File(...)):
+async def add_banner(file: UploadFile = File(...)):
+    """新增Banner"""
     img = await _frame_to_np(file)
     _, image_url, serialized = _process_image_detection(img)
 
@@ -162,12 +159,13 @@ async def add_class_index_banner(file: UploadFile = File(...)):
         "raw_result": serialized["raw_result_json"],
     }
     create_banner(insert_data)
-    return Res.ok("添加成功")
+    return Res.ok("新增成功")
 
 
-@pro_class_index_banner_router.put('')
-async def update_class_index_banner(banner_id: int, file: UploadFile = File(...)):
-    old_record = get_banner_by_id(banner_id)
+@pro_class_index_banner_router.put('/{id}')
+async def edit_banner(id: int, file: UploadFile = File(...)):
+    """修改Banner"""
+    old_record = get_banner_by_id(id)
     if not old_record:
         raise ServiceException(msg="记录不存在")
     _delete_minio_file(old_record.get("resource_url"))
@@ -183,15 +181,16 @@ async def update_class_index_banner(banner_id: int, file: UploadFile = File(...)
         "det_list": serialized["det_list_json"],
         "raw_result": serialized["raw_result_json"],
     }
-    update_banner(banner_id, update_data)
-    return Res.ok("更新成功")
+    update_banner(id, update_data)
+    return Res.ok("修改成功")
 
 
-@pro_class_index_banner_router.delete('')
-async def delete_class_index_banner(banner_id: int):
-    old_record = get_banner_by_id(banner_id)
+@pro_class_index_banner_router.delete('/{id}')
+async def remove_banner(id: int):
+    """删除Banner"""
+    old_record = get_banner_by_id(id)
     if not old_record:
         raise ServiceException(msg="记录不存在")
     _delete_minio_file(old_record.get("resource_url"))
-    delete_banner(banner_id)
+    delete_banner(id)
     return Res.ok("删除成功")

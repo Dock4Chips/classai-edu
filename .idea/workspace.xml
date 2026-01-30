@@ -4,21 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="feat(homepage): 添加首页组件并重构身份验证服务&#10;&#10;- 添加了 HomePage 组件，包含英雄区域和动态轮播图&#10;- 将 auth.ts 重命名为 identity.ts 并更新类名为 IdentityService&#10;- 更新 IdentityPage 中的导入路径和服务调用&#10;- 在 HomePage 中集成 ClassIndexBanner 数据获取功能&#10;- 添加了教室行为检测的动画效果和交互界面&#10;- 集成了多源检测功能展示和实时状态卡片">
+    <list default="true" id="f649ec1d-c093-4961-90e4-7bc86a9b244d" name="Changes" comment="feat(monitor): 添加系统监控模块包括登录日志和在线用户管理&#10;&#10;- 新增异常处理器配置，统一处理服务异常和全局异常&#10;- 创建登录日志数据访问层，实现登录日志的增查功能&#10;- 创建在线用户数据访问层，实现用户的在线状态管理和查询功能&#10;- 创建操作日志数据访问层，记录系统操作日志&#10;- 实现系统监控路由，提供登录日志分页查询接口&#10;- 实现在线用户分页查询和强制下线功能&#10;- 支持按用户名和状态过滤查询登录日志和在线用户&#10;- 实现根据session_id和user_id两种方式强制下线功能">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/auth/authorization.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/auth/authorization.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/classai_main.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/classai_main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/config/security_context.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/model/exceptions.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/model/exceptions.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/model/result.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/model/result.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/model/security.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/model/security.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/repository/adentity_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/repository/identity_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/repository/class_index_banner_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/repository/class_index_banner_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/repository/identity_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/repository/identity_repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/repository/sys_user_repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/repository/sys_user_repository.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend_api/routers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/routers/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/routers/identity_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/routers/identity_router.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend_api/routers/class_index_banner_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/routers/class_index_banner_router.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/backend_api/routers/sys_user_router.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/routers/sys_user_router.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/services/strategies/password_login.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/services/strategies/password_login.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend_api/tools/security_tool.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend_api/tools/security_tool.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/script/sql/classai_edu.sql" beforeDir="false" afterPath="$PROJECT_DIR$/script/sql/classai_edu.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -327,23 +320,7 @@
       <workItem from="1769610791964" duration="12109000" />
       <workItem from="1769672105013" duration="21914000" />
       <workItem from="1769739262858" duration="180000" />
-      <workItem from="1769775530188" duration="12813000" />
-    </task>
-    <task id="LOCAL-00031" summary="feat(page): 实现轮播图管理功能&#10;&#10;- 新增轮播图的添加、更新、删除接口&#10;- 优化数据库插入与更新逻辑，自动过滤 None 字段&#10;- 修复 SQL 语法错误及字段默认值问题&#10;- 统一异常处理并增强日志记录&#10;- 前端新增对应的页面服务调用方法&#10;- 调整权限校验与请求路径配置&#10;- 修复 cls_counts 字段序列化问题&#10;- 完善删除与更新时的文件清理逻辑">
-      <option name="closed" value="true" />
-      <created>1764684091096</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1764684091096</updated>
-    </task>
-    <task id="LOCAL-00032" summary="refactor(db): 重命名自动填充字段装饰器&#10;&#10;- 将 auto_fill_fields 函数名改为 db_fill&#10;- 更新 page_index_mapper.py 中的装饰器引用&#10;- 移除未使用的导入模块 json 和 datetime&#10;- 简化装饰器应用逻辑，保持功能一致">
-      <option name="closed" value="true" />
-      <created>1764684197692</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1764684197692</updated>
+      <workItem from="1769775530188" duration="14286000" />
     </task>
     <task id="LOCAL-00033" summary="refactor(db): 重命名自动填充字段装饰器&#10;&#10;- 将 auto_fill_fields 函数名改为 db_fill&#10;- 更新 page_index_mapper.py 中的装饰器引用&#10;- 移除未使用的导入模块 json 和 datetime&#10;- 简化装饰器应用逻辑，保持功能一致">
       <option name="closed" value="true" />
@@ -721,7 +698,23 @@
       <option name="project" value="LOCAL" />
       <updated>1769715877993</updated>
     </task>
-    <option name="localTasksCounter" value="80" />
+    <task id="LOCAL-00080" summary="feat(router): 添加系统监控路由并完善授权功能&#10;&#10;- 添加了系统监控路由器模块&#10;- 在API路由器中注册了系统监控路由&#10;- 扩展了授权类的令牌创建方法，增加用户名参数&#10;- 在令牌载荷中添加了用户名字段&#10;- 完善了令牌解析逻辑，提取用户名信息&#10;- 集成在线用户状态更新功能，支持用户下线状态同步&#10;- 更新了AI检测结果表结构，增加用户ID字段&#10;- 优化了操作日志表结构，调整字段设计&#10;- 添加了初始化数据记录到数据库脚本">
+      <option name="closed" value="true" />
+      <created>1769792644938</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1769792644938</updated>
+    </task>
+    <task id="LOCAL-00081" summary="feat(monitor): 添加系统监控模块包括登录日志和在线用户管理&#10;&#10;- 新增异常处理器配置，统一处理服务异常和全局异常&#10;- 创建登录日志数据访问层，实现登录日志的增查功能&#10;- 创建在线用户数据访问层，实现用户的在线状态管理和查询功能&#10;- 创建操作日志数据访问层，记录系统操作日志&#10;- 实现系统监控路由，提供登录日志分页查询接口&#10;- 实现在线用户分页查询和强制下线功能&#10;- 支持按用户名和状态过滤查询登录日志和在线用户&#10;- 实现根据session_id和user_id两种方式强制下线功能">
+      <option name="closed" value="true" />
+      <created>1769792663008</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1769792663008</updated>
+    </task>
+    <option name="localTasksCounter" value="82" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -764,8 +757,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="feat(frontend): 重构首页并增强视觉效果&#10;&#10;- 更新认证接口路径从 /api/login 到 /api/auth&#10;- 修改验证码接口路径为 /api/auth/captcha&#10;- 重构 HomePage 组件，移除旧导航栏结构&#10;- 引入多种动画组件如 SpotlightCard、AnimatedContent 等&#10;- 添加 AuroraBackground 和 BeamsBackground 背景效果&#10;- 实现检测结果轮播图展示功能&#10;- 增加磁性按钮和渐变文字等交互元素&#10;- 更新图标引用和相关样式配置&#10;- 调整后端服务端口从 8989 到 7869&#10;- 优化日志模块命名规则及文件路径处理逻辑" />
-    <MESSAGE value="feat(login): 重构登录页面并增强视觉效果&#10;&#10;- 导入新的图标组件 Crosshair, Zap, ShieldCheck&#10;- 更新浮动标签徽章样式并添加图标&#10;- 重新设计登录表单布局和装饰元素&#10;- 添加动态背景效果和网格图案&#10;- 实现卡片玻璃态效果和动画边框&#10;- 优化步骤指示器和头部样式&#10;- 改进表单输入和按钮交互效果&#10;- 增强社交登录区域视觉设计&#10;- 更新页脚安全状态显示样式&#10;- 调整整体动画过渡效果和延迟时间" />
     <MESSAGE value="feat(backend): 集成MinIO对象存储并重构认证路由&#10;&#10;- 在配置文件中新增MinIO连接配置及bucket初始化逻辑&#10;- 更新认证接口前缀从 /api/auth 到 /server/api/auth&#10;- 更新YOLO图像接口前缀并添加token验证依赖&#10;- 修改数据库查询表名从 user 到 sys_user&#10;- 添加minio依赖并升级urllib3版本&#10;- 创建minio_tools工具类用于文件上传下载和管理&#10;- 新增页面索引控制器和服务占位函数&#10;- 调整环境变量MYSQL_DB值为classai_edu&#10;- 优化项目运行配置和调试设置" />
     <MESSAGE value="feat(yolo): 更新模型并优化验证脚本&#10;&#10;- 将YOLO模型从yolov8n.pt升级到yolov8m.pt以提升精度&#10;- 重构验证脚本val.py，增加图像预测与结果可视化功能&#10;- 注释掉旧的日志配置并调整模型加载路径&#10;- 移除冗余的验证逻辑，改用predict方法进行推理测试&#10;- 添加OpenCV图像处理代码，支持边界框、标签和置信度显示&#10;- 更新日志记录方式，使用更通用的日志工具函数&#10;- 清理无用代码并增强脚本可读性和维护性" />
     <MESSAGE value="feat(backend): 集成MinIO对象存储并实现图片上传与展示功能&#10;&#10;- 在.env.local中添加MinIO相关配置项，包括地址、端口、管理员账号等&#10;- 更新config.py以支持通过环境变量初始化MinIO客户端连接&#10;- 在controller层新增页面索引路由/pub_page_index_router和受保护路由/pro_page_index_router&#10;- 实现首页轮播图数据接口/server/api/page/index/list，用于前端获取检测结果列表&#10;- 增加基于YOLO模型的图片上传处理接口/server/api/page/index/add_page，完成目标检测后存入MinIO&#10;- 修改Carousel组件支持空状态占位符显示，优化用户体验&#10;- 调整HomeController逻辑，从模拟数据切换为调用真实API获取首页展示数据&#10;- 扩展minio_tools工具类，新增upload_data_to_bucket方法支持内存数据上传&#10;- 更新requirements.txt引入pillow依赖库&#10;- 优化YOLO预测模块predict.py，提供pre_act_local方法返回绘图结果&#10;- 更新前端请求白名单路径，允许访问新的公开接口/server/api/page/index/list" />
@@ -789,7 +780,9 @@
     <MESSAGE value="feat(auth): 添加身份认证和用户管理系统&#10;&#10;- 实现了用户注册、登录功能，支持密码、GitHub、Google多种登录方式&#10;- 集成验证码系统，防止恶意登录尝试&#10;- 添加用户管理API，包括用户列表、详情查看、更新和删除功能&#10;- 实现头像上传功能，集成MinIO对象存储服务&#10;- 添加密码修改功能，包含原密码验证机制&#10;- 构建基于策略模式的登录系统，支持扩展多种认证方式&#10;- 集成JWT令牌管理和Redis缓存机制&#10;- 实现数据库用户操作的基础CRUD功能" />
     <MESSAGE value="feat(notification): 添加通知系统和登录类型枚举&#10;&#10;- 新增 LoginType 枚举，支持密码、GitHub 和 Google 登录方式&#10;- 实现完整的通知系统，支持成功、错误、警告和信息类型&#10;- 创建带动画效果的通知卡片组件，包含渐变背景和图标&#10;- 实现通知的添加、移除和自动消失功能&#10;- 提供便捷的 notification API 方法&#10;- 使用 portal 将通知渲染到 body 元素&#10;- 添加进度条显示通知持续时间" />
     <MESSAGE value="feat(homepage): 添加首页组件并重构身份验证服务&#10;&#10;- 添加了 HomePage 组件，包含英雄区域和动态轮播图&#10;- 将 auth.ts 重命名为 identity.ts 并更新类名为 IdentityService&#10;- 更新 IdentityPage 中的导入路径和服务调用&#10;- 在 HomePage 中集成 ClassIndexBanner 数据获取功能&#10;- 添加了教室行为检测的动画效果和交互界面&#10;- 集成了多源检测功能展示和实时状态卡片" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat(homepage): 添加首页组件并重构身份验证服务&#10;&#10;- 添加了 HomePage 组件，包含英雄区域和动态轮播图&#10;- 将 auth.ts 重命名为 identity.ts 并更新类名为 IdentityService&#10;- 更新 IdentityPage 中的导入路径和服务调用&#10;- 在 HomePage 中集成 ClassIndexBanner 数据获取功能&#10;- 添加了教室行为检测的动画效果和交互界面&#10;- 集成了多源检测功能展示和实时状态卡片" />
+    <MESSAGE value="feat(router): 添加系统监控路由并完善授权功能&#10;&#10;- 添加了系统监控路由器模块&#10;- 在API路由器中注册了系统监控路由&#10;- 扩展了授权类的令牌创建方法，增加用户名参数&#10;- 在令牌载荷中添加了用户名字段&#10;- 完善了令牌解析逻辑，提取用户名信息&#10;- 集成在线用户状态更新功能，支持用户下线状态同步&#10;- 更新了AI检测结果表结构，增加用户ID字段&#10;- 优化了操作日志表结构，调整字段设计&#10;- 添加了初始化数据记录到数据库脚本" />
+    <MESSAGE value="feat(monitor): 添加系统监控模块包括登录日志和在线用户管理&#10;&#10;- 新增异常处理器配置，统一处理服务异常和全局异常&#10;- 创建登录日志数据访问层，实现登录日志的增查功能&#10;- 创建在线用户数据访问层，实现用户的在线状态管理和查询功能&#10;- 创建操作日志数据访问层，记录系统操作日志&#10;- 实现系统监控路由，提供登录日志分页查询接口&#10;- 实现在线用户分页查询和强制下线功能&#10;- 支持按用户名和状态过滤查询登录日志和在线用户&#10;- 实现根据session_id和user_id两种方式强制下线功能" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat(monitor): 添加系统监控模块包括登录日志和在线用户管理&#10;&#10;- 新增异常处理器配置，统一处理服务异常和全局异常&#10;- 创建登录日志数据访问层，实现登录日志的增查功能&#10;- 创建在线用户数据访问层，实现用户的在线状态管理和查询功能&#10;- 创建操作日志数据访问层，记录系统操作日志&#10;- 实现系统监控路由，提供登录日志分页查询接口&#10;- 实现在线用户分页查询和强制下线功能&#10;- 支持按用户名和状态过滤查询登录日志和在线用户&#10;- 实现根据session_id和user_id两种方式强制下线功能" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
