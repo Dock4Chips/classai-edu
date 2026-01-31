@@ -41,7 +41,7 @@ export default function IdentityPage() {
         setIsLoading(false);
         if (results.code === 200) {
             apiClient.setToken(results.data);
-            router.push('/');
+            router.push('/admin/dashboard');
             notification.success(results.msg)
             return
         }
