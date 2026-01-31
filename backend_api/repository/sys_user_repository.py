@@ -21,12 +21,13 @@ def page_list_user(page: int,page_size: int,filters: Dict[str, Any] | None = Non
     return db.page('sys_user',page,page_size,filters,remove_fields)
 
 
-@db_fill
+@db_fill('insert')
 def create_user(data: dict):
     db.insert('sys_user', data)
+    return get_user_by_username(data['user_name'])
 
 
-@db_fill
+@db_fill('update')
 def update_user(user_id: int, data: dict):
     db.update('sys_user', 'user_id', user_id, data)
 
