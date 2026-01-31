@@ -195,7 +195,7 @@ export function Table<T extends Record<string, any>>({
                               min-w-[36px] h-9 px-3 rounded-xl text-sm font-bold transition-all
                               ${
                                 page === pagination.current
-                                  ? 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30'
+                                  ? 'bg-black text-white'
                                   : 'border border-gray-200 hover:bg-gray-100 text-gray-700'
                               }
                             `}
