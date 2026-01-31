@@ -81,6 +81,68 @@ class DBTools:
         """
         self.db_config = db_config
 
+    # def page(
+    #         self,
+    #         table: str,
+    #         page: int,
+    #         page_size: int,
+    #         filters: Optional[Dict[str, Any]] = None,
+    #         remove_fields: Optional[List[str]] = None,
+    #         order_by: Optional[str] = None
+    # ) -> Dict[str, Any]:
+    #     """
+    #     通用分页查询
+    #     :param table: 表名
+    #     :param page: 当前页码（从1开始）
+    #     :param page_size: 每页条数
+    #     :param filters: 查询条件字典（None 或字段=值）
+    #     :param remove_fields: 查询结果中需要移除的字段列表
+    #     :param order_by: 排序规则
+    #     :return: 分页结果（records / total / page / page_size）
+    #     """
+    #     filters = filters or {}
+    #     remove_fields = remove_fields or []
+    #     offset = (page - 1) * page_size
+    #     where_clauses = []
+    #     params = {}
+    #     for key, value in filters.items():
+    #         if value is None:
+    #             continue
+    #         if isinstance(value, str) and "%" in value:
+    #             where_clauses.append(f"{key} LIKE :{key}")
+    #         else:
+    #             where_clauses.append(f"{key} = :{key}")
+    #         params[key] = value
+    #     where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
+    #     order_sql = f"ORDER BY {order_by}" if order_by else ""
+    #     total_sql = f"""
+    #         SELECT COUNT(1) AS total
+    #         FROM {table}
+    #         {where_sql}
+    #     """
+    #     total = self.query(total_sql, params)[0]["total"]
+    #     page_sql = f"""
+    #         SELECT *
+    #         FROM {table}
+    #         {where_sql}
+    #         {order_sql}
+    #         LIMIT :limit OFFSET :offset
+    #     """
+    #     params.update({
+    #         "limit": page_size,
+    #         "offset": offset
+    #     })
+    #     records = self.query(page_sql, params)
+    #     for row in records:
+    #         for f in remove_fields:
+    #             row.pop(f, None)
+    #     return {
+    #         "records": records,
+    #         "total": total,
+    #         "page": page,
+    #         "page_size": page_size
+    #     }
+
     def page(
             self,
             table: str,
@@ -92,6 +154,7 @@ class DBTools:
     ) -> Dict[str, Any]:
         """
         通用分页查询
+        通用分页查询（默认过滤 is_deleted = 0）
         :param table: 表名
         :param page: 当前页码（从1开始）
         :param page_size: 每页条数
@@ -101,26 +164,51 @@ class DBTools:
         :return: 分页结果（records / total / page / page_size）
         """
         filters = filters or {}
+
+        # ===== 默认软删除条件（如果用户没传）=====
+        if "is_deleted" not in filters:
+            filters["is_deleted"] = 0
+
         remove_fields = remove_fields or []
         offset = (page - 1) * page_size
+
+        # ===== 查询表字段（防止字段不存在报错）=====
+        try:
+            columns = {
+                row["Field"]
+                for row in self.query(f"SHOW COLUMNS FROM {table}")
+            }
+        except Exception:
+            columns = set()
+
         where_clauses = []
         params = {}
+
         for key, value in filters.items():
+            # 字段不存在，直接忽略
+            if key not in columns:
+                continue
+
             if value is None:
                 continue
+
             if isinstance(value, str) and "%" in value:
                 where_clauses.append(f"{key} LIKE :{key}")
             else:
                 where_clauses.append(f"{key} = :{key}")
+
             params[key] = value
+
         where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
         order_sql = f"ORDER BY {order_by}" if order_by else ""
+
         total_sql = f"""
             SELECT COUNT(1) AS total
             FROM {table}
             {where_sql}
         """
         total = self.query(total_sql, params)[0]["total"]
+
         page_sql = f"""
             SELECT *
             FROM {table}
@@ -128,14 +216,18 @@ class DBTools:
             {order_sql}
             LIMIT :limit OFFSET :offset
         """
+
         params.update({
             "limit": page_size,
             "offset": offset
         })
+
         records = self.query(page_sql, params)
+
         for row in records:
             for f in remove_fields:
                 row.pop(f, None)
+
         return {
             "records": records,
             "total": total,
