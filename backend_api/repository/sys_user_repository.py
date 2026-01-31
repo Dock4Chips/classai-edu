@@ -31,7 +31,7 @@ def create_user(data: dict):
 def update_user(user_id: int, data: dict):
     db.update('sys_user', 'user_id', user_id, data)
 
-
+@db_fill('update')
 def delete_user(user_id: int):
     """软删除用户"""
     db.update('sys_user', 'user_id', user_id, {'is_deleted': 1})

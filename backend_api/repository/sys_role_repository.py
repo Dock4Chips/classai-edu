@@ -22,18 +22,18 @@ def page_list_role(page: int, page_size: int, filters: dict = None):
     return db.page('sys_role', page, page_size, filters)
 
 
-@db_fill
+@db_fill('insert')
 def create_role(data: dict):
     """创建角色"""
     db.insert('sys_role', data)
 
 
-@db_fill
+@db_fill('update')
 def update_role(role_id: int, data: dict):
     """更新角色"""
     db.update('sys_role', 'role_id', role_id, data)
 
-
+@db_fill('update')
 def delete_role(role_id: int):
     """删除角色（软删除）"""
     db.update('sys_role', 'role_id', role_id, {'is_deleted': 1})

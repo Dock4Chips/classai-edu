@@ -22,18 +22,18 @@ def page_list_config(page: int, page_size: int, filters: dict = None):
     return db.page('sys_config', page, page_size, filters)
 
 
-@db_fill
+@db_fill('insert')
 def create_config(data: dict):
     """创建配置"""
     db.insert('sys_config', data)
 
 
-@db_fill
+@db_fill('update')
 def update_config(config_id: int, data: dict):
     """更新配置"""
     db.update('sys_config', 'config_id', config_id, data)
 
-
+@db_fill('update')
 def delete_config(config_id: int):
     """删除配置（软删除）"""
     db.update('sys_config', 'config_id', config_id, {'is_deleted': 1})

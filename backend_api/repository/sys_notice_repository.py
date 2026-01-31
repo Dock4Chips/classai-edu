@@ -16,18 +16,18 @@ def page_list_notice(page: int, page_size: int, filters: dict = None):
     return db.page('sys_notice', page, page_size, filters)
 
 
-@db_fill
+@db_fill('insert')
 def create_notice(data: dict):
     """创建通知"""
     db.insert('sys_notice', data)
 
 
-@db_fill
+@db_fill('update')
 def update_notice(notice_id: int, data: dict):
     """更新通知"""
     db.update('sys_notice', 'notice_id', notice_id, data)
 
-
+@db_fill('update')
 def delete_notice(notice_id: int):
     """删除通知（软删除）"""
     db.update('sys_notice', 'notice_id', notice_id, {'is_deleted': 1})

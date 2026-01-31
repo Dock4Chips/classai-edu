@@ -10,7 +10,7 @@ def list_banners():
     return db.query('SELECT * FROM class_index_banner WHERE is_deleted = 0 ORDER BY create_time DESC LIMIT 6')
 
 
-@db_fill
+@db_fill('insert')
 def create_banner(data: dict):
     """创建Banner"""
     db.insert('class_index_banner', data)
@@ -20,12 +20,12 @@ def get_banner_by_id(id: int):
     """根据ID获取Banner"""
     return db.query('SELECT * FROM class_index_banner WHERE id = :id AND is_deleted = 0', {'id': id})
 
-
+@db_fill('update')
 def update_banner(id: int, data: dict):
     """更新Banner"""
     db.update('class_index_banner', 'id', id, data)
 
-
+@db_fill('update')
 def delete_banner(id: int):
     """删除Banner（软删除）"""
     db.update('class_index_banner', 'id', id, {'is_deleted': 1})
