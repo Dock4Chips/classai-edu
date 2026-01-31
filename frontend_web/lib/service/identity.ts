@@ -59,4 +59,30 @@ export class IdentityService {
         return await apiClient.get<Results>('/api/sys/user/current');
     }
 
+    /**
+     * 获取 Google OAuth 授权 URL
+     * @returns {Promise<string>} 返回授权 URL
+     */
+    static async getGoogleAuthUrl(): Promise<string> {
+        const redirectUrl = `${window.location.origin}/auth/callback`;
+        const result = await apiClient.post<Results>('/api/strategies/identity/login', {
+            login_type: LoginType.GOOGLE,
+            data: { redirect_url: redirectUrl }
+        });
+        return result.data;
+    }
+
+    /**
+     * 获取 GitHub OAuth 授权 URL
+     * @returns {Promise<string>} 返回授权 URL
+     */
+    static async getGithubAuthUrl(): Promise<string> {
+        const redirectUrl = `${window.location.origin}/auth/callback`;
+        const result = await apiClient.post<Results>('/api/strategies/identity/login', {
+            login_type: LoginType.GITHUB,
+            data: { redirect_url: redirectUrl }
+        });
+        return result.data;
+    }
+
 }

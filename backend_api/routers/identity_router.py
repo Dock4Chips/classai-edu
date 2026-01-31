@@ -7,6 +7,7 @@ from typing import Dict, Any
 from fastapi.security.utils import get_authorization_scheme_param
 from captcha.image import ImageCaptcha
 from fastapi import APIRouter, Depends, Request, Body
+from fastapi.responses import RedirectResponse
 from auth.authorization import Authorization
 from config import redis_client
 from enums.login_type import LoginType
@@ -14,7 +15,10 @@ from master_tools.logger_tool import log
 from model.exceptions import ServiceException
 from model.result import Res
 from repository.identity_repository import get_user_by_username, create_user
+from services.strategies.github_login import callback_github
+from services.strategies.google_login import callback_google
 from services.strategies.login_registry import LOGIN_STRATEGY_MAP
+
 
 pub_identity_router = APIRouter(
     prefix='/api/strategies/identity',
@@ -56,13 +60,12 @@ async def get_captcha(request: Request):
 @pub_identity_router.post('/login')
 async def identity_login(request: Request,
                          login_type: LoginType = Body(..., embed=True),
-                         data: Dict[str, Any] = Body(...)):
+                         data: Dict[str, Any] = Body(...,default_factory=dict)):
 
     login_func = LOGIN_STRATEGY_MAP.get(login_type)
     if not login_func:
         raise ServiceException(msg="不支持的登录方式")
 
-    # 传入 request 参数
     result = login_func(data, request)
     return Res.ok(result)
 
@@ -86,7 +89,8 @@ async def identity_register(data: Dict[str, Any] = Body(...)):
     return Res.ok({
         "token": token,
         "user_id": user_id,
-        "role_id": role_id
+        "role_id": role_id,
+        "user_name": user_name
     })
 
 
@@ -99,3 +103,21 @@ async def identity_logout(request: Request):
         if scheme.lower() == "bearer" and token:
             Authorization.logout(token)
     return Res.ok("登出成功")
+
+
+
+
+@pub_identity_router.get("/auth/google")
+async def callback_auth_google(code: str, state: str):
+    result = await callback_google(code)
+    token = result['token']
+    callback_url = f"{state}?token={token}&provider=google"
+    return RedirectResponse(callback_url)
+
+
+@pub_identity_router.get("/auth/github")
+async def callback_auth_github(code: str, state: str):
+    result = await callback_github(code)
+    token = result['token']
+    callback_url = f"{state}?token={token}&provider=github"
+    return RedirectResponse(callback_url)

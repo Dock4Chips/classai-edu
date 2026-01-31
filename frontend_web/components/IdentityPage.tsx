@@ -49,7 +49,8 @@ export default function IdentityPage() {
         setIsLoading(false);
         if (results.code === 200) {
             apiClient.setToken(results.data);
-            router.push('/');
+            router.push('/dashboard');
+            notification.success(results.msg)
             return;
         }
         notification.error(results.msg);
@@ -71,6 +72,24 @@ export default function IdentityPage() {
             return
         }
         notification.error(results.msg);
+    };
+
+    const handleLoginGoogle = async () => {
+        try {
+            const authUrl = await IdentityService.getGoogleAuthUrl()
+            window.location.href = authUrl;
+        } catch (error) {
+            notification.error('获取授权链接失败');
+        }
+    };
+
+    const handleLoginGithub = async () => {
+        try {
+            const authUrl = await IdentityService.getGithubAuthUrl();
+            window.location.href = authUrl;
+        } catch (error) {
+            notification.error('获取授权链接失败');
+        }
     };
 
 
@@ -511,6 +530,7 @@ export default function IdentityPage() {
                                         <div className="grid grid-cols-2 gap-3">
                                             <Button
                                                 type="button"
+                                                onClick={handleLoginGoogle}
                                                 variant="outline"
                                                 size="sm"
                                                 className="w-full"
@@ -540,6 +560,7 @@ export default function IdentityPage() {
 
                                             <Button
                                                 type="button"
+                                                onClick={handleLoginGithub}
                                                 variant="outline"
                                                 size="sm"
                                                 className="w-full"
@@ -705,6 +726,7 @@ export default function IdentityPage() {
                                         <div className="grid grid-cols-2 gap-3">
                                             <Button
                                                 type="button"
+                                                onClick={handleLoginGoogle}
                                                 variant="outline"
                                                 size="sm"
                                                 className="w-full"
@@ -734,6 +756,7 @@ export default function IdentityPage() {
 
                                             <Button
                                                 type="button"
+                                                onClick={handleLoginGithub}
                                                 variant="outline"
                                                 size="sm"
                                                 className="w-full"

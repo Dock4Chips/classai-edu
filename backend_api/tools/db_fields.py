@@ -18,18 +18,12 @@ def db_fill(op_type: str):
                 return func(*args, **kwargs)
 
             now = datetime.now()
-            user_id = SecurityTool.get_user_id()
 
             if op_type == "insert":
                 data.setdefault("create_time", now)
                 data.setdefault("update_time", now)
-                data.setdefault("created_by", user_id)
-                data.setdefault("updated_by", user_id)
-                data.setdefault("user_id", user_id)
             elif op_type == "update":
                 data.setdefault("update_time", now)
-                data.setdefault("updated_by", user_id)
-                data.setdefault("user_id", user_id)
 
             return func(*args, **kwargs)
         return wrapper
