@@ -1,0 +1,183 @@
+'use client';
+
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Sidebar } from './Sidebar';
+import { Bell, Search, User, ChevronDown } from 'lucide-react';
+
+interface AdminLayoutProps {
+  children: React.ReactNode;
+}
+
+export function AdminLayout({ children }: AdminLayoutProps) {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 relative overflow-hidden">
+      {/* Animated Background - React Bits Style */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        {/* Subtle gradient blobs */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-200/30 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-200/20 rounded-full blur-3xl" />
+
+        {/* Grid pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `
+              linear-gradient(to right, #000 1px, transparent 1px),
+              linear-gradient(to bottom, #000 1px, transparent 1px)
+            `,
+            backgroundSize: '50px 50px'
+          }}
+        />
+
+        {/* 80 floating particles - React Bits style with deterministic positioning */}
+        {[...Array(80)].map((_, i) => {
+          // Deterministic pseudo-random values based on index to prevent hydration errors
+          const seed1 = (i * 9301 + 49297) % 233280;
+          const seed2 = (i * 7919 + 7907) % 233280;
+          const seed3 = (i * 65537 + 4294967291) % 233280;
+          const seed4 = (i * 514229 + 317811) % 233280;
+          const seed5 = (i * 196418 + 121393) % 233280;
+
+          const randomYMove = (seed1 / 233280) * 60; // 0-60
+          const randomXMove = ((seed2 / 233280) - 0.5) * 20; // -10 to 10
+          const duration = 4 + (seed3 / 233280) * 6; // 4-10
+          const delay = (seed4 / 233280) * 2; // 0-2
+          const size = 2 + (seed5 / 233280) * 4; // 2-6
+          const left = ((i * 137) % 10000) / 100; // 0-100%
+          const top = ((i * 251) % 10000) / 100; // 0-100%
+
+          return (
+            <motion.div
+              key={i}
+              animate={{
+                y: [0, -40 - randomYMove, 0],
+                x: [0, randomXMove, 0],
+                opacity: [0.3, 0.7, 0.3],
+                scale: [1, 1.2, 1],
+              }}
+              transition={{
+                duration,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                delay
+              }}
+              className="absolute rounded-full"
+              style={{
+                width: `${size}px`,
+                height: `${size}px`,
+                left: `${left}%`,
+                top: `${top}%`,
+                backgroundColor: i % 3 === 0 ? '#8b5cf6' : i % 3 === 1 ? '#3b82f6' : '#ec4899',
+              }}
+            />
+          );
+        })}
+
+        {/* Larger floating orbs with blur */}
+        <motion.div
+          animate={{
+            y: [0, -30, 0],
+            x: [0, 20, 0],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: 'easeInOut'
+          }}
+          className="absolute top-1/4 left-1/4 w-4 h-4 bg-purple-400/30 rounded-full blur-sm"
+        />
+        <motion.div
+          animate={{
+            y: [0, 25, 0],
+            x: [0, -15, 0],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 1
+          }}
+          className="absolute top-1/3 right-1/4 w-3 h-3 bg-blue-400/30 rounded-full blur-sm"
+        />
+        <motion.div
+          animate={{
+            y: [0, -20, 0],
+            x: [0, 10, 0],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 2
+          }}
+          className="absolute bottom-1/3 left-1/3 w-5 h-5 bg-pink-400/20 rounded-full blur-md"
+        />
+      </div>
+
+      <div className="relative flex h-screen">
+        {/* Sidebar */}
+        <Sidebar
+          collapsed={sidebarCollapsed}
+          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <header className="h-16 bg-white/70 backdrop-blur-xl border-b border-gray-200/50 flex items-center justify-between px-6 relative z-10">
+            {/* Search */}
+            <div className="flex-1 max-w-md">
+              <div className="relative group">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  className="w-full pl-10 pr-4 py-2 bg-gray-50/80 border border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all outline-none text-sm placeholder-gray-400"
+                />
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-500/0 via-indigo-500/0 to-purple-500/0 group-focus-within:from-blue-500/10 group-focus-within:via-indigo-500/10 group-focus-within:to-purple-500/10 transition-all duration-500 pointer-events-none" />
+              </div>
+            </div>
+
+            {/* Right Actions */}
+            <div className="flex items-center gap-3">
+              {/* Notifications */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="relative p-2.5 rounded-xl hover:bg-gray-100/80 transition-colors group"
+              >
+                <Bell className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full animate-pulse" />
+              </motion.button>
+
+              {/* User Profile */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center gap-3 px-3 py-2 rounded-xl hover:bg-gray-100/80 transition-all group"
+              >
+                <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                  <User className="w-5 h-5 text-white" />
+                </div>
+                <div className="text-left hidden md:block">
+                  <p className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">Admin</p>
+                  <p className="text-xs text-gray-500">admin@classai.edu</p>
+                </div>
+                <ChevronDown className="w-4 h-4 text-gray-400 group-hover:text-blue-600 transition-colors" />
+              </motion.button>
+            </div>
+          </header>
+
+          {/* Main Content Area */}
+          <main className="flex-1 overflow-y-auto p-6 relative z-10">
+            {children}
+          </main>
+        </div>
+      </div>
+    </div>
+  );
+}
