@@ -30,6 +30,10 @@ def update_online_user(session_id: str, data:dict):
     """更新在线用户状态"""
     db.update('sys_user_online', 'session_id', session_id, data)
 
+@db_fill('update')
+def update_online_user_by_user_id(user_id:int,status:str):
+    """根据用户ID更新在线用户状态"""
+    db.execute_sql('UPDATE sys_user_online SET status = :status WHERE user_id = :user_id',{'status':status,'user_id':user_id})
 
 def page_list_online_users(page: int, page_size: int, filters: dict = None):
     """分页查询在线用户"""

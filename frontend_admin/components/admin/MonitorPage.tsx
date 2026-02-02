@@ -54,6 +54,7 @@ export default function MonitorPage() {
     const result = await MonitorService.getOnlineUserList({
       page: queryParams.current,
       page_size: queryParams.pageSize,
+      status:'on_line'
     });
 
     if (result?.data) {

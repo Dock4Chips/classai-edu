@@ -40,7 +40,6 @@ export default function IdentityPage() {
             return;
         }
         notification.error(results.msg);
-        void fetchCaptchaImage();
     };
 
     const handleLogin = async () => {
@@ -48,13 +47,12 @@ export default function IdentityPage() {
         const results = await IdentityService.login(LoginType.PASSWORD, username, password, captcha, uuidImg);
         setIsLoading(false);
         if (results.code === 200) {
-            apiClient.setToken(results.data);
+            apiClient.setToken(results.data.token);
             router.push('/dashboard');
             notification.success(results.msg)
             return;
         }
         notification.error(results.msg);
-        void fetchCaptchaImage();
     };
 
     const handleRegister = async () => {
@@ -67,7 +65,7 @@ export default function IdentityPage() {
         const results = await IdentityService.register(username, password);
         setIsLoading(false);
         if (results.code === 200) {
-            apiClient.setToken(results.data);
+            apiClient.setToken(results.data.token);
             router.push('/');
             return
         }

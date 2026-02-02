@@ -1,7 +1,8 @@
 import axios, { type AxiosInstance, type AxiosResponse, type AxiosError } from 'axios';
 import type { InternalAxiosRequestConfig } from 'axios';
 
-import Cookies from 'js-cookie'; // ✅ 用于管理 token
+import Cookies from 'js-cookie';
+import {notification} from "@/utils/notification"; // ✅ 用于管理 token
 
 export class ApiClient {
     private baseURL: string;
@@ -29,6 +30,7 @@ export class ApiClient {
                 if (!isPublic) {
                     const token = Cookies.get('AUTH_TOKEN');
                     if (!token) {
+                        notification.error('未登录或 token 不存在，请先登录');
                         return Promise.reject(new Error('未登录或 token 不存在，禁止请求'));
                     }
                     config.headers = config.headers || {};
@@ -44,6 +46,7 @@ export class ApiClient {
         this.instance.interceptors.response.use(
             (response: AxiosResponse) => response.data,
             (error: AxiosError) => {
+                notification.error(error.message);
                 console.error('API 请求失败:', error.message);
                 return Promise.reject(error);
             }
@@ -84,8 +87,8 @@ export class ApiClient {
     }
 
     // ✅ PUT
-    put<T>(endpoint: string, data?: any): Promise<T> {
-        return this.instance.put(endpoint, data);
+    put<T>(endpoint: string, data?: any, config?: any): Promise<T> {
+        return this.instance.put(endpoint, data, config);
     }
 
     // ✅ DELETE
