@@ -40,7 +40,7 @@ export default function IdentityPage() {
         const results = await IdentityService.login(LoginType.PASSWORD, username, password, captcha, uuidImg);
         setIsLoading(false);
         if (results.code === 200) {
-            apiClient.setToken(results.data);
+            apiClient.setToken(results.data.token);
             router.push('/admin/dashboard');
             notification.success(results.msg)
             return
