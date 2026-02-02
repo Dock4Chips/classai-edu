@@ -7,11 +7,13 @@ import { ChevronDown } from 'lucide-react';
 
 export interface DropdownItem {
   key: string;
-  label: string;
+  label?: string;
+  content?: React.ReactNode;
   icon?: React.ReactNode;
   onClick?: () => void;
   danger?: boolean;
   disabled?: boolean;
+  divider?: boolean;
 }
 
 export interface DropdownProps {
@@ -119,30 +121,36 @@ export function Dropdown({ trigger, items, align = 'left', menuClassName = '' }:
                   py-1 overflow-hidden
                   ${menuClassName}
                 `}>
-                  {items.map((item) => (
-                    <motion.button
-                      key={item.key}
-                      whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.08)', x: 4 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleItemClick(item);
-                      }}
-                      disabled={item.disabled}
-                      className={`
-                        w-full px-4 py-2.5 text-left text-sm
-                        flex items-center gap-3
-                        transition-colors duration-150
-                        ${item.danger ? 'text-red-600 hover:bg-red-50' : 'text-gray-700'}
-                        ${item.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
-                      `}
-                    >
-                      {item.icon && (
-                        <span className="w-4 h-4 flex-shrink-0">{item.icon}</span>
-                      )}
-                      <span className="flex-1">{item.label}</span>
-                    </motion.button>
-                  ))}
+                  {items.map((item) => {
+                    if (item.divider) {
+                      return <div key={item.key} className="h-px bg-gray-200 my-1" />;
+                    }
+
+                    return (
+                      <motion.button
+                        key={item.key}
+                        whileHover={{ backgroundColor: 'rgba(59, 130, 246, 0.08)', x: 4 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleItemClick(item);
+                        }}
+                        disabled={item.disabled}
+                        className={`
+                          w-full px-4 py-2.5 text-left text-sm
+                          flex items-center gap-3
+                          transition-colors duration-150
+                          ${item.danger ? 'text-red-600 hover:bg-red-50' : 'text-gray-700'}
+                          ${item.disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
+                        `}
+                      >
+                        {item.icon && (
+                          <span className="w-4 h-4 flex-shrink-0">{item.icon}</span>
+                        )}
+                        <span className="flex-1">{item.content || item.label}</span>
+                      </motion.button>
+                    );
+                  })}
                 </div>
               </motion.div>
             </>

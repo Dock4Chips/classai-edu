@@ -32,7 +32,6 @@ export default function IdentityPage() {
             return;
         }
         notification.error(results.msg);
-        void fetchCaptchaImage();
     };
 
     const handleLogin = async () => {
@@ -46,7 +45,6 @@ export default function IdentityPage() {
             return
         }
         notification.error(results.msg);
-        void fetchCaptchaImage();
     };
 
     const handleLoginGoogle = async () => {

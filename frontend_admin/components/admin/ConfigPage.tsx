@@ -2,21 +2,22 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Database, Sparkles, MoreVertical, Pencil, Trash2, RefreshCw } from 'lucide-react';
+import { Plus, Sparkles, MoreVertical, Pencil, Trash2, RefreshCw } from 'lucide-react';
 import { ConfigService } from '@/lib/service/config';
 import { Results } from '@/lib/api';
 import { Table, Column } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Dropdown, DropdownButton } from '@/components/ui/dropdown';
 import { Modal } from '@/components/ui/modal';
 import { notification } from '@/utils/notification';
 import { confirm } from '@/utils/confirm';
+import { FormField, type FormFieldConfig } from '@/components/ui/form';
 
 export default function ConfigPage() {
   const [configs, setConfigs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [originalConfigData, setOriginalConfigData] = useState<any>(null); // 保存原始数据用于对比
 
   /** 查询参数（搜索 + 分页） */
   const [queryParams, setQueryParams] = useState<Results>({
@@ -28,20 +29,20 @@ export default function ConfigPage() {
   });
 
   /** 编辑表单字段配置 */
-  const updateFormFields = [
-    { key: 'config_name', label: 'Config Name', type: 'text', placeholder: 'Enter config name' },
-    { key: 'config_key', label: 'Config Key', type: 'text', placeholder: 'e.g., system.max_upload_size' },
-    { key: 'config_value', label: 'Config Value', type: 'textarea', placeholder: 'Enter config value' },
-    { key: 'group_name', label: 'Group Name', type: 'text', placeholder: 'e.g., system, upload' },
-  ] as const;
+  const updateFormFields: FormFieldConfig[] = [
+    { key: 'config_name', label: 'Config Name', type: 'text', colSpan: 2, placeholder: 'Enter config name', required: true },
+    { key: 'config_key', label: 'Config Key', type: 'text', colSpan: 2, placeholder: 'e.g., system.max_upload_size', description: 'Unique key for accessing this config' },
+    { key: 'config_value', label: 'Config Value', type: 'textarea', colSpan: 2, rows: 4, placeholder: 'Enter config value' },
+    { key: 'group_name', label: 'Group Name', type: 'text', colSpan: 2, placeholder: 'e.g., system, upload', description: 'Group configs together for easier management' },
+  ];
 
   /** 新增表单字段配置 */
-  const addFormFields = [
-    { key: 'config_name', label: 'Config Name', type: 'text', placeholder: 'Enter config name' },
-    { key: 'config_key', label: 'Config Key', type: 'text', placeholder: 'e.g., system.max_upload_size' },
-    { key: 'config_value', label: 'Config Value', type: 'textarea', placeholder: 'Enter config value' },
-    { key: 'group_name', label: 'Group Name', type: 'text', placeholder: 'e.g., system, upload' },
-  ] as const;
+  const addFormFields: FormFieldConfig[] = [
+    { key: 'config_name', label: 'Config Name', type: 'text', colSpan: 2, placeholder: 'Enter config name', required: true },
+    { key: 'config_key', label: 'Config Key', type: 'text', colSpan: 2, placeholder: 'e.g., system.max_upload_size', description: 'Unique key for accessing this config' },
+    { key: 'config_value', label: 'Config Value', type: 'textarea', colSpan: 2, rows: 4, placeholder: 'Enter config value' },
+    { key: 'group_name', label: 'Group Name', type: 'text', colSpan: 2, placeholder: 'e.g., system, upload', description: 'Group configs together for easier management' },
+  ];
 
   /** 生成空表单 */
   const getEmptyForm = (fields: readonly { key: string }[]) =>
@@ -109,6 +110,8 @@ export default function ConfigPage() {
   /** 打开编辑 */
   const handleEdit = (config: any) => {
     setIsEditMode(true);
+    // 保存原始数据用于对比
+    setOriginalConfigData(config);
     setUpdateForm({
       config_id: config.config_id,
       config_name: config.config_name ?? null,
@@ -131,17 +134,28 @@ export default function ConfigPage() {
       notification.success('Created successfully');
       setModalOpen(false);
       void fetchConfigs();
+      return;
     }
+    notification.error(results.msg);
     setLoading(false);
   };
 
-  /** 编辑保存 */
+  /** 编辑保存 - 只发送修改过的字段 */
   const handleSaveUpdate = async () => {
     if (!updateForm.config_id) return;
 
-    const data = Object.fromEntries(
-      updateFormFields.map(f => [f.key, updateForm[f.key]])
-    );
+    // 只包含修改过的字段（对比原始数据）
+    const changedFields = updateFormFields
+      .filter(f => {
+        const currentValue = updateForm[f.key];
+        const originalValue = originalConfigData?.[f.key];
+        return currentValue !== originalValue;
+      })
+      .map(f => [f.key, updateForm[f.key]]);
+
+    const data = Object.fromEntries(changedFields);
+
+    console.log('Changed fields:', data);
 
     setLoading(true);
     const results = await ConfigService.updateConfig(updateForm.config_id, data);
@@ -149,7 +163,9 @@ export default function ConfigPage() {
       notification.success('Updated successfully');
       setModalOpen(false);
       void fetchConfigs();
+      return;
     }
+    notification.error(results.msg);
     setLoading(false);
   };
 
@@ -253,33 +269,19 @@ export default function ConfigPage() {
       <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={isEditMode ? 'Edit Config' : 'Add Config'}>
         <div className="space-y-4">
           {currentFields.map(field => (
-            <div key={field.key}>
-              <label className="block text-sm font-semibold mb-2">{field.label}</label>
-              {field.type === 'textarea' ? (
-                <textarea
-                  value={currentForm[field.key] ?? ''}
-                  onChange={e => setCurrentForm(prev => ({ ...prev, [field.key]: e.target.value }))}
-                  placeholder={field.placeholder}
-                  rows={4}
-                  className="w-full px-4 py-3 border rounded-xl resize-none"
-                />
-              ) : (
-                <input
-                  type={field.type}
-                  value={currentForm[field.key] ?? ''}
-                  onChange={e => setCurrentForm(prev => ({ ...prev, [field.key]: e.target.value }))}
-                  placeholder={field.placeholder}
-                  className="w-full px-4 py-3 border rounded-xl"
-                />
-              )}
-            </div>
+            <FormField
+              key={field.key}
+              field={field}
+              value={currentForm[field.key]}
+              onChange={(value) => setCurrentForm(prev => ({ ...prev, [field.key]: value }))}
+            />
           ))}
         </div>
         <div className="flex justify-end gap-3 mt-6">
-          <button onClick={() => setModalOpen(false)}>取消</button>
+          <button onClick={() => setModalOpen(false)} className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all font-medium">取消</button>
           <button
             onClick={isEditMode ? handleSaveUpdate : handleSaveAdd}
-            className="bg-black text-white px-5 py-2 rounded-xl"
+            className="bg-black text-white px-5 py-2.5 rounded-xl hover:bg-gray-800 transition-all font-medium"
           >
             保存
           </button>
