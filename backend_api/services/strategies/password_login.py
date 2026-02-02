@@ -1,16 +1,11 @@
 import hashlib
 from typing import Dict
-from auth.authorization import Authorization, jwt, SECRET_KEY, ALGORITHM
+from auth.authorization import Authorization
 from config import redis_client
-from config.auth_config import ACCESS_TOKEN_EXPIRE_MINUTES
 from model.exceptions import ServiceException
 from repository.identity_repository import get_user_by_username
 from repository.sys_login_log_repository import create_login_log
-from repository.sys_user_online_repository import (
-    create_online_user,
-    get_online_user_by_user_id,
-    update_online_user,
-)
+from tools.login_tool import record_login
 
 
 def password_login(data: Dict, request=None):
@@ -69,30 +64,8 @@ def password_login(data: Dict, request=None):
         user_name=user_name
     )
 
-    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-    jti = payload.get("jti")
-
-    write_login_log(0, "登录成功")
-
-    online_data = {
-        "session_id": jti,
-        "ipaddr": ip,
-        "browser": user_agent,
-        "status": "on_line",
-        "expire_time": ACCESS_TOKEN_EXPIRE_MINUTES * 60
-    }
-
-    existing_online = get_online_user_by_user_id(user_id)
-    if existing_online:
-        update_online_user(existing_online[0]["session_id"], online_data)
-    else:
-        online_data.update({
-            "user_id": user_id,
-            "user_name": user_name,
-            "login_location": ip,
-            "os": ""
-        })
-        create_online_user(online_data)
+    # 使用统一函数记录登录日志和在线用户
+    record_login(user_id, user_name, token, ip, user_agent, "登录成功")
 
     return {
         "token": token,

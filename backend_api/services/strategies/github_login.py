@@ -9,6 +9,7 @@ from config import GITHUB_TOKEN_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GIT
 from master_tools.logger_tool import log
 from repository.identity_repository import get_user_by_username
 from repository.sys_user_repository import create_user
+from tools.login_tool import record_login
 
 
 def github_login(data: dict, request: Request):
@@ -24,7 +25,10 @@ def github_login(data: dict, request: Request):
     return authorization_url
 
 
-async def callback_github(code:str):
+async def callback_github(code: str, request: Request):
+    ip = request.client.host
+    user_agent = request.headers.get("User-Agent")
+
     async with httpx.AsyncClient() as client:
         token_response = await client.post(
             GITHUB_TOKEN_URL,
@@ -65,10 +69,12 @@ async def callback_github(code:str):
             user_name=user_name
         )
 
+        # 使用统一函数记录登录日志和在线用户
+        record_login(user_id, user_name, token, ip, user_agent, "GitHub登录成功")
+
         return {
             "token": token,
             "user_id": user_id,
             "role_id": role_id,
             "user_name": user_name
         }
-

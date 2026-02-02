@@ -8,6 +8,7 @@ from sentry_sdk.integrations import httpx
 
 from master_tools.logger_tool import log
 from repository.sys_user_repository import get_user_by_username, create_user
+from tools.login_tool import record_login
 
 
 def google_login(data: dict, request: Request):
@@ -24,8 +25,11 @@ def google_login(data: dict, request: Request):
     return authorization_url
 
 
-async def callback_google(code: str):
+async def callback_google(code: str, request: Request):
     """接收授权码并交换访问令牌"""
+    ip = request.client.host
+    user_agent = request.headers.get("User-Agent")
+
     async with httpx.AsyncClient() as client:
         token_response = await client.post(
             GOOGLE_TOKEN_URL,
@@ -55,7 +59,6 @@ async def callback_google(code: str):
             }
             user = create_user(data)
 
-
         user_id = user[0]['user_id']
         role_id = user[0]['role_id']
         user_name = user[0]['user_name']
@@ -66,11 +69,12 @@ async def callback_google(code: str):
             user_name=user_name
         )
 
+        # 使用统一函数记录登录日志和在线用户
+        record_login(user_id, user_name, token, ip, user_agent, "Google登录成功")
+
         return {
             "token": token,
             "user_id": user_id,
             "role_id": role_id,
             "user_name": user_name
         }
-
-

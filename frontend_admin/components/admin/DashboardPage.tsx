@@ -3,10 +3,8 @@
 import { motion } from 'framer-motion';
 import { Users, Activity, DollarSign, TrendingUp, Sparkles } from 'lucide-react';
 import { StatCard } from './StatCard';
-import { UserService } from '@/lib/service/user';
-import { MonitorService } from '@/lib/service/monitor';
+import { DashboardService } from '@/lib/service/dashboard';
 import { useEffect, useState } from 'react';
-import { Results } from '@/lib/api';
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({
@@ -23,33 +21,16 @@ export default function DashboardPage() {
   }, []);
 
   const loadDashboardData = async () => {
-    const [usersResult, logsResult, onlineResult]: Results[] = await Promise.all([
-      UserService.getUserList({ page: 1, page_size: 1 }),
-      MonitorService.getLoginLogList({ page: 1, page_size: 5 }),
-      MonitorService.getOnlineUserList({ page: 1, page_size: 100 }),
-    ]);
+    const result = await DashboardService.getDashboardStats();
 
-    if (usersResult?.data) {
-      setStats(prev => ({
-        ...prev,
-        totalUsers: usersResult.data.total || 0,
-        activeUsers: usersResult.data.total || 0,
-      }));
-    }
-
-    if (logsResult?.data) {
-      setStats(prev => ({
-        ...prev,
-        totalLogins: logsResult.data.total || 0,
-      }));
-      setRecentActivities(logsResult.data.records || []);
-    }
-
-    if (onlineResult?.data) {
-      setStats(prev => ({
-        ...prev,
-        onlineUsers: onlineResult.data.total || 0,
-      }));
+    if (result?.data) {
+      setStats({
+        totalUsers: result.data.total_users || 0,
+        activeUsers: result.data.total_users || 0,
+        onlineUsers: result.data.online_users || 0,
+        totalLogins: result.data.total_logins || 0,
+      });
+      setRecentActivities(result.data.recent_activities || []);
     }
   };
 

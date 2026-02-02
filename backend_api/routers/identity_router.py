@@ -108,16 +108,16 @@ async def identity_logout(request: Request):
 
 
 @pub_identity_router.get("/auth/google")
-async def callback_auth_google(code: str, state: str):
-    result = await callback_google(code)
+async def callback_auth_google(code: str, state: str, request: Request):
+    result = await callback_google(code, request)
     token = result['token']
     callback_url = f"{state}?token={token}&provider=google"
     return RedirectResponse(callback_url)
 
 
 @pub_identity_router.get("/auth/github")
-async def callback_auth_github(code: str, state: str):
-    result = await callback_github(code)
+async def callback_auth_github(code: str, state: str, request: Request):
+    result = await callback_github(code, request)
     token = result['token']
     callback_url = f"{state}?token={token}&provider=github"
     return RedirectResponse(callback_url)
