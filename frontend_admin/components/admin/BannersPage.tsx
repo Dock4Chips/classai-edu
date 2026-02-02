@@ -17,6 +17,8 @@ export default function BannersPage() {
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [editingBannerId, setEditingBannerId] = useState<number | null>(null);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxBanner, setLightboxBanner] = useState<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -57,6 +59,11 @@ export default function BannersPage() {
     setPreviewUrl(banner.resource_url);
     setSelectedFile(null);
     setModalOpen(true);
+  };
+
+  const handleImageClick = (banner: any) => {
+    setLightboxBanner(banner);
+    setLightboxOpen(true);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,12 +121,13 @@ export default function BannersPage() {
     {
       key: 'resource_url',
       title: 'Image',
-      render: (value) => (
+      render: (_, record) => (
         <div className="relative group">
           <img
-            src={value}
+            src={record.resource_url}
             alt="banner"
-            className="h-16 w-auto rounded-lg object-cover shadow-sm"
+            className="h-16 w-auto rounded-lg object-cover shadow-sm cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => handleImageClick(record)}
           />
         </div>
       ),
@@ -261,7 +269,7 @@ export default function BannersPage() {
           {/* Info */}
           <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
             <p className="text-sm text-blue-800">
-              <strong>Note:</strong> The uploaded image will be automatically processed with AI detection to identify objects.
+              <strong>Note:</strong> The uploaded image will be automatically processed with YOLO detection to identify objects.
             </p>
           </div>
 
@@ -291,6 +299,19 @@ export default function BannersPage() {
               )}
             </button>
           </div>
+        </div>
+      </Modal>
+
+      {/* Image Lightbox */}
+      <Modal isOpen={lightboxOpen} onClose={() => setLightboxOpen(false)} title="">
+        <div className="flex items-center justify-center p-4" style={{ maxHeight: '70vh' }}>
+          {lightboxBanner && (
+            <img
+              src={lightboxBanner.resource_url}
+              alt="Full size banner"
+              className="max-w-full max-h-full object-contain rounded-lg"
+            />
+          )}
         </div>
       </Modal>
     </div>
