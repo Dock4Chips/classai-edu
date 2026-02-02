@@ -1,5 +1,5 @@
-import axios, { type AxiosInstance, type AxiosResponse, type AxiosError } from 'axios';
-import type { InternalAxiosRequestConfig } from 'axios';
+import axios, {type AxiosInstance, type AxiosResponse, type AxiosError} from 'axios';
+import type {InternalAxiosRequestConfig} from 'axios';
 
 import Cookies from 'js-cookie'; // ✅ 用于管理 token
 
@@ -83,7 +83,7 @@ export class ApiClient {
 
     // ✅ GET
     get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-        return this.instance.get(endpoint, { params });
+        return this.instance.get(endpoint, {params});
     }
 
     // ✅ POST
@@ -92,8 +92,8 @@ export class ApiClient {
     }
 
     // ✅ PUT
-    put<T>(endpoint: string, data?: any): Promise<T> {
-        return this.instance.put(endpoint, data);
+    put<T>(endpoint: string, data?: any, config?: any): Promise<T> {
+        return this.instance.put(endpoint, data, config);
     }
 
     // ✅ DELETE

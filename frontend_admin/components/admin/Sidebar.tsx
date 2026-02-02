@@ -13,6 +13,7 @@ import {
     Database,
     Activity,
     BrainCircuit,
+    Image as ImageIcon,
 } from 'lucide-react';
 import {IdentityService} from "@/lib/service/identity";
 import {notification} from "@/utils/notification";
@@ -44,6 +45,12 @@ const menuItems: MenuItem[] = [
         label: 'Roles',
         icon: <Shield className="w-5 h-5"/>,
         path: '/admin/roles',
+    },
+    {
+        key: 'banners',
+        label: 'Banners',
+        icon: <ImageIcon className="w-5 h-5"/>,
+        path: '/admin/banners',
     },
     {
         key: 'config',

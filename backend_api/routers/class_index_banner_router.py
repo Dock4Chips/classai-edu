@@ -12,7 +12,7 @@ from repository.class_index_banner_repository import (
     create_banner,
     get_banner_by_id,
     update_banner,
-    delete_banner
+    delete_banner, count_banners
 )
 from tools.file_tool import upload_np_image_to_minio, delete_minio_file
 from yolo_edu.core import Det, YOLOConfig
@@ -103,6 +103,8 @@ async def list_banner():
 @pro_class_index_banner_router.post('')
 async def add_banner(file: UploadFile = File(...)):
     """新增Banner"""
+    if count_banners()[0].get('total_count') >= 6:
+        raise ServiceException(msg="最多只能添加6个Banner")
     img = await _frame_to_np(file)
     _, image_url, serialized = _process_image_detection(img)
 
@@ -135,7 +137,7 @@ async def edit_banner(id: int, file: UploadFile = File(...)):
     old_record = get_banner_by_id(id)
     if not old_record:
         raise ServiceException(msg="记录不存在")
-    delete_minio_file(old_record.get("resource_url"))
+    delete_minio_file(old_record[0].get("resource_url"))
     img = await _frame_to_np(file)
     _, image_url, serialized = _process_image_detection(img)
     update_data = {
@@ -158,6 +160,6 @@ async def remove_banner(id: int):
     old_record = get_banner_by_id(id)
     if not old_record:
         raise ServiceException(msg="记录不存在")
-    delete_minio_file(old_record.get("resource_url"))
+    delete_minio_file(old_record[0].get("resource_url"))
     delete_banner(id)
     return Res.ok("删除成功")
