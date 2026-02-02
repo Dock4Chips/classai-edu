@@ -15,6 +15,7 @@ from master_tools.logger_tool import log
 from model.exceptions import ServiceException
 from model.result import Res
 from repository.identity_repository import get_user_by_username, create_user, get_user_by_user_id
+from repository.sys_user_online_repository import update_online_user_by_user_id
 from services.strategies.github_login import callback_github
 from services.strategies.google_login import callback_google
 from services.strategies.login_registry import LOGIN_STRATEGY_MAP
@@ -102,6 +103,8 @@ async def identity_logout(request: Request):
         scheme, token = get_authorization_scheme_param(authorization)
         if scheme.lower() == "bearer" and token:
             Authorization.logout(token)
+    user_id =  SecurityTool.get_user_id()
+    update_online_user_by_user_id(user_id,'off_line')
     return Res.ok("登出成功")
 
 

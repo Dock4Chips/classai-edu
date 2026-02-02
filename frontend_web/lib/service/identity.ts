@@ -52,11 +52,18 @@ export class IdentityService {
     }
 
     /**
-     * 获取用户信息（需要登录）
-     * @returns {Promise<Results>} 返回用户信息
+     * 获取当前登录用户信息
      */
-    static async userinfo(): Promise<Results> {
-        return await apiClient.get<Results>('/api/sys/user/current');
+    static async getCurrentUser(): Promise<Results> {
+        return await apiClient.get<Results>('/api/strategies/identity/current');
+    }
+
+    /**
+     * 用户退出登录
+     * @returns {Promise<Results>} 返回退出登录结果
+     */
+    static async logout(): Promise<Results> {
+        return await apiClient.post<Results>('/api/strategies/identity/logout');
     }
 
     /**

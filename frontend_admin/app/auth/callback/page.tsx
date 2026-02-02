@@ -12,7 +12,7 @@ export default function AuthCallback() {
         const token = searchParams.get('token');
         if (token) {
             apiClient.setToken(token);
-            router.push('/welcome');
+            router.push('/admin/dashboard');
         } else {
             // 没有 token，返回登录页
             router.push('/identity');
