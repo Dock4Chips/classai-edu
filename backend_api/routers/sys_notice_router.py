@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, Query, Body
 from auth.authorization import Authorization
 from model.exceptions import ServiceException
@@ -8,6 +10,14 @@ from repository.sys_notice_repository import (
     create_notice,
     update_notice,
     delete_notice
+)
+from tools.security_tool import SecurityTool
+from repository.sys_notice_read_repository import (
+    get_unread_notice_count,
+    get_user_notice_read_status,
+    create_notice_read,
+    update_notice_read,
+    get_notices_with_read_status,
 )
 
 pro_sys_notice_router = APIRouter(
@@ -100,3 +110,44 @@ async def remove_notice(notice_id: int):
 
     delete_notice(notice_id)
     return Res.ok("删除成功")
+
+
+@pro_sys_notice_router.get('/unread/count')
+async def get_unread_count():
+    """获取当前用户未读通知数量"""
+    user_id = SecurityTool.get_user_id()
+    count = get_unread_notice_count(user_id)
+    return Res.ok({'count': count})
+
+
+@pro_sys_notice_router.get('/list/with-read-status')
+async def list_notices_with_read_status(page: int = Query(1, ge=1),
+                                        page_size: int = Query(10, ge=1, le=100)):
+    """获取通知列表（包含当前用户的阅读状态）"""
+    user_id = SecurityTool.get_user_id()
+    result = get_notices_with_read_status(user_id, page, page_size)
+    return Res.ok(result)
+
+
+@pro_sys_notice_router.post('/{notice_id}/read')
+async def mark_as_read(notice_id: int):
+    """标记通知为已读"""
+
+    user_id = SecurityTool.get_user_id()
+
+    # 检查是否已有记录
+    existing = get_user_notice_read_status(user_id, notice_id)
+
+    if existing:
+        # 更新已有记录
+        update_notice_read(existing[0]['id'], {'is_read': 1, 'read_time': datetime.now()})
+    else:
+        # 创建新记录
+        create_notice_read({
+            'notice_id': notice_id,
+            'user_id': user_id,
+            'is_read': 1,
+            'read_time': datetime.now()
+        })
+
+    return Res.ok("标记成功")
