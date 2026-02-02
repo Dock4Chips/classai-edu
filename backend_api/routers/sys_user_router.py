@@ -94,12 +94,4 @@ async def update_password(old_password: str, new_password: str):
     return Res.ok("修改成功")
 
 
-@pro_sys_user_router.get('/current')
-async def get_current_user():
-    """获取当前登录用户信息"""
-    user_id = SecurityTool.get_user_id()
-    user_list = get_user_by_user_id(user_id)
-    if not user_list:
-        raise ServiceException(msg="用户不存在")
-    user_list[0].pop('password')
-    return Res.ok(user_list[0])
+

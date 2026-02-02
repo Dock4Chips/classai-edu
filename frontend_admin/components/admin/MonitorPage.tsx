@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Activity, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 import { MonitorService } from '@/lib/service/monitor';
 import { Results } from '@/lib/api';
 import { Table, Column } from '@/components/ui/table';

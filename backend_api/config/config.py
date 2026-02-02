@@ -46,10 +46,10 @@ MINIO_PORT = os.getenv("MINIO_PORT")
 MINIO_ADMIN = os.getenv("MINIO_ADMIN")
 MINIO_PASSWORD = os.getenv("MINIO_PASSWORD")
 MINIO_BUCKET_NAME = os.getenv("MINIO_BUCKET_NAME")
-minio_endpoint = f"{MINIO_ADDRESS}:{MINIO_PORT}"
+MINIO_ENDPOINT = f"{MINIO_ADDRESS}:{MINIO_PORT}"
 
 
-bucket = Bucket(minio_address=minio_endpoint,
+bucket = Bucket(minio_address=MINIO_ENDPOINT,
                 minio_admin=MINIO_ADMIN,
                 minio_password=MINIO_PASSWORD)
 

@@ -25,13 +25,6 @@ export class UserService {
     }
 
     /**
-     * 获取当前登录用户信息
-     */
-    static async getCurrentUser(): Promise<Results> {
-        return await apiClient.get<Results>('/api/sys/user/current');
-    }
-
-    /**
      * 新增用户
      */
     static async createUser(data: Record<string, any>): Promise<Results> {
@@ -50,5 +43,28 @@ export class UserService {
      */
     static async deleteUser(userId: number): Promise<Results> {
         return await apiClient.delete<Results>(`/api/sys/user/${userId}`);
+    }
+
+    /**
+     * 上传头像
+     */
+    static async uploadAvatar(file: File): Promise<Results> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return await apiClient.post<Results>('/api/sys/user/avatar', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+    }
+
+    /**
+     * 修改密码
+     */
+    static async updatePassword(oldPassword: string, newPassword: string): Promise<Results> {
+        return await apiClient.post<Results>('/api/sys/user/password', {
+            old_password: oldPassword,
+            new_password: newPassword
+        });
     }
 }

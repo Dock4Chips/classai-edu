@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from fastapi import UploadFile
 
-from config.config import bucket, MINIO_BUCKET_NAME
+from config.config import bucket, MINIO_BUCKET_NAME, MINIO_ENDPOINT
 from master_tools.logger_tool import log
 from model.exceptions import ServiceException
 
@@ -28,10 +28,7 @@ async def upload_file_to_minio(file: UploadFile) -> str:
         data=data,
         content_type=file.content_type
     )
-    return bucket.minioClient.get_object_url(
-        MINIO_BUCKET_NAME,
-        object_name
-    )
+    return f"http://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
 
 
 def upload_np_image_to_minio(img: np.ndarray, suffix: str = ".jpg") -> str:
@@ -52,10 +49,7 @@ def upload_np_image_to_minio(img: np.ndarray, suffix: str = ".jpg") -> str:
         data=buffer,
         content_type="image/jpeg"
     )
-    return bucket.minioClient.get_object_url(
-        MINIO_BUCKET_NAME,
-        object_name
-    )
+    return f"http://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
 
 
 def delete_minio_file(image_url: Optional[str]):
@@ -70,3 +64,10 @@ def delete_minio_file(image_url: Optional[str]):
         bucket.minioClient.remove_object(MINIO_BUCKET_NAME, object_key)
     except Exception as e:
         log.error(f"删除MinIO文件失败: {e}")
+
+
+# bucket.minioClient.presigned_get_object(
+#     bucket_name,
+#     object_name,
+#     expires=timedelta(days=7)
+# )

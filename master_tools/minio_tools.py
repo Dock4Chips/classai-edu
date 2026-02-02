@@ -1,6 +1,8 @@
 from minio import Minio, InvalidResponseError, S3Error
 import urllib3
 import io
+
+
 # MinIO使用bucket（桶）来组织对象。
 # bucket类似于文件夹或目录，其中每个bucket可以容纳任意数量的对象。
 class Bucket:
@@ -9,13 +11,13 @@ class Bucket:
         # 通过ip 账号 密码 连接minio server
         # Http连接 将secure设置为False
         http_client = urllib3.PoolManager(
-            timeout=urllib3.Timeout(connect=10, read=600) # 这里将读超时设置为600秒 (10分钟)
+            timeout=urllib3.Timeout(connect=10, read=600)  # 这里将读超时设置为600秒 (10分钟)
         )
         self.minioClient = Minio(endpoint=minio_address,
                                  access_key=minio_admin,
                                  secret_key=minio_password,
                                  secure=False,
-                                 http_client=http_client) # <--- 新增这行，将自定义的http_client传递进去
+                                 http_client=http_client)  # <--- 新增这行，将自定义的http_client传递进去
 
     def create_one_bucket(self, bucket_name):
         # 创建桶(调用make_bucket api来创建一个桶)
@@ -220,4 +222,3 @@ if __name__ == "__main__":
     # 获取一个桶中的某目录下的所有文件
     # ret = bucket.get_list_objects_from_bucket_dir('test', 'covers/')
     # print(ret)
-

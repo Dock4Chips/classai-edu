@@ -14,11 +14,11 @@ from enums.login_type import LoginType
 from master_tools.logger_tool import log
 from model.exceptions import ServiceException
 from model.result import Res
-from repository.identity_repository import get_user_by_username, create_user
+from repository.identity_repository import get_user_by_username, create_user, get_user_by_user_id
 from services.strategies.github_login import callback_github
 from services.strategies.google_login import callback_google
 from services.strategies.login_registry import LOGIN_STRATEGY_MAP
-
+from tools.security_tool import SecurityTool
 
 pub_identity_router = APIRouter(
     prefix='/api/strategies/identity',
@@ -121,3 +121,13 @@ async def callback_auth_github(code: str, state: str):
     token = result['token']
     callback_url = f"{state}?token={token}&provider=github"
     return RedirectResponse(callback_url)
+
+@pro_identity_router.get('/current')
+async def get_current_user():
+    """获取当前登录用户信息"""
+    user_id = SecurityTool.get_user_id()
+    user_list = get_user_by_user_id(user_id)
+    if not user_list:
+        raise ServiceException(msg="用户不存在")
+    user_list[0].pop('password')
+    return Res.ok(user_list[0])
