@@ -10,7 +10,7 @@ def list_banners():
     return db.query('SELECT * FROM class_index_banner WHERE is_deleted = 0 ORDER BY create_time DESC')
 
 def count_banners():
-    return db.query('SELECT COUNT(*) as total_count FROM class_index_banner')
+    return db.query('SELECT COUNT(*) as total_count FROM class_index_banner WHERE is_deleted = 0')
 
 @db_fill('insert')
 def create_banner(data: dict):

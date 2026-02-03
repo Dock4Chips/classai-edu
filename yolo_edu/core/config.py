@@ -10,7 +10,8 @@ class YOLOConfig:
 
     # 模型文件路径
     MODEL_PATH_8N = str(BASE_DIR / "model" / "classai_8n.pt")
-    MODEL_PATH_8M = str(BASE_DIR / "model" / "classai_11n.pt")
+    MODEL_PATH_11N = str(BASE_DIR / "model" / "classai_11n.pt")
+    MODEL_PATH_11_test = str(BASE_DIR / "model" / "best.pt")
 
     # 默认使用的模型
     DEFAULT_MODEL = MODEL_PATH_8N
