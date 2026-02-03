@@ -1,5 +1,6 @@
 'use client';
 
+import {useState} from 'react';
 import {useRouter, usePathname} from 'next/navigation';
 import {motion, AnimatePresence} from 'framer-motion';
 import {
@@ -15,6 +16,9 @@ import {
     BrainCircuit,
     Image as ImageIcon,
     FileText,
+    ChevronDown,
+    ListChecks,
+    ScanSearch,
 } from 'lucide-react';
 import {IdentityService} from "@/lib/service/identity";
 import {notification} from "@/utils/notification";
@@ -24,8 +28,9 @@ interface MenuItem {
     key: string;
     label: string;
     icon: React.ReactNode;
-    path: string;
+    path?: string;
     badge?: string | number;
+    children?: MenuItem[];
 }
 
 const menuItems: MenuItem[] = [
@@ -60,6 +65,25 @@ const menuItems: MenuItem[] = [
         path: '/admin/notices',
     },
     {
+        key: 'detection',
+        label: 'Detection',
+        icon: <BrainCircuit className="w-5 h-5"/>,
+        children: [
+            {
+                key: 'detection-task',
+                label: 'Tasks',
+                icon: <ListChecks className="w-4 h-4"/>,
+                path: '/admin/detection/task',
+            },
+            {
+                key: 'detection-detail',
+                label: 'Details',
+                icon: <ScanSearch className="w-4 h-4"/>,
+                path: '/admin/detection/detail',
+            },
+        ],
+    },
+    {
         key: 'config',
         label: 'Config',
         icon: <Database className="w-5 h-5"/>,
@@ -87,6 +111,21 @@ interface SidebarProps {
 export function Sidebar({collapsed, onToggle}: SidebarProps) {
     const router = useRouter();
     const pathname = usePathname();
+    const [expandedMenu, setExpandedMenu] = useState<string | null>('detection');
+
+    const toggleMenu = (key: string) => {
+        setExpandedMenu(expandedMenu === key ? null : key);
+    };
+
+    const isMenuActive = (item: MenuItem): boolean => {
+        if (item.path) {
+            return pathname === item.path;
+        }
+        if (item.children) {
+            return item.children.some(child => pathname === child.path);
+        }
+        return false;
+    };
 
     const handleLogout = async () => {
         const results = await IdentityService.logout()
@@ -169,26 +208,41 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
 
             {/* Menu Items */}
             <nav className="flex-1 overflow-y-auto py-5 px-3 space-y-1.5">
-                <AnimatePresence mode="wait">
-                    {menuItems.map((item, index) => {
-                        const isActive = pathname === item.path;
-                        return (
-                            <motion.button
-                                key={item.key}
-                                whileHover={{x: 4}}
-                                whileTap={{scale: 0.98}}
-                                onClick={() => router.push(item.path)}
-                                className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group overflow-hidden"
-                                initial={{opacity: 0, x: -20}}
-                                animate={{opacity: 1, x: 0}}
-                                transition={{delay: index * 0.05}}
-                            >
+                {menuItems.map((item, index) => {
+                    const hasChildren = item.children && item.children.length > 0;
+                    const isActive = isMenuActive(item);
+                    const isExpanded = expandedMenu === item.key;
+
+                    return (
+                        <div key={item.key}>
+                                {/* Parent Menu Item */}
+                                <motion.button
+                                    whileHover={{x: 4}}
+                                    whileTap={{scale: 0.98}}
+                                    onClick={() => {
+                                        if (hasChildren) {
+                                            toggleMenu(item.key);
+                                        } else if (item.path) {
+                                            router.push(item.path);
+                                        }
+                                    }}
+                                    className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group overflow-hidden"
+                                    initial={{opacity: 0, x: -20}}
+                                    animate={{opacity: 1, x: 0}}
+                                    transition={{delay: index * 0.05}}
+                                >
                                 {/* Background */}
-                                {isActive && (
+                                {isActive && !hasChildren && (
                                     <motion.div
                                         layoutId="activeTab"
                                         className="absolute inset-0 bg-black rounded-xl"
                                         transition={{type: 'spring', stiffness: 500, damping: 30}}
+                                    />
+                                )}
+                                {/* 当有子菜单激活时，显示静态背景（无动画） */}
+                                {isActive && hasChildren && (
+                                    <div
+                                        className="absolute inset-0 bg-black rounded-xl"
                                     />
                                 )}
 
@@ -219,6 +273,17 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
                                     )}
                                 </AnimatePresence>
 
+                                {/* Chevron for submenu */}
+                                {!collapsed && hasChildren && (
+                                    <motion.span
+                                        initial={false}
+                                        animate={{ rotate: isExpanded ? 180 : 0 }}
+                                        className={`relative z-10 ml-auto transition-colors ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-black'}`}
+                                    >
+                                        <ChevronDown className="w-4 h-4"/>
+                                    </motion.span>
+                                )}
+
                                 {/* Badge */}
                                 {item.badge && !collapsed && (
                                     <motion.span
@@ -230,9 +295,63 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
                                     </motion.span>
                                 )}
                             </motion.button>
-                        );
-                    })}
-                </AnimatePresence>
+
+                            {/* Submenu Items */}
+                            {hasChildren && !collapsed && (
+                                <AnimatePresence mode="wait">
+                                    {isExpanded && (
+                                        <motion.div
+                                            initial={{opacity: 0, height: 0}}
+                                            animate={{opacity: 1, height: 'auto'}}
+                                            exit={{opacity: 0, height: 0}}
+                                            transition={{duration: 0.2}}
+                                            className="ml-6 mt-1 space-y-1 overflow-hidden"
+                                        >
+                                            {item.children!.map((child) => {
+                                                const isChildActive = pathname === child.path;
+                                                return (
+                                                    <motion.button
+                                                        key={child.key}
+                                                        whileHover={{x: 4}}
+                                                        whileTap={{scale: 0.98}}
+                                                        onClick={() => child.path && router.push(child.path)}
+                                                        className="relative w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group overflow-hidden"
+                                                    >
+                                                        {/* Background */}
+                                                        {isChildActive && (
+                                                            <div
+                                                                className="absolute inset-0 bg-gray-100 rounded-xl"
+                                                            />
+                                                        )}
+
+                                                        {/* Hover effect */}
+                                                        {!isChildActive && (
+                                                            <div
+                                                                className="absolute inset-0 bg-transparent group-hover:bg-gray-50 rounded-xl transition-all duration-300"/>
+                                                        )}
+
+                                                        {/* Icon */}
+                                                        <span
+                                                            className={`relative z-10 flex-shrink-0 ${isChildActive ? 'text-black' : 'text-gray-500 group-hover:text-black'} transition-colors`}>
+                                                            {child.icon}
+                                                        </span>
+
+                                                        {/* Label */}
+                                                        <span
+                                                            className={`relative z-10 text-sm font-medium whitespace-nowrap ${isChildActive ? 'text-black' : 'text-gray-700 group-hover:text-black'} transition-colors`}
+                                                        >
+                                                            {child.label}
+                                                        </span>
+                                                    </motion.button>
+                                                );
+                                            })}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            )}
+                        </div>
+                    );
+                })}
             </nav>
 
             {/* Bottom decoration */}
