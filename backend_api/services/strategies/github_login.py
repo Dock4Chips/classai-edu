@@ -57,11 +57,11 @@ async def callback_github(code: str, request: Request):
                 'avatar': user_info.get('avatar_url'),
                 'role_id': 2
             }
-            user = create_user(data)[0]
+            user = create_user(data)
 
-        user_id = user['user_id']
-        role_id = user['role_id']
-        user_name = user['user_name']
+        user_id = user[0]['user_id']
+        role_id = user[0]['role_id']
+        user_name = user[0]['user_name']
 
         token = Authorization.create_token(
             user_id=user_id,
