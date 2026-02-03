@@ -64,25 +64,25 @@ const menuItems: MenuItem[] = [
         icon: <FileText className="w-5 h-5"/>,
         path: '/admin/notices',
     },
-    {
-        key: 'detection',
-        label: 'Detection',
-        icon: <BrainCircuit className="w-5 h-5"/>,
-        children: [
-            {
-                key: 'detection-task',
-                label: 'Tasks',
-                icon: <ListChecks className="w-4 h-4"/>,
-                path: '/admin/detection/task',
-            },
-            {
-                key: 'detection-detail',
-                label: 'Details',
-                icon: <ScanSearch className="w-4 h-4"/>,
-                path: '/admin/detection/detail',
-            },
-        ],
-    },
+    // {
+    //     key: 'detection',
+    //     label: 'Detection',
+    //     icon: <BrainCircuit className="w-5 h-5"/>,
+    //     children: [
+    //         {
+    //             key: 'detection-task',
+    //             label: 'Tasks',
+    //             icon: <ListChecks className="w-4 h-4"/>,
+    //             path: '/admin/detection/task',
+    //         },
+    //         {
+    //             key: 'detection-detail',
+    //             label: 'Details',
+    //             icon: <ScanSearch className="w-4 h-4"/>,
+    //             path: '/admin/detection/detail',
+    //         },
+    //     ],
+    // },
     {
         key: 'config',
         label: 'Config',

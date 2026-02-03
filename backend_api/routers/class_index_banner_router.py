@@ -108,7 +108,7 @@ async def add_banner(file: UploadFile = File(...)):
     img = await _frame_to_np(file)
     _, image_url, serialized = _process_image_detection(img)
 
-    detector = Det(model_path=YOLOConfig.DEFAULT_MODEL)
+    detector = Det(model_path=YOLOConfig.MODEL_PATH_11N)
 
     insert_data = {
         "resource_type": "image",
