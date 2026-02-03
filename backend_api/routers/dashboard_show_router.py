@@ -9,7 +9,7 @@ pro_dashboard_router = APIRouter(
 )
 
 
-@pro_dashboard_router.get('/stats')
+@pro_dashboard_router.get('/admin/stats')
 async def dashboard_stats():
     """获取 dashboard 统计数据"""
     data = get_dashboard_stats()
