@@ -26,3 +26,4 @@ captcha~=0.7.1
 ttkthemes==3.3.0
 filterpy==1.4.5
 scipy==1.16.3
+websockets==16.0

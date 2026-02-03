@@ -2,13 +2,10 @@
 
 import {useState, useEffect} from 'react';
 import {motion} from 'framer-motion';
-import {MoreVertical, Eye, Trash2, Sparkles, Search} from 'lucide-react';
+import {Eye, Sparkles, Search} from 'lucide-react';
 import {DetectionDetailService} from '@/lib/service/detectionDetail';
 import {Table, Column} from '@/components/ui/table';
 import {Badge} from '@/components/ui/badge';
-import {Dropdown} from '@/components/ui/dropdown';
-import {notification} from '@/utils/notification';
-import {confirm} from '@/utils/confirm';
 import {Results} from '@/lib/api';
 
 export default function DetectionDetailPage() {
@@ -49,28 +46,13 @@ export default function DetectionDetailPage() {
             key: 'actions',
             title: 'Actions',
             render: (_, record) => (
-                <Dropdown
-                    trigger={
-                        <button className="p-2 hover:bg-gray-100 rounded-lg">
-                            <MoreVertical className="w-4 h-4"/>
-                        </button>
-                    }
-                    items={[
-                        {
-                            key: 'view',
-                            label: 'View Detail',
-                            icon: <Eye className="w-4 h-4"/>,
-                            onClick: () => handleViewDetail(record),
-                        },
-                        {
-                            key: 'delete',
-                            label: 'Delete',
-                            icon: <Trash2 className="w-4 h-4"/>,
-                            danger: true,
-                            onClick: () => handleDelete(record),
-                        },
-                    ]}
-                />
+                <button
+                    onClick={() => handleViewDetail(record)}
+                    className="p-2 hover:bg-gray-100 rounded-lg text-gray-600 hover:text-blue-600 transition-colors"
+                    title="查看详情"
+                >
+                    <Eye className="w-4 h-4"/>
+                </button>
             ),
         },
     ];
@@ -89,8 +71,10 @@ export default function DetectionDetailPage() {
         };
         const results = await DetectionDetailService.getDetailList(params);
         if (results.code === 200) {
-            setDetails(results.data?.items || []);
-            setQueryParams(prev => ({...prev, total: results.data?.total || 0}));
+            // 转换后端返回的records为前端期望的items
+            const data = results.data || {};
+            setDetails(data.items || data.records || []);
+            setQueryParams(prev => ({...prev, total: data.total || 0}));
         }
         setLoading(false);
     };
@@ -98,19 +82,6 @@ export default function DetectionDetailPage() {
     const handleViewDetail = (detail: Results) => {
         console.log('View detail:', detail);
         // TODO: Implement detail view modal
-    };
-
-    const handleDelete = async (detail: Results) => {
-        const confirmed = await confirm.danger('Are you sure you want to delete this detail?');
-        if (!confirmed) return;
-
-        setLoading(true);
-        const results = await DetectionDetailService.deleteDetail(detail.detail_id);
-        if (results.code === 200) {
-            notification.success('Deleted successfully');
-            void fetchDetails();
-        }
-        setLoading(false);
     };
 
     const handleFilterByTask = (taskId: number | null) => {

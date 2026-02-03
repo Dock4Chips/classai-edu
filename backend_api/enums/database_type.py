@@ -114,6 +114,28 @@ class RiskLevel(IntEnum):
     CRITICAL = 3   # 严重风险
 
 
+class NotificationType(IntEnum):
+    """通知类型 (notification_record.notification_type)"""
+    EMAIL = 0      # 邮件
+    SMS = 1        # 短信
+    WEBHOOK = 2    # Webhook
+    WEBSOCKET = 3  # WebSocket
+
+
+class NotificationStatus(IntEnum):
+    """通知状态 (notification_record.status)"""
+    PENDING = 0    # 待发送
+    SENT = 1       # 已发送
+    FAILED = 2     # 发送失败
+
+
+class ReportStatus(IntEnum):
+    """报表状态 (report_record.status)"""
+    GENERATING = 0  # 生成中
+    COMPLETED = 1   # 已完成
+    FAILED = 2      # 生成失败
+
+
 # 枚举名称映射字典 (用于查询时转换显示)
 ENUM_LABELS = {
     'resource_type': {

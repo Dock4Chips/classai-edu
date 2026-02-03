@@ -19,6 +19,10 @@ import {
     ChevronDown,
     ListChecks,
     ScanSearch,
+    FolderOpen,
+    HardDrive,
+    Bell,
+    AlertTriangle,
 } from 'lucide-react';
 import {IdentityService} from "@/lib/service/identity";
 import {notification} from "@/utils/notification";
@@ -64,25 +68,87 @@ const menuItems: MenuItem[] = [
         icon: <FileText className="w-5 h-5"/>,
         path: '/admin/notices',
     },
-    // {
-    //     key: 'detection',
-    //     label: 'Detection',
-    //     icon: <BrainCircuit className="w-5 h-5"/>,
-    //     children: [
-    //         {
-    //             key: 'detection-task',
-    //             label: 'Tasks',
-    //             icon: <ListChecks className="w-4 h-4"/>,
-    //             path: '/admin/detection/task',
-    //         },
-    //         {
-    //             key: 'detection-detail',
-    //             label: 'Details',
-    //             icon: <ScanSearch className="w-4 h-4"/>,
-    //             path: '/admin/detection/detail',
-    //         },
-    //     ],
-    // },
+    {
+        key: 'detection',
+        label: 'Detection',
+        icon: <BrainCircuit className="w-5 h-5"/>,
+        children: [
+            {
+                key: 'detection-task',
+                label: 'Tasks',
+                icon: <ListChecks className="w-4 h-4"/>,
+                path: '/admin/detection/tasks',
+            },
+            {
+                key: 'detection-detail',
+                label: 'Details',
+                icon: <ScanSearch className="w-4 h-4"/>,
+                path: '/admin/detection/details',
+            },
+            {
+                key: 'detection-tracking',
+                label: 'Tracking',
+                icon: <Activity className="w-4 h-4"/>,
+                path: '/admin/detection/tracking',
+            },
+            {
+                key: 'detection-analysis',
+                label: 'Analysis',
+                icon: <BrainCircuit className="w-4 h-4"/>,
+                path: '/admin/detection/analysis',
+            },
+        ],
+    },
+    {
+        key: 'resources',
+        label: 'Resources',
+        icon: <FolderOpen className="w-5 h-5"/>,
+        children: [
+            {
+                key: 'resources-library',
+                label: 'Library',
+                icon: <ImageIcon className="w-4 h-4"/>,
+                path: '/admin/resources',
+            },
+            {
+                key: 'resources-upload',
+                label: 'Upload',
+                icon: <HardDrive className="w-4 h-4"/>,
+                path: '/admin/resources/upload',
+            },
+            {
+                key: 'resources-devices',
+                label: 'Devices',
+                icon: <Activity className="w-4 h-4"/>,
+                path: '/admin/resources/devices',
+            },
+            {
+                key: 'resources-models',
+                label: 'Models',
+                icon: <Database className="w-4 h-4"/>,
+                path: '/admin/resources/models',
+            },
+        ],
+    },
+    {
+        key: 'alerts',
+        label: 'Alerts',
+        icon: <Bell className="w-5 h-5"/>,
+        children: [
+            {
+                key: 'alerts-records',
+                label: 'Records',
+                icon: <AlertTriangle className="w-4 h-4"/>,
+                path: '/admin/alerts/records',
+            },
+            {
+                key: 'alerts-rules',
+                label: 'Rules',
+                icon: <Shield className="w-4 h-4"/>,
+                path: '/admin/alerts/rules',
+            },
+        ],
+    },
     {
         key: 'config',
         label: 'Config',
@@ -111,7 +177,7 @@ interface SidebarProps {
 export function Sidebar({collapsed, onToggle}: SidebarProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const [expandedMenu, setExpandedMenu] = useState<string | null>('detection');
+    const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
 
     const toggleMenu = (key: string) => {
         setExpandedMenu(expandedMenu === key ? null : key);
