@@ -6,57 +6,14 @@
 
 import cv2
 import numpy as np
-# from backend_api.repository.model_repository import get_draw_config_dict, get_default_model
-
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 class DrawUtils:
-    """绘图工具类"""
-
-    # 颜色配置（从数据库加载）
     COLORS = {}
-
-    # @classmethod
-    # def load_colors_from_db(cls, model_id: int = None):
-    #     """
-    #     从数据库加载颜色配置
-    #
-    #     Args:
-    #         model_id: 模型ID，不传则使用默认模型
-    #
-    #     Returns:
-    #         bool: 是否成功加载
-    #     """
-    #
-    #     # if model_id is None:
-    #     #     default_model = get_default_model()
-    #     #     model_id = default_model['model_id']
-    #     #
-    #     # # 获取配置
-    #     # configs = get_draw_config_dict(model_id)
-    #
-    #     # 更新颜色配置
-    #     cls.COLORS = {}
-    #     for class_name, config in configs.items():
-    #         # color_bgr 格式: "(255, 0, 0)" -> 转换为元组
-    #         bgr_str = config.get('color_bgr', '(0, 0, 0)')
-    #         bgr_values = bgr_str.strip('()').split(',')
-    #         bgr_tuple = tuple(int(v.strip()) for v in bgr_values)
-    #         cls.COLORS[class_name] = bgr_tuple
-    #
-    #     print(f"已从数据库加载 {len(configs)} 个类别的颜色配置")
-    #     return True
 
     @classmethod
     def get_color(cls, class_name):
-        """
-        获取类别对应的颜色
-
-        Args:
-            class_name: 类别名称
-
-        Returns:
-            tuple: BGR 颜色值
-        """
         return cls.COLORS.get(class_name, (128, 128, 128))  # 默认灰色
 
     @classmethod
@@ -66,35 +23,16 @@ class DrawUtils:
 
         x1, y1, x2, y2 = map(int, bbox)
         h, w = image.shape[:2]
-
-        # ===== YOLO 原生参数 =====
         lw = max(round((h + w) / 2 * 0.003), 2)
         font = cv2.FONT_HERSHEY_SIMPLEX
         font_scale = lw / 3
         thickness = max(lw - 1, 1)
         pad = 3
         txt_color = (255, 255, 255)  # YOLO 原生：白色
-        # ========================
-
-        # 框
         cv2.rectangle(image, (x1, y1), (x2, y2), color, lw, lineType=cv2.LINE_AA)
-
         text = label
         if conf is not None:
             text += f" {conf:.2f}"
-
-        (tw, th), _ = cv2.getTextSize(text, font, font_scale, thickness)
-
-        # 标签背景（和框同色）
-        cv2.rectangle(
-            image,
-            (x1, y1 - th - pad * 2),
-            (x1 + tw + pad * 2, y1),
-            color,
-            -1
-        )
-
-        # 文本（白色）
         cv2.putText(
             image,
             text,
@@ -105,9 +43,7 @@ class DrawUtils:
             thickness,
             lineType=cv2.LINE_AA
         )
-
         return image
-
 
     @classmethod
     def draw_crosshair(cls, image, center, size=20, color=(0, 255, 0)):
@@ -147,12 +83,10 @@ class DrawUtils:
         Returns:
             输出路径
         """
-        import matplotlib.pyplot as plt
-        import matplotlib.patches as mpatches
-        from datetime import datetime
+
 
         # 创建图像
-        fig, ax = plt.subplots(figsize=(width/100, height/100))
+        fig, ax = plt.subplots(figsize=(width / 100, height / 100))
 
         # 收集所有行为
         all_behaviors = set()

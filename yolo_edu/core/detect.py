@@ -107,12 +107,12 @@ class Det:
 if __name__ == '__main__':
     detector = Det(model_path=YOLOConfig.MODEL_PATH_8N)
 
-    img_path = r'/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets/active/val/images/19a25492-data_rbg_frame220.jpg'
+    img_path = r'/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets/active/train/images/0a8ba612-data_rbg_frame1765.jpg'
     cap_path = r'/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets/cheating-test-v1.mp4'
 
-    # dets, vis_img = detector.detect_img_task(img_path)
-    # show_cv2_img(vis_img)
+    dets, vis_img = detector.detect_img_task(img_path)
+    show_cv2_img(vis_img)
 
     # 检测视频
-    frames = detector.detect_cap_task(cap_path)
-    show_cv2_frames(frames)
+    # frames = detector.detect_cap_task(cap_path)
+    # show_cv2_frames(frames)
