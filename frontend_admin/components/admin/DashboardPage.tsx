@@ -112,8 +112,16 @@ export default function DashboardPage() {
                 transition={{ delay: index * 0.1 }}
                 className="flex items-center gap-4 p-4 rounded-2xl hover:bg-gray-50/80 transition-all group"
               >
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-shadow">
-                  <Activity className="w-6 h-6 text-white" />
+                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:shadow-blue-500/50 transition-shadow overflow-hidden">
+                  {activity.avatar ? (
+                    <img 
+                      src={activity.avatar} 
+                      alt={`${activity.user_name}'s avatar`}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <Activity className="w-6 h-6 text-white" />
+                  )}
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-gray-900">

@@ -29,7 +29,8 @@ def get_dashboard_stats():
             l.ipaddr,
             l.login_location,
             l.login_time,
-            l.status
+            l.status,
+            u.avatar
         FROM sys_login_log l
         INNER JOIN sys_user u ON l.user_name = u.user_name
         WHERE u.is_deleted = 0
