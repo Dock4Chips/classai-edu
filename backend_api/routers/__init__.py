@@ -8,14 +8,6 @@ from .sys_role_router import pro_sys_role_router
 from .sys_notice_router import pro_sys_notice_router, pub_sys_notice_router
 from .sys_config_router import pro_sys_config_router
 from .dashboard_show_router import pro_dashboard_router
-from .resource_router import pub_resource_router, pro_resource_router
-from .device_router import pub_device_router, pro_device_router
-from .model_router import pub_model_router, pro_model_router
-from .task_router import pub_task_router, pro_task_router
-from .detail_router import pub_detail_router, pro_detail_router
-from .alert_router import pub_alert_router, pro_alert_router
-from .behavior_router import pub_behavior_router, pro_behavior_router
-from .tracking_router import pub_tracking_router, pro_tracking_router
 
 api_router = APIRouter()
 
@@ -31,21 +23,5 @@ api_router.include_router(pro_sys_notice_router)
 api_router.include_router(pub_sys_notice_router)
 api_router.include_router(pro_sys_config_router)
 api_router.include_router(pro_dashboard_router)
-api_router.include_router(pub_resource_router)
-api_router.include_router(pro_resource_router)
-api_router.include_router(pub_device_router)
-api_router.include_router(pro_device_router)
-api_router.include_router(pub_model_router)
-api_router.include_router(pro_model_router)
-api_router.include_router(pub_task_router)
-api_router.include_router(pro_task_router)
-api_router.include_router(pub_detail_router)
-api_router.include_router(pro_detail_router)
-api_router.include_router(pub_alert_router)
-api_router.include_router(pro_alert_router)
-api_router.include_router(pub_behavior_router)
-api_router.include_router(pro_behavior_router)
-api_router.include_router(pub_tracking_router)
-api_router.include_router(pro_tracking_router)
 
 
