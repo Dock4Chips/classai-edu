@@ -157,7 +157,7 @@ class DetectionWorker(threading.Thread):
         """初始化 YOLO 检测器"""
         try:
             self.detector = Det(
-                model_path=YOLOConfig.DEFAULT_MODEL,
+                model_path=YOLOConfig.DEFAULT_MODEL(),
                 conf=self.config.conf_threshold
             )
             log.info(f"Worker {self.client_id} 检测器初始化成功")
