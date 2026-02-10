@@ -2,9 +2,9 @@ import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from routers import api_router
-from model.security import security
+from models.security import security
 from config.exception_handler import handler_exception
-from model.result import ResContext
+from models.result import ResContext
 
 app = FastAPI(
     docs_url=None,

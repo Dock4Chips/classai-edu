@@ -23,6 +23,7 @@ import {
     HardDrive,
     Bell,
     AlertTriangle,
+    Video,
 } from 'lucide-react';
 import {IdentityService} from "@/lib/service/identity";
 import {notification} from "@/utils/notification";
@@ -84,6 +85,12 @@ const menuItems: MenuItem[] = [
                 label: 'Details',
                 icon: <ScanSearch className="w-4 h-4"/>,
                 path: '/admin/detection/details',
+            },
+            {
+                key: 'realtime-detection',
+                label: 'Realtime Detection',
+                icon: <Video className="w-4 h-4"/>,
+                path: '/admin/realtime-detection',
             },
             {
                 key: 'detection-tracking',

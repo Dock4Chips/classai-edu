@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 from fastapi import UploadFile
 
-from model.exceptions import ServiceException
+from models.exceptions import ServiceException
 from tools.file_tool import upload_np_image_to_minio
 from yolo_edu.core import Det, YOLOConfig
 

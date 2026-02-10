@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from auth.authorization import Authorization
-from model.exceptions import ServiceException
-from model.result import Res
+from models.exceptions import ServiceException
+from models.result import Res
 from repository.model_class_repository import (
     get_model_class_by_id,
     get_model_class_by_model_id,

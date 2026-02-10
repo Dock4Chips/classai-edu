@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, UploadFile, File
 from auth.authorization import Authorization
-from model.exceptions import ServiceException
-from model.result import Res
+from models.exceptions import ServiceException
+from models.result import Res
 from repository.class_index_banner_repository import (
     list_banners,
     create_banner,

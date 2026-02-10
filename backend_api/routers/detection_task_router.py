@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, Query, Form, UploadFile, File
 from typing import List
 from auth.authorization import Authorization
-from model.exceptions import ServiceException
-from model.result import Res
+from models.exceptions import ServiceException
+from models.result import Res
 from repository.detection_task_repository import (
     get_detection_task_by_id,
     page_list_detection_task,

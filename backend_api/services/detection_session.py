@@ -9,10 +9,10 @@ from queue import Queue
 from datetime import datetime
 from typing import Optional
 
-from model import SessionConfig
-from model import SessionState
-from model import FrameResult
-from model import SessionStats
+from models import SessionConfig
+from models import SessionState
+from models import FrameResult
+from models import SessionStats
 from services.detection_worker import DetectionWorker
 from master_tools.logger_tool import log
 

@@ -1,6 +1,6 @@
 from contextvars import ContextVar
 from typing import Optional, Dict, Any
-from model.exceptions import ServiceException
+from models.exceptions import ServiceException
 
 _current_user: ContextVar[Optional[Dict[str, Any]]] = ContextVar(
     "current_user",

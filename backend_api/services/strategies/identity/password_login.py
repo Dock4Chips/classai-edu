@@ -2,7 +2,7 @@ import hashlib
 from typing import Dict
 from auth.authorization import Authorization
 from config import redis_client
-from model.exceptions import ServiceException
+from models.exceptions import ServiceException
 from repository.identity_repository import get_user_by_username
 from repository.sys_login_log_repository import create_login_log
 from tools.login_tool import record_login

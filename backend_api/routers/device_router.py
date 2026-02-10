@@ -5,8 +5,8 @@ from pydantic import BaseModel
 
 from auth.authorization import Authorization
 from enums.device_type import DeviceConnectionType, DeviceType, DeviceStatus
-from model.exceptions import ServiceException
-from model.result import Res
+from models.exceptions import ServiceException
+from models.result import Res
 from repository.device_repository import (
     get_device_by_id,
     page_list_device,

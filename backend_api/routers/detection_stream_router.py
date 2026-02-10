@@ -10,10 +10,11 @@ from typing import Dict
 import json
 import asyncio
 
-from model.result import Res
+from auth.authorization import Authorization
+from models.result import Res
 from services.session_manager import manager
-from model import SessionConfig
-from model import SessionState
+from models import SessionConfig
+from models import SessionState
 from master_tools.logger_tool import log
 from services.image_policy import ImagePolicy
 from services.failure_counter import FailureCounter
@@ -22,7 +23,7 @@ import cv2
 import base64
 
 pro_detection_stream_router = APIRouter(
-    prefix='/api/detection/stream',
+    prefix='/api/detection/stream'
 )
 
 # 全局任务管理
@@ -35,8 +36,8 @@ async def health_check():
     return Res.ok(msg="实时检测流服务正常")
 
 
-@pro_detection_stream_router.websocket("/ws/{client_id}")
-async def websocket_endpoint(websocket: WebSocket, client_id: int):
+@pro_detection_stream_router.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket, token: str = None):
     """
     WebSocket 实时检测端点
 
@@ -46,8 +47,24 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
 
     Args:
         websocket: WebSocket 连接
-        client_id: 客户端ID
+        token: 认证 token（从 URL 查询参数获取）
     """
+    # 从查询参数获取 token 并设置 SecurityTool 上下文
+    # if not token:
+    #     await websocket.close(code=4001, reason="Missing token")
+    #     log.warning("WebSocket 连接失败：缺少 token")
+    #     return
+    #
+    # try:
+    #     user_info = Authorization.val_token(token)
+    #     SecurityTool.set(user_info)
+    # except Exception as e:
+    #     await websocket.close(code=4001, reason=f"Invalid token: {str(e)}")
+    #     log.warning(f"WebSocket 连接失败：token 验证失败 - {str(e)}")
+    #     return
+    client = Authorization.val_token(token)
+    client_id = client.get('user_id')
+
     await websocket.accept()
     log.info(f"客户端 {client_id} 已连接")
 

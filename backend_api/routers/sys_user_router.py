@@ -1,13 +1,12 @@
 import hashlib
 from fastapi import APIRouter, Depends, Query, UploadFile, File
 from auth.authorization import Authorization
-from model.exceptions import ServiceException
-from model.result import Res
+from models.exceptions import ServiceException
+from models.result import Res
 from repository.sys_user_repository import get_user_by_id, page_list_user, update_user, delete_user, create_user, \
     get_user_by_username
 from tools.file_tool import upload_file_to_minio
 from tools.security_tool import SecurityTool
-from repository.identity_repository import get_user_by_user_id
 
 pro_sys_user_router = APIRouter(
     prefix='/api/sys/user',
