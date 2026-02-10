@@ -11,7 +11,7 @@ class Det:
         self.model = YOLO(model_path, task="detect")
         self.conf = conf
 
-    def _infer_and_draw(self, image, conf=None):
+    def infer_and_draw(self, image, conf=None):
         if conf is None:
             conf = self.conf
         results = self.model(source=image, save=False, conf=conf)
@@ -44,13 +44,13 @@ class Det:
     def detect_img_task_np(self, img: np.ndarray, conf=None):
         if img is None:
             raise ValueError("image is None")
-        return self._infer_and_draw(img, conf)
+        return self.infer_and_draw(img, conf)
 
     def detect_img_task(self, img_path, conf=None):
         image = cv2.imread(img_path)
         if image is None:
             raise ValueError(f"无法读取图片: {img_path}")
-        return self._infer_and_draw(image, conf)
+        return self.infer_and_draw(image, conf)
 
     def detect_cap_task(self, video_path, conf=None):
         cap = cv2.VideoCapture(video_path)
@@ -63,7 +63,7 @@ class Det:
             ret, frame = cap.read()
             if not ret:
                 break
-            det_list, vis_frame = self._infer_and_draw(frame, conf)
+            det_list, vis_frame = self.infer_and_draw(frame, conf)
             frame_list.append(vis_frame)
 
         cap.release()
@@ -96,7 +96,7 @@ class Det:
             ret, frame = cap.read()
             if not ret:
                 break
-            det_list, _ = self._infer_and_draw(frame, conf)
+            det_list, _ = self.infer_and_draw(frame, conf)
             all_detections.append({"frame": frame_idx, "detections": det_list})
             frame_idx += 1
 
