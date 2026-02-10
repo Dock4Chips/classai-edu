@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query
 from auth.authorization import Authorization
-from model.exceptions import ServiceException
-from model.result import Res
+from models.exceptions import ServiceException
+from models.result import Res
 from repository.detection_detail_repository import (
     get_detection_detail_by_id,
     get_detection_details_by_task_id,

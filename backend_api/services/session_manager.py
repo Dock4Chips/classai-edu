@@ -7,8 +7,8 @@ async-friendly，不是 async-native
 import threading
 from typing import Dict, List, Optional
 
-from model import SessionConfig
-from model import SessionState
+from models import SessionConfig
+from models import SessionState
 from services.detection_session import DetectionSession
 from master_tools.logger_tool import log
 

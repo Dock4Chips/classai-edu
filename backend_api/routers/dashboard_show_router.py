@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 from auth.authorization import Authorization
-from model.result import Res
+from models.result import Res
 from repository.dashboard_repository import get_dashboard_stats
 
 pro_dashboard_router = APIRouter(

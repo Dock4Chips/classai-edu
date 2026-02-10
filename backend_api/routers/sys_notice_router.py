@@ -2,8 +2,8 @@ from datetime import datetime
 
 from fastapi import APIRouter, Depends, Query, Body
 from auth.authorization import Authorization
-from model.exceptions import ServiceException
-from model.result import Res
+from models.exceptions import ServiceException
+from models.result import Res
 from repository.sys_notice_repository import (
     get_notice_by_id,
     page_list_notice,

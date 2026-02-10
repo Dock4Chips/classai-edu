@@ -2,8 +2,8 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 
-from model.exceptions import ServiceException
-from model.result import Res
+from models.exceptions import ServiceException
+from models.result import Res
 
 
 def handler_exception(app: FastAPI):

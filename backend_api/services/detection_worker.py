@@ -13,8 +13,8 @@ from datetime import datetime
 from typing import Optional, Callable, Dict, Tuple, List
 
 from yolo_edu.core import Det, YOLOConfig
-from model import SessionConfig
-from model import FrameResult, Detection
+from models import SessionConfig
+from models import FrameResult, Detection
 from master_tools.logger_tool import log
 
 

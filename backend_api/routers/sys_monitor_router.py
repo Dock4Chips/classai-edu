@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query
 from auth.authorization import Authorization
-from model.result import Res
+from models.result import Res
 from repository.sys_login_log_repository import page_list_login_log
 from repository.sys_user_online_repository import (
     page_list_online_users,

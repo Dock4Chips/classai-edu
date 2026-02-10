@@ -9,7 +9,7 @@ from fastapi import UploadFile
 
 from config.config import bucket, MINIO_BUCKET_NAME, MINIO_ENDPOINT
 from master_tools.logger_tool import log
-from model.exceptions import ServiceException
+from models.exceptions import ServiceException
 
 
 async def upload_file_to_minio(file: UploadFile) -> str:

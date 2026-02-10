@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Query, Body
 from auth.authorization import Authorization
-from model.exceptions import ServiceException
-from model.result import Res
+from models.exceptions import ServiceException
+from models.result import Res
 from repository.sys_role_repository import (
     get_role_by_id,
     get_role_by_key,

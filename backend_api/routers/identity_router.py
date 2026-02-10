@@ -12,8 +12,8 @@ from auth.authorization import Authorization
 from config import redis_client
 from enums.login_type import LoginType
 from master_tools.logger_tool import log
-from model.exceptions import ServiceException
-from model.result import Res
+from models.exceptions import ServiceException
+from models.result import Res
 from repository.identity_repository import get_user_by_username, create_user, get_user_by_user_id
 from repository.sys_user_online_repository import update_online_user_by_user_id
 from services.strategies.identity.github_login import callback_github

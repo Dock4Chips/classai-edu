@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from typing import List
 
 from enums.detect_type import TaskStatus, TaskType
-from model.exceptions import ServiceException
+from models.exceptions import ServiceException
 from services.detect_service import process_image_detection, frame_to_np
 from tools.security_tool import SecurityTool
 from repository.detection_task_repository import create_detection_task

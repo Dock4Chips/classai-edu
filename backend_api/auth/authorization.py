@@ -9,7 +9,7 @@ from fastapi.security import OAuth2PasswordBearer
 from fastapi import Request
 from fastapi.security.utils import get_authorization_scheme_param
 
-from model.exceptions import ServiceException
+from models.exceptions import ServiceException
 from repository.sys_user_online_repository import update_online_user
 
 
