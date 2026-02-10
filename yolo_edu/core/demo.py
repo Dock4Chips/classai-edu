@@ -3,11 +3,11 @@ from yolo_edu.core import YOLOConfig
 from yolo_edu.core import Det
 
 # === 1. IP Webcam 地址（带用户名密码）===
-IP_CAM_URL = "http://Dock4Chips:mashifu1919@192.168.1.3:7869/video"
+IP_CAM_URL = "http://Dock4Chips:mashifu1919@192.168.1.7:7869/video"
 
 # === 2. 初始化检测器 ===
 detector = Det(
-    model_path=YOLOConfig.MODEL_PATH_8N,
+    model_path=YOLOConfig.DEFAULT_MODEL(),
     conf=0.01
 )
 
