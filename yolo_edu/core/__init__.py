@@ -7,12 +7,10 @@ yolo_edu.core - YOLO 核心功能模块
 from .config import YOLOConfig
 from .detect import Det
 from .tracker import Tracker, KalmanTrack
-from .stream import RealTimeDetector
 
 __all__ = [
     'YOLOConfig',
     'Det',
     'Tracker',
     'KalmanTrack',
-    'RealTimeDetector',
 ]
