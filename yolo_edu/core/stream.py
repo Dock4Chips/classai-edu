@@ -1,113 +1,218 @@
-# -*- coding: utf-8 -*-
-"""
-实时检测模块
-提供实时视频流检测功能
-"""
+import cv2
+import numpy as np
+from typing import List, Dict, Optional, Tuple
+import threading
+from datetime import datetime
+import time
 
-from typing import List, Dict, Callable
-from queue import Queue
+from yolo_edu.core import Det, YOLOConfig
 
 
 class RealTimeDetector:
     """实时检测器"""
 
-    def __init__(self, model_path: str, conf_threshold: float = 0.5):
+    def __init__(self, model_path: str = YOLOConfig.DEFAULT_MODEL, conf_threshold: float = 0.5):
         """
+        初始化实时检测器
+
         Args:
             model_path: 模型路径
             conf_threshold: 置信度阈值
         """
-        pass
+        self.detector = Det(model_path=model_path, conf=conf_threshold)
+        self.is_running = False
+        self.cap = None
+        self.lock = threading.Lock()
+        self.frame_count = 0
+        self.total_detections = 0
+        self.start_time = None
 
-    def detect_camera(self, camera_id: int = 0,
-                      display: bool = True,
-                      save_video: str = None,
-                      callback: Callable = None) -> None:
-        """检测摄像头画面
+    def connect(self, source: str) -> bool:
+        """
+        连接到视频源
 
         Args:
-            camera_id: 摄像头ID
-            display: 是否显示画面
-            save_video: 保存视频路径（可选）
-            callback: 每帧回调函数 fn(frame, results)
+            source: 视频源（摄像头ID、RTSP地址、网络摄像头地址）
 
         Returns:
-            None
+            是否连接成功
         """
-        pass
+        try:
+            if isinstance(source, int):
+                self.cap = cv2.VideoCapture(source)
+            else:
+                self.cap = cv2.VideoCapture(source, cv2.CAP_FFMPEG)
 
-    def detect_rtsp_stream(self, rtsp_url: str,
-                           display: bool = True,
-                           save_video: str = None,
-                           reconnect: bool = True) -> None:
-        """检测RTSP流
+            if not self.cap.isOpened():
+                raise RuntimeError(f"无法连接到视频源: {source}")
+
+            self.start_time = datetime.now()
+            return True
+        except Exception as e:
+            raise RuntimeError(f"连接视频源失败: {str(e)}")
+
+    def disconnect(self):
+        """断开视频源连接"""
+        with self.lock:
+            self.is_running = False
+            if self.cap is not None:
+                self.cap.release()
+                self.cap = None
+
+    def get_frame(self) -> Optional[np.ndarray]:
+        """
+        获取一帧图像
+
+        Returns:
+            帧图像（numpy数组），如果读取失败返回None
+        """
+        if self.cap is None or not self.cap.isOpened():
+            return None
+
+        ret, frame = self.cap.read()
+        if not ret:
+            return None
+
+        return frame
+
+    def detect_frame(self, frame: np.ndarray) -> Tuple[List[Dict], np.ndarray]:
+        """
+        检测单帧图像
 
         Args:
-            rtsp_url: RTSP地址
-            display: 是否显示
-            save_video: 保存路径
-            reconnect: 断线重连
+            frame: 输入帧图像
 
         Returns:
-            None
+            (检测结果列表, 可视化后的帧图像)
         """
-        pass
+        try:
+            det_list, vis_frame = self.detector.infer_and_draw(frame)
+            return det_list, vis_frame
+        except Exception as e:
+            raise RuntimeError(f"帧检测失败: {str(e)}")
 
-    def detect_video_file(self, video_path: str,
-                          display: bool = True,
-                          save_video: str = None,
-                          frame_skip: int = 0) -> List[Dict]:
-        """检测视频文件（实时模式）
-
-        Args:
-            video_path: 视频路径
-            display: 是否显示
-            save_video: 保存路径
-            frame_skip: 跳帧数
-
-        Returns:
-            检测结果列表
+    def start_detection(self, source: str, callback=None):
         """
-        pass
-
-    def detect_webcam(self, save_video: str = None,
-                      fps: int = 30) -> None:
-        """检测网络摄像头
-
-        Args:
-            save_video: 保存路径
-            fps: 帧率
-
-        Returns:
-            None
-        """
-        pass
-
-    def start_async_detection(self, source: str,
-                               result_queue: Queue) -> None:
-        """异步检测
+        开始实时检测
 
         Args:
             source: 视频源
-            result_queue: 结果队列
-
-        Returns:
-            None
+            callback: 每帧回调函数，接收帧和检测结果
         """
-        pass
+        try:
+            self.connect(source)
+        except Exception as e:
+            print(f"连接失败: {e}")
+            return
 
-    def stop(self) -> None:
-        """停止检测"""
-        pass
+        self.is_running = True
+        self.frame_count = 0
+        self.total_detections = 0
 
-    def set_callback(self, event: str, callback: Callable) -> None:
-        """设置事件回调
+        print(f"开始检测视频源: {source}")
+
+        try:
+            while self.is_running:
+                frame = self.get_frame()
+                if frame is None:
+                    time.sleep(0.1)
+                    continue
+
+                self.frame_count += 1
+
+                # 检测帧
+                det_list, vis_frame = self.detect_frame(frame)
+                self.total_detections += len(det_list)
+
+                # 调用回调函数
+                if callback:
+                    callback(frame, det_list, vis_frame)
+
+                time.sleep(0.01)
+
+        except Exception as e:
+            print(f"检测过程中出错: {e}")
+        finally:
+            self.disconnect()
+
+        print(f"检测结束，共处理 {self.frame_count} 帧，检测到 {self.total_detections} 个目标")
+
+    def start_async(self, source: str, callback=None):
+        """
+        异步开始实时检测
 
         Args:
-            event: 'on_detection' | 'on_track_start' | 'on_track_end' | 'on_error'
-            callback: 回调函数
+            source: 视频源
+            callback: 每帧回调函数
+        """
+        self.is_running = True
+        thread = threading.Thread(
+            target=self.start_detection,
+            args=(source, callback),
+            daemon=True
+        )
+        thread.start()
+
+    def stop(self):
+        """停止检测"""
+        self.is_running = False
+
+    def get_statistics(self) -> Dict:
+        """
+        获取检测统计信息
 
         Returns:
-            None
+            统计信息字典
         """
-        pass
+        if self.start_time is None:
+            return {
+                "total_frames": 0,
+                "total_detections": 0,
+                "fps": 0,
+                "avg_detections_per_frame": 0
+            }
+
+        duration = (datetime.now() - self.start_time).total_seconds() or 1
+        fps = self.frame_count / duration
+
+        return {
+            "total_frames": self.frame_count,
+            "total_detections": self.total_detections,
+            "fps": round(fps, 2),
+            "avg_detections_per_frame": round(self.total_detections / self.frame_count, 2)
+            if self.frame_count > 0 else 0
+        }
+
+
+def encode_frame(frame: np.ndarray) -> bytes:
+    """
+    编码帧图像为JPEG字节
+
+    Args:
+        frame: 帧图像
+
+    Returns:
+        JPEG编码的字节
+    """
+    ret, buffer = cv2.imencode('.jpg', frame)
+    if not ret:
+        raise RuntimeError("帧编码失败")
+    return buffer.tobytes()
+
+
+def decode_frame(data: bytes) -> np.ndarray:
+    """
+    解码JPEG字节为帧图像
+
+    Args:
+        data: JPEG字节
+
+    Returns:
+        帧图像
+    """
+    nparr = np.frombuffer(data, np.uint8)
+    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    if frame is None:
+        raise RuntimeError("帧解码失败")
+    return frame
+

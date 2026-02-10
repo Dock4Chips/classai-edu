@@ -16,9 +16,9 @@ from model.exceptions import ServiceException
 from model.result import Res
 from repository.identity_repository import get_user_by_username, create_user, get_user_by_user_id
 from repository.sys_user_online_repository import update_online_user_by_user_id
-from services.strategies.github_login import callback_github
-from services.strategies.google_login import callback_google
-from services.strategies.login_registry import LOGIN_STRATEGY_MAP
+from services.strategies.identity.github_login import callback_github
+from services.strategies.identity.google_login import callback_google
+from services.strategies.identity.login_registry import LOGIN_STRATEGY_MAP
 from tools.security_tool import SecurityTool
 
 pub_identity_router = APIRouter(

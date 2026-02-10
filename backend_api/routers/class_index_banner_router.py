@@ -1,8 +1,3 @@
-import json
-from collections import Counter
-from typing import Tuple, Dict, List, Optional
-import cv2
-import numpy as np
 from fastapi import APIRouter, Depends, UploadFile, File
 from auth.authorization import Authorization
 from model.exceptions import ServiceException
@@ -14,7 +9,8 @@ from repository.class_index_banner_repository import (
     update_banner,
     delete_banner, count_banners
 )
-from tools.file_tool import upload_np_image_to_minio, delete_minio_file
+from tools.file_tool import delete_minio_file
+from services.detect_service import frame_to_np, process_image_detection
 from yolo_edu.core import Det, YOLOConfig
 
 pub_class_index_banner_router = APIRouter(prefix='/api/class/index/banner')
@@ -23,74 +19,6 @@ pro_class_index_banner_router = APIRouter(
     prefix='/api/class/index/banner',
     dependencies=[Depends(Authorization.val_token)]
 )
-
-
-async def _frame_to_np(file: UploadFile) -> np.ndarray:
-    """将上传的文件转换为numpy数组"""
-    file_bytes = await file.read()
-    if not file_bytes:
-        raise ServiceException(msg="上传文件为空")
-
-    np_img = np.frombuffer(file_bytes, np.uint8)
-    img = cv2.imdecode(np_img, cv2.IMREAD_COLOR)
-
-    if img is None:
-        raise ServiceException(msg="图片读取失败")
-
-    return img
-
-
-def _serialize_detection(det_list: List[Dict]) -> Dict[str, any]:
-    """序列化检测结果为JSON格式"""
-    # 序列化 det_list
-    det_list_json = json.dumps([{
-        "class_id": d.get("class_id"),
-        "class_name": d.get("class_name"),
-        "class_index": d.get("class_id"),
-        "confidence": float(d.get("confidence")),
-        "bbox_xyxy": d.get("bbox_xyxy"),
-        "bbox_xywhn": d.get("bbox_xywhn"),
-    } for d in det_list], ensure_ascii=False)
-
-    # 序列化 cls_counts
-    cls_counts_json = json.dumps(
-        dict(Counter(d["class_name"] for d in det_list)),
-        ensure_ascii=False
-    )
-
-    # 计算最大置信度
-    max_conf = max([d["confidence"] for d in det_list]) if det_list else 0.0
-
-    # 构建 raw_result
-    raw_result_json = json.dumps({
-        'det_list': det_list,
-        'num_detections': len(det_list),
-    }, ensure_ascii=False)
-
-    return {
-        "det_list_json": det_list_json,
-        "cls_counts_json": cls_counts_json,
-        "max_confidence": max_conf,
-        "raw_result_json": raw_result_json,
-        "num_boxes": len(det_list),
-    }
-
-
-def _process_image_detection(img: np.ndarray) -> Tuple[np.ndarray, str, Dict]:
-    """
-    处理图片检测
-    返回: (可视化图片, URL, 序列化后的检测数据)
-    """
-    detector = Det(model_path=YOLOConfig.DEFAULT_MODEL)
-    det_list, vis_img = detector.detect_img_task_np(img)
-    image_url = upload_np_image_to_minio(vis_img)
-    serialized = _serialize_detection(det_list)
-    height, width = vis_img.shape[:2]
-    serialized["width"] = width
-    serialized["height"] = height
-
-    return vis_img, image_url, serialized
-
 
 
 
@@ -105,10 +33,10 @@ async def add_banner(file: UploadFile = File(...)):
     """新增Banner"""
     if count_banners()[0].get('total_count') >= 6:
         raise ServiceException(msg="最多只能添加6个Banner")
-    img = await _frame_to_np(file)
-    _, image_url, serialized = _process_image_detection(img)
+    img = await frame_to_np(file)
+    _, image_url, serialized = process_image_detection(img)
 
-    detector = Det(model_path=YOLOConfig.MODEL_PATH_11N)
+    detector = Det(model_path=YOLOConfig.DEFAULT_MODEL)
 
     insert_data = {
         "resource_type": "image",
@@ -138,8 +66,8 @@ async def edit_banner(id: int, file: UploadFile = File(...)):
     if not old_record:
         raise ServiceException(msg="记录不存在")
     delete_minio_file(old_record[0].get("resource_url"))
-    img = await _frame_to_np(file)
-    _, image_url, serialized = _process_image_detection(img)
+    img = await frame_to_np(file)
+    _, image_url, serialized = process_image_detection(img)
     update_data = {
         "resource_url": image_url,
         "width": serialized["width"],
