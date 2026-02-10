@@ -6,8 +6,11 @@ from yolo_edu.utils.display import show_cv2_img, show_cv2_frames
 from yolo_edu.utils.draw import DrawUtils
 
 class Det:
-    def __init__(self, model_path: str = YOLOConfig.DEFAULT_MODEL,
+    def __init__(self, model_path: str = None,
                  conf: float = YOLOConfig.DEFAULT_CONF):
+        # 默认值需要调用方法，不能在函数签名中直接调用
+        if model_path is None:
+            model_path = YOLOConfig.DEFAULT_MODEL()
         self.model = YOLO(model_path, task="detect")
         self.conf = conf
 
@@ -105,7 +108,7 @@ class Det:
 
 
 if __name__ == '__main__':
-    detector = Det(model_path=YOLOConfig.MODEL_PATH_8N)
+    detector = Det(model_path=YOLOConfig.DEFAULT_MODEL())
 
     img_path = r'/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets/active/train/images/0a8ba612-data_rbg_frame1765.jpg'
     cap_path = r'/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets/cheating-test-v1.mp4'

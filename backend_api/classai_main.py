@@ -1,15 +1,27 @@
 import uvicorn
+from contextlib import asynccontextmanager
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from routers import api_router
 from models.security import security
 from config.exception_handler import handler_exception
 from models.result import ResContext
+from master_tools.logger_tool import log
+from yolo_edu.services.model_config_service import ModelConfigService
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    model_config =  ModelConfigService.load_active_model_config()
+    log.info(model_config)
+    yield
+
 
 app = FastAPI(
     docs_url=None,
     redoc_url=None,
-    openapi_url=None
+    openapi_url=None,
+    lifespan=lifespan
 )
 
 # 异常处理器

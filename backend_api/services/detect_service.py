@@ -52,7 +52,7 @@ def process_image_detection(img: np.ndarray, conf: float = None) -> Tuple[np.nda
     处理图片检测
     返回: (可视化图片, URL, 序列化后的检测数据)
     """
-    detector = Det(model_path=YOLOConfig.DEFAULT_MODEL, conf=conf)
+    detector = Det(model_path=YOLOConfig.DEFAULT_MODEL(), conf=conf)
     det_list, vis_img = detector.detect_img_task_np(img)
     image_url = upload_np_image_to_minio(vis_img)
     serialized = serialize_detection(det_list)

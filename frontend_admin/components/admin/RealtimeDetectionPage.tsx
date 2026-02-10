@@ -42,14 +42,14 @@ export default function RealtimeDetectionPage() {
         return (
           <Badge className="bg-green-100 text-green-800 flex items-center gap-1">
             <Wifi size={14} />
-            已连接
+            Connected
           </Badge>
         );
       case 'connecting':
         return (
           <Badge className="bg-blue-100 text-blue-800 flex items-center gap-1">
             <Activity size={14} className="animate-pulse" />
-            连接中...
+            Connecting...
           </Badge>
         );
       case 'error':
@@ -57,14 +57,14 @@ export default function RealtimeDetectionPage() {
         return (
           <Badge className="bg-red-100 text-red-800 flex items-center gap-1">
             <WifiOff size={14} />
-            {connectionState === 'error' ? '连接错误' : '已断开'}
+            {connectionState === 'error' ? 'Error' : 'Disconnected'}
           </Badge>
         );
       default:
         return (
           <Badge className="bg-gray-100 text-gray-800 flex items-center gap-1">
             <WifiOff size={14} />
-            未连接
+            Not Connected
           </Badge>
         );
     }
@@ -81,10 +81,10 @@ export default function RealtimeDetectionPage() {
     };
 
     const labels: Record<string, string> = {
-      stopped: '已停止',
-      running: '运行中',
-      stopping: '停止中...',
-      error: '错误',
+      stopped: 'Stopped',
+      running: 'Running',
+      stopping: 'Stopping...',
+      error: 'Error',
     };
 
     return (
@@ -106,22 +106,22 @@ export default function RealtimeDetectionPage() {
       >
         <div>
           <h1 className="text-4xl font-bold mb-2 text-black">
-            实时检测
+            Realtime Detection
           </h1>
           <p className="text-gray-600 flex items-center gap-2">
             <Sparkles size={18} />
-            <span>WebSocket 实时视频流检测</span>
+            <span>WebSocket Realtime Video Stream Detection</span>
           </p>
         </div>
 
-        {/* 状态指示器 */}
+        {/* Status Indicators */}
         <div className="flex items-center gap-3">
           {getConnectionStatusBadge()}
           {getSessionStatusBadge()}
         </div>
       </motion.div>
 
-      {/* 连接错误提示 */}
+      {/* Connection Error Alert */}
       {connectionError && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -133,12 +133,12 @@ export default function RealtimeDetectionPage() {
             onClick={() => toggleConnection()}
             className="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors"
           >
-            重试
+            Retry
           </button>
         </motion.div>
       )}
 
-      {/* 控制面板 */}
+      {/* Control Panel */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -146,27 +146,27 @@ export default function RealtimeDetectionPage() {
       >
         <h2 className="text-xl font-bold text-black mb-6 flex items-center gap-2">
           <Video size={20} />
-          <span>检测配置</span>
+          <span>Detection Config</span>
         </h2>
 
-        {/* 配置表单 */}
+        {/* Config Form */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {/* 视频源 */}
+          {/* Video Source */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">视频源</label>
+            <label className="text-sm font-medium text-gray-700">Video Source</label>
             <input
               type="text"
               value={desiredConfig.source}
               onChange={(e) => updateConfig('source', e.target.value)}
-              placeholder="0 (默认摄像头) 或 rtsp://..."
+              placeholder="0 (default camera) or rtsp://..."
               className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20"
             />
           </div>
 
-          {/* 置信度阈值 */}
+          {/* Confidence Threshold */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              置信度阈值: {desiredConfig.conf_threshold}
+              Confidence Threshold: {desiredConfig.conf_threshold}
             </label>
             <input
               type="range"
@@ -179,9 +179,9 @@ export default function RealtimeDetectionPage() {
             />
           </div>
 
-          {/* 最大 FPS */}
+          {/* Max FPS */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">最大 FPS</label>
+            <label className="text-sm font-medium text-gray-700">Max FPS</label>
             <select
               value={desiredConfig.max_fps}
               onChange={(e) => updateConfig('max_fps', parseInt(e.target.value))}
@@ -192,7 +192,7 @@ export default function RealtimeDetectionPage() {
             </select>
           </div>
 
-          {/* 启用图像 */}
+          {/* Enable Image */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
               <input
@@ -201,29 +201,14 @@ export default function RealtimeDetectionPage() {
                 onChange={(e) => updateConfig('enable_image', e.target.checked)}
                 className="w-4 h-4"
               />
-              启用图像传输
+              Enable Image Stream
             </label>
           </div>
 
-          {/* 图像间隔 */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">图像间隔（帧）</label>
-            <select
-              value={desiredConfig.image_interval}
-              onChange={(e) => updateConfig('image_interval', parseInt(e.target.value))}
-              disabled={!desiredConfig.enable_image}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <option value={1}>每帧</option>
-              <option value={3}>每 3 帧</option>
-              <option value={5}>每 5 帧</option>
-            </select>
-          </div>
-
-          {/* 图像质量 */}
+          {/* Image Quality */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">
-              图像质量: {desiredConfig.image_quality}
+              Image Quality: {desiredConfig.image_quality}
             </label>
             <input
               type="range"
@@ -236,9 +221,24 @@ export default function RealtimeDetectionPage() {
               className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
+
+          {/* Image Interval */}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">Image Interval (frames)</label>
+            <select
+              value={desiredConfig.image_interval}
+              onChange={(e) => updateConfig('image_interval', parseInt(e.target.value))}
+              disabled={!desiredConfig.enable_image}
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <option value={1}>Every frame</option>
+              <option value={3}>Every 3 frames</option>
+              <option value={5}>Every 5 frames</option>
+            </select>
+          </div>
         </div>
 
-        {/* 控制按钮 */}
+        {/* Control Buttons */}
         <div className="flex items-center gap-3">
           <button
             onClick={toggleConnection}
@@ -252,12 +252,12 @@ export default function RealtimeDetectionPage() {
             {userWantsConnection ? (
               <>
                 <Power size={18} />
-                断开连接
+                Disconnect
               </>
             ) : (
               <>
                 <Plug size={18} />
-                连接
+                Connect
               </>
             )}
           </button>
@@ -274,17 +274,17 @@ export default function RealtimeDetectionPage() {
             {userWantsDetection ? (
               <>
                 <Square size={18} />
-                停止检测
+                Stop Detection
               </>
             ) : (
               <>
                 <Play size={18} />
-                启动检测
+                Start Detection
               </>
             )}
           </button>
 
-          {/* 会话信息 */}
+          {/* Session Info */}
           {sessionInfo && sessionInfo.session_id && (
             <div className="ml-auto text-sm text-gray-500">
               Session: {sessionInfo.session_id} | Client: {sessionInfo.client_id}
@@ -293,7 +293,7 @@ export default function RealtimeDetectionPage() {
         </div>
       </motion.div>
 
-      {/* 统计信息 */}
+      {/* Stats */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -305,51 +305,51 @@ export default function RealtimeDetectionPage() {
           <div className="text-2xl font-bold text-black">{latestStats.fps.toFixed(1)}</div>
         </div>
         <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-4">
-          <div className="text-sm text-gray-600 mb-1">帧数</div>
+          <div className="text-sm text-gray-600 mb-1">Frames</div>
           <div className="text-2xl font-bold text-black">{frameCount}</div>
         </div>
         <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-4">
-          <div className="text-sm text-gray-600 mb-1">检测数</div>
+          <div className="text-sm text-gray-600 mb-1">Detections</div>
           <div className="text-2xl font-bold text-black">{detectionCount}</div>
         </div>
         <div className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-2xl p-4">
-          <div className="text-sm text-gray-600 mb-1">运行时长</div>
+          <div className="text-sm text-gray-600 mb-1">Duration</div>
           <div className="text-2xl font-bold text-black">{duration.toFixed(1)}s</div>
         </div>
       </motion.div>
 
-      {/* 主内容区：图像 + 检测列表 */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* 实时画面 */}
+      {/* Main Content: Video + Detection List */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Realtime Video - 占用2列，更大 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-3xl shadow-xl shadow-gray-200/50 overflow-hidden"
+          className="lg:col-span-2 bg-white/80 backdrop-blur-xl border border-gray-200/50 rounded-3xl shadow-xl shadow-gray-200/50 overflow-hidden"
         >
           <div className="p-4 border-b border-gray-200/50">
             <h2 className="text-lg font-bold text-black flex items-center gap-2">
               <Video size={18} />
-              实时画面
+              Realtime Video
             </h2>
           </div>
 
-          <div className="aspect-video bg-gray-900 flex items-center justify-center">
+          <div className="h-[500px] bg-gray-900 flex items-center justify-center p-4">
             {latestFrame?.image ? (
               <img
                 src={`data:image/jpeg;base64,${latestFrame.image}`}
                 alt={`Frame ${latestFrame.frame_id}`}
-                className="w-full h-full object-contain"
+                className="w-full h-full object-fill rounded-lg"
               />
             ) : (
               <div className="text-center text-gray-500">
-                <Video size={48} className="mx-auto mb-2 opacity-50" />
-                <p>等待画面...</p>
+                <Video size={64} className="mx-auto mb-4 opacity-50" />
+                <p className="text-lg">Waiting for video...</p>
               </div>
             )}
           </div>
 
-          {/* 帧信息 */}
+          {/* Frame Info */}
           {latestFrame && (
             <div className="p-3 bg-gray-50 text-sm text-gray-600 flex justify-between">
               <span>Frame: {latestFrame.frame_id}</span>
@@ -358,7 +358,7 @@ export default function RealtimeDetectionPage() {
           )}
         </motion.div>
 
-        {/* 检测结果列表 */}
+        {/* Detection Results - 占用1列 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -368,11 +368,11 @@ export default function RealtimeDetectionPage() {
           <div className="p-4 border-b border-gray-200/50">
             <h2 className="text-lg font-bold text-black flex items-center gap-2">
               <Activity size={18} />
-              检测结果
+              Detection Results
             </h2>
           </div>
 
-          <div className="p-4 space-y-2 max-h-[400px] overflow-y-auto">
+          <div className="p-4 space-y-2 max-h-[600px] overflow-y-auto">
             {latestDetections.length > 0 ? (
               latestDetections.map((det, index) => (
                 <div
@@ -387,18 +387,18 @@ export default function RealtimeDetectionPage() {
                       </Badge>
                     </div>
                     <div className="text-xs text-gray-500 mt-1">
-                      中心: ({det.center[0]}, {det.center[1]})
+                      Center: ({det.center[0]}, {det.center[1]})
                     </div>
                   </div>
                   <div className="text-xs text-gray-400">
-                    [{det.bbox.slice(0, 2).join(', ')}] → [{det.bbox.slice(2, 4).join(', ')}]
+                    [{det.bbox.slice(0, 2).join(', ')}] &rarr; [{det.bbox.slice(2, 4).join(', ')}]
                   </div>
                 </div>
               ))
             ) : (
               <div className="text-center py-12 text-gray-400">
                 <Activity size={48} className="mx-auto mb-2 opacity-50" />
-                <p>暂无检测结果</p>
+                <p>No detections yet</p>
               </div>
             )}
           </div>
