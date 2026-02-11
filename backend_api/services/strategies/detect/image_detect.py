@@ -6,7 +6,7 @@ from typing import List
 
 from enums.detect_type import TaskStatus, TaskType
 from models.exceptions import ServiceException
-from services.detect_service import process_image_detection, frame_to_np
+from services.detetion.detect_service import frame_to_np, process_image_detection
 from tools.security_tool import SecurityTool
 from repository.detection_task_repository import create_detection_task
 from repository.detection_detail_repository import batch_create_detection_detail

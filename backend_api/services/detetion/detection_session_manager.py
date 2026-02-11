@@ -9,13 +9,13 @@ from typing import Dict, List, Optional
 
 from models import SessionConfig
 from models import SessionState
-from services.detection_session import DetectionSession
+from services.detetion.detection_session import DetectionSession
 from master_tools.logger_tool import log
 
 
-class SessionManager:
+class DetectionSessionManager:
     """
-    全局会话管理器（单例）
+    检测会话管理器（单例）
 
     职责：
     - 创建 / 销毁 DetectionSession
@@ -25,7 +25,7 @@ class SessionManager:
 
     关键约束：
     1. async 方法是为了和 FastAPI 对齐，不是为了并发能力
-    2. 不在 manager 里滥用 await 做并发
+    2. 不在 detection_manager 里滥用 await 做并发
     3. start/stop 本质是同步控制 + await join
     """
 
@@ -51,7 +51,7 @@ class SessionManager:
         self._sessions_lock = threading.Lock()
 
         self._initialized = True
-        log.info("SessionManager 初始化完成")
+        log.info("DetectionSessionManager 初始化完成")
 
     async def create_session(
         self,
@@ -83,7 +83,7 @@ class SessionManager:
             )
 
             self._sessions[client_id] = session
-            log.info(f"SessionManager 创建会话: {client_id}")
+            log.info(f"DetectionSessionManager 创建会话: {client_id}")
 
             return session
 
@@ -127,13 +127,13 @@ class SessionManager:
             if session.get_state() in (SessionState.RUNNING, SessionState.STOPPING):
                 await session.stop()
         except Exception as e:
-            log.error(f"SessionManager 停止会话 {client_id} 时出错: {str(e)}")
+            log.error(f"DetectionSessionManager 停止会话 {client_id} 时出错: {str(e)}")
 
         # 从字典中移除
         with self._sessions_lock:
             if client_id in self._sessions:
                 del self._sessions[client_id]
-                log.info(f"SessionManager 销毁会话: {client_id}")
+                log.info(f"DetectionSessionManager 销毁会话: {client_id}")
 
     async def list_sessions(self) -> List[Dict]:
         """
@@ -163,4 +163,4 @@ class SessionManager:
 
 
 # 全局单例实例
-manager = SessionManager()
+detection_manager = DetectionSessionManager()

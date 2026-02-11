@@ -13,7 +13,7 @@ from models import SessionConfig
 from models import SessionState
 from models import FrameResult
 from models import SessionStats
-from services.detection_worker import DetectionWorker
+from services.detetion.detection_worker import DetectionWorker
 from master_tools.logger_tool import log
 
 

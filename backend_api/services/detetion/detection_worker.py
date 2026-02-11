@@ -8,6 +8,7 @@ import threading
 import time
 import cv2
 import numpy as np
+import json
 from queue import Queue
 from datetime import datetime
 from typing import Optional, Callable, Dict, Tuple, List
@@ -16,6 +17,7 @@ from yolo_edu.core import Det, YOLOConfig
 from models import SessionConfig
 from models import FrameResult, Detection
 from master_tools.logger_tool import log
+from config import redis_client
 
 
 class DetectionWorker(threading.Thread):
@@ -240,7 +242,7 @@ class DetectionWorker(threading.Thread):
                 # Session 层决定如何编码、传输
                 image_frame = vis_frame
 
-        return FrameResult(
+        result = FrameResult(
             frame_id=self.frame_count,
             timestamp=datetime.now().timestamp(),
             fps=round(self.fps, 2),
@@ -248,6 +250,42 @@ class DetectionWorker(threading.Thread):
             image_frame=image_frame,
             has_image=has_image
         )
+
+        # 发布检测上下文到 Redis（供 Chat 使用）
+        self._publish_context(result, detections)
+
+        return result
+
+    def _publish_context(self, result: FrameResult, detections: list) -> None:
+        """
+        发布检测上下文到 Redis
+
+        供 Chat 系统使用，实现检测和分析的联动
+        """
+        try:
+            context = {
+                "frame_id": result.frame_id,
+                "timestamp": result.timestamp,
+                "fps": result.fps,
+                "num_detections": len(detections),
+                "detections": [
+                    {
+                        "class_id": d.class_id,
+                        "class_name": d.class_name,
+                        "confidence": float(d.confidence),
+                    }
+                    for d in detections
+                ]
+            }
+
+            key = f"detection:context:{self.client_id}"
+            redis_client.setex(
+                key,
+                300,  # 5 分钟过期
+                json.dumps(context, ensure_ascii=False)
+            )
+        except Exception as e:
+            log.warning(f"发布检测上下文失败: {e}")
 
     def _put_result(self, result: FrameResult) -> None:
         """

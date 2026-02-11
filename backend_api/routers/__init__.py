@@ -15,6 +15,7 @@ from .device_router import pro_device_router
 from .detection_task_router import pro_detection_task_router
 from .detection_result_router import pro_detection_result_router
 from .detection_stream_router import pro_detection_stream_router
+from .chat_stream_router import pro_chat_router
 
 api_router = APIRouter()
 
@@ -37,5 +38,6 @@ api_router.include_router(pro_device_router)
 api_router.include_router(pro_detection_task_router)
 api_router.include_router(pro_detection_result_router)
 api_router.include_router(pro_detection_stream_router)
+api_router.include_router(pro_chat_router)
 
 
