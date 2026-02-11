@@ -5,6 +5,7 @@ import { Play, Square, Plug, Power, Sparkles, Video, Activity, Wifi, WifiOff } f
 import { useDetectionSession } from '@/hooks/useDetectionSession';
 import { Badge } from '@/components/ui/badge';
 import {Select} from "@/components/ui/select";
+import { VideoSourceSelector } from './VideoSourceSelector';
 
 export default function RealtimeDetectionPage() {
   const {
@@ -152,31 +153,12 @@ export default function RealtimeDetectionPage() {
 
         {/* Config Form */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {/* Video Source */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Video Source</label>
-            <input
-              type="text"
+          {/* Video Source - 跨越整行 */}
+          <div className="md:col-span-2 lg:col-span-3">
+            <VideoSourceSelector
               value={desiredConfig.source}
-              onChange={(e) => updateConfig('source', e.target.value)}
-              placeholder="0 (default camera) or rtsp://..."
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-transparent transition-all"
-            />
-          </div>
-
-
-          {/* Image Interval */}
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Image Interval (frames)</label>
-            <Select
-              value={desiredConfig.image_interval}
-              onChange={(value) => updateConfig('image_interval', parseInt(value as string))}
-              disabled={!desiredConfig.enable_image}
-              options={[
-                {value: 1, label: 'Every frame'},
-                {value: 3, label: 'Every 3 frames'},
-                {value: 5, label: 'Every 5 frames'},
-              ]}
+              onChange={(source) => updateConfig('source', source)}
+              disabled={userWantsDetection}
             />
           </div>
 
@@ -193,9 +175,24 @@ export default function RealtimeDetectionPage() {
             />
           </div>
 
-          {/* Enable Image */}
+          {/* Image Interval */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+            <label className="text-sm font-medium text-gray-700">Image Interval (frames)</label>
+            <Select
+              value={desiredConfig.image_interval}
+              onChange={(value) => updateConfig('image_interval', parseInt(value as string))}
+              disabled={!desiredConfig.enable_image}
+              options={[
+                {value: 1, label: 'Every frame'},
+                {value: 3, label: 'Every 3 frames'},
+                {value: 5, label: 'Every 5 frames'},
+              ]}
+            />
+          </div>
+
+          {/* Enable Image */}
+          <div className="space-y-2 flex items-end">
+            <label className="text-sm font-medium text-gray-700 flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={desiredConfig.enable_image}
@@ -374,7 +371,7 @@ export default function RealtimeDetectionPage() {
             </h2>
           </div>
 
-          <div className="p-4 space-y-2 max-h-[600px] overflow-y-auto">
+          <div className={latestDetections.length > 0 ? "p-4 space-y-2 max-h-[600px] overflow-y-auto" : "h-[500px] flex items-center justify-center"}>
             {latestDetections.length > 0 ? (
               latestDetections.map((det, index) => (
                 <div
@@ -398,7 +395,7 @@ export default function RealtimeDetectionPage() {
                 </div>
               ))
             ) : (
-              <div className="text-center py-12 text-gray-400">
+              <div className="text-center text-gray-400">
                 <Activity size={48} className="mx-auto mb-2 opacity-50" />
                 <p>No detections yet</p>
               </div>

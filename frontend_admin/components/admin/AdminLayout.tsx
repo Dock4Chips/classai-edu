@@ -3,7 +3,7 @@
 import {useState, useEffect} from 'react';
 import {motion} from 'framer-motion';
 import {Sidebar} from './Sidebar';
-import {Bell, Search, User, UserCircle, KeyRound, LogOut, FileText} from 'lucide-react';
+import {Bell, Search, User, UserCircle, KeyRound, LogOut, FileText, Settings} from 'lucide-react';
 import {IdentityService} from '@/lib/service/identity';
 import {NoticeService} from '@/lib/service/notice';
 import {apiClient, Results} from "@/lib/api";
@@ -342,6 +342,14 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                         icon: <KeyRound className="w-4 h-4"/>,
                                         onClick: () => {
                                             router.push('/admin/change-password');
+                                        },
+                                    },
+                                    {
+                                        key: 'settings',
+                                        label: 'Settings',
+                                        icon: <Settings className="w-4 h-4"/>,
+                                        onClick: () => {
+                                            router.push('/admin/settings');
                                         },
                                     },
                                     {

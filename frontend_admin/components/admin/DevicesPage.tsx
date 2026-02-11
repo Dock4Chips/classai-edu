@@ -472,8 +472,10 @@ export default function DevicesPage() {
     ];
 
     return (
+
         <div className="space-y-6">
             {/* header */}
+
             <motion.div className="flex items-center justify-between">
                 <div>
                     <h1 className="text-4xl font-bold">Device Management</h1>

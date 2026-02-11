@@ -9,16 +9,16 @@ import {
     Settings,
     ChevronLeft,
     ChevronRight,
+    ChevronDown,
     LogOut,
     Shield,
-    Database,
     Activity,
     Image as ImageIcon,
-    FileText,
-    ChevronDown,
     Video,
     BrainCircuit,
     Camera,
+    Sliders,
+    Bell,
 } from 'lucide-react';
 import {IdentityService} from "@/lib/service/identity";
 import {notification} from "@/utils/notification";
@@ -33,7 +33,8 @@ interface MenuItem {
     children?: MenuItem[];
 }
 
-const menuItems: MenuItem[] = [
+// 主菜单 - 系统管理
+const mainMenuItems: MenuItem[] = [
     {
         key: 'dashboard',
         label: 'Dashboard',
@@ -71,34 +72,32 @@ const menuItems: MenuItem[] = [
         path: '/admin/banners',
     },
     {
-        key: 'notices',
-        label: 'Notices',
-        icon: <FileText className="w-5 h-5"/>,
-        path: '/admin/notices',
-    },
-    {
         key: 'realtime-detection',
         label: 'Realtime Detection',
         icon: <Video className="w-5 h-5"/>,
         path: '/admin/realtime-detection',
     },
+];
+
+// Settings 模块菜单 - 系统配置
+const settingsModuleMenuItems: MenuItem[] = [
     {
         key: 'config',
         label: 'Config',
-        icon: <Database className="w-5 h-5"/>,
-        path: '/admin/config',
+        icon: <Sliders className="w-5 h-5"/>,
+        path: '/admin/settings/config',
+    },
+    {
+        key: 'notices',
+        label: 'Notices',
+        icon: <Bell className="w-5 h-5"/>,
+        path: '/admin/settings/notices',
     },
     {
         key: 'monitor',
         label: 'Monitor',
         icon: <Activity className="w-5 h-5"/>,
-        path: '/admin/monitor',
-    },
-    {
-        key: 'settings',
-        label: 'Settings',
-        icon: <Settings className="w-5 h-5"/>,
-        path: '/admin/settings',
+        path: '/admin/settings/monitor',
     },
 ];
 
@@ -112,6 +111,13 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
     const pathname = usePathname();
     const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
 
+    // 判断当前在哪个模块
+    const isInSettingsModule = pathname.startsWith('/admin/settings');
+
+    // 根据模块选择菜单
+    const currentMenuItems = isInSettingsModule ? settingsModuleMenuItems : mainMenuItems;
+    const currentTitle = isInSettingsModule ? 'Settings' : 'Administration';
+
     const toggleMenu = (key: string) => {
         setExpandedMenu(expandedMenu === key ? null : key);
     };
@@ -124,6 +130,10 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
             return item.children.some(child => pathname === child.path);
         }
         return false;
+    };
+
+    const handleGoBack = () => {
+        router.push('/admin/dashboard');
     };
 
     const handleLogout = async () => {
@@ -163,31 +173,50 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
                         animate={{opacity: 1, x: 0}}
                         className="flex items-center gap-3"
                     >
-                        <div className="relative">
-                            <motion.div
-                                className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shadow-lg"
-                                animate={{
-                                    boxShadow: [
-                                        '0 10px 40px -10px rgba(0, 0, 0, 0.3)',
-                                        '0 10px 40px -10px rgba(0, 0, 0, 0.4)',
-                                        '0 10px 40px -10px rgba(0, 0, 0, 0.3)',
-                                    ],
-                                }}
-                                transition={{duration: 2, repeat: Infinity}}
-                            >
-                                <BrainCircuit className="text-white" size={22} />
-                            </motion.div>
-                            <motion.div
-                                className="absolute -inset-1 bg-black rounded-xl opacity-20 blur-lg"
-                                animate={{scale: [1, 1.1, 1]}}
-                                transition={{duration: 2, repeat: Infinity}}
-                            />
-                        </div>
-                        <div>
-              <span className="text-xl font-bold text-black">
-                ClassAI
-              </span>
-                        </div>
+                        {isInSettingsModule ? (
+                            <>
+                                {/* 返回按钮 */}
+                                <motion.button
+                                    whileHover={{scale: 1.1}}
+                                    whileTap={{scale: 0.9}}
+                                    onClick={handleGoBack}
+                                    className="p-2 rounded-lg hover:bg-gray-100 transition-all"
+                                >
+                                    <ChevronLeft className="w-5 h-5 text-gray-600" />
+                                </motion.button>
+                                <span className="text-lg font-bold text-gray-800">
+                                    {currentTitle}
+                                </span>
+                            </>
+                        ) : (
+                            <>
+                                <div className="relative">
+                                    <motion.div
+                                        className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shadow-lg"
+                                        animate={{
+                                            boxShadow: [
+                                                '0 10px 40px -10px rgba(0, 0, 0, 0.3)',
+                                                '0 10px 40px -10px rgba(0, 0, 0, 0.4)',
+                                                '0 10px 40px -10px rgba(0, 0, 0, 0.3)',
+                                            ],
+                                        }}
+                                        transition={{duration: 2, repeat: Infinity}}
+                                    >
+                                        <BrainCircuit className="text-white" size={22} />
+                                    </motion.div>
+                                    <motion.div
+                                        className="absolute -inset-1 bg-black rounded-xl opacity-20 blur-lg"
+                                        animate={{scale: [1, 1.1, 1]}}
+                                        transition={{duration: 2, repeat: Infinity}}
+                                    />
+                                </div>
+                                <div>
+                                    <span className="text-xl font-bold text-black">
+                                        ClassAI
+                                    </span>
+                                </div>
+                            </>
+                        )}
                     </motion.div>
                 )}
 
@@ -207,7 +236,7 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
 
             {/* Menu Items */}
             <nav className="flex-1 overflow-y-auto py-5 px-3 space-y-1.5">
-                {menuItems.map((item, index) => {
+                {currentMenuItems.map((item, index) => {
                     const hasChildren = item.children && item.children.length > 0;
                     const isActive = isMenuActive(item);
                     const isExpanded = expandedMenu === item.key;
