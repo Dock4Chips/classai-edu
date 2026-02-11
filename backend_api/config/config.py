@@ -69,6 +69,26 @@ GITHUB_AUTHORIZATION_URL = os.getenv("GITHUB_AUTHORIZATION_URL")
 GITHUB_TOKEN_URL = os.getenv("GITHUB_TOKEN_URL")
 GITHUB_USER_INFO_URL = os.getenv("GITHUB_USER_INFO_URL")
 
+# LangChain / OpenAI 配置
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL")
+OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+
+# 聊天配置
+CHAT_MAX_TOKENS = int(os.getenv("CHAT_MAX_TOKENS", "4096"))
+CHAT_TEMPERATURE = float(os.getenv("CHAT_TEMPERATURE", "0.7"))
+CHAT_TIMEOUT = int(os.getenv("CHAT_TIMEOUT", "30"))
+
+# 限流配置
+CHAT_RATE_LIMIT_PER_MINUTE = int(os.getenv("CHAT_RATE_LIMIT_PER_MINUTE", "10"))
+CHAT_RATE_LIMIT_LOCK_TTL = int(os.getenv("CHAT_RATE_LIMIT_LOCK_TTL", "60"))
+
+# 背压配置
+CHAT_BACKPRESSURE_QUEUE_SIZE = int(os.getenv("CHAT_BACKPRESSURE_QUEUE_SIZE", "100"))
+
+# 检测上下文配置
+DETECTION_CONTEXT_MAX_ITEMS = int(os.getenv("DETECTION_CONTEXT_MAX_ITEMS", "10"))
+
 
 db = DBTools(mysql_client)
 def query():

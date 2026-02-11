@@ -7,11 +7,10 @@
 """
 
 from dataclasses import dataclass
-from typing import Optional, Literal
 from enum import Enum
 
-from services.image_policy import ImagePolicy
-from services.failure_counter import FailureCounter
+from services.detetion.image_policy import ImagePolicy
+from services.detetion.failure_counter import FailureCounter
 
 
 class DegradeLevel(Enum):

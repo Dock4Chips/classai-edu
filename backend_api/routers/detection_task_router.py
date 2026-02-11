@@ -9,8 +9,8 @@ from repository.detection_task_repository import (
     update_detection_task,
     delete_detection_task
 )
-from services.strategies.detect.detect_registry import DETECT_STRATEGY_MAP
 from enums.detect_type import TaskType
+from services.strategies.detect.detect_registry import DETECT_STRATEGY_MAP
 
 pro_detection_task_router = APIRouter(
     prefix='/api/detection/task',

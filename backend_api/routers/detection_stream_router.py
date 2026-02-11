@@ -12,13 +12,11 @@ import asyncio
 
 from auth.authorization import Authorization
 from models.result import Res
-from services.session_manager import manager
 from models import SessionConfig
 from models import SessionState
 from master_tools.logger_tool import log
-from services.image_policy import ImagePolicy
-from services.failure_counter import FailureCounter
-from services.degrade_controller import DegradeController
+from services.detetion import detection_manager, FailureCounter, DegradeController
+from services.detetion.image_policy import ImagePolicy
 import cv2
 import base64
 
@@ -110,7 +108,7 @@ async def handle_start_detection(
     """处理开始检测请求"""
     try:
         # 检查会话是否已存在
-        existing_session = await manager.get_session(client_id)
+        existing_session = await detection_manager.get_session(client_id)
         if existing_session and existing_session.get_state() != SessionState.STOPPED:
             await send_error(websocket, "检测已在运行中，请先停止")
             return
@@ -136,7 +134,7 @@ async def handle_start_detection(
         )
 
         # 创建会话
-        session = await manager.create_session(client_id, config)
+        session = await detection_manager.create_session(client_id, config)
 
         # 启动会话
         session.start()
@@ -260,7 +258,7 @@ async def handle_stop_detection(
     client_id: int
 ):
     """处理停止检测请求"""
-    session = await manager.get_session(client_id)
+    session = await detection_manager.get_session(client_id)
 
     if session is None:
         await send_error(websocket, "没有运行的检测任务")
@@ -292,7 +290,7 @@ async def cleanup_session(client_id: int):
     Args:
         client_id: 客户端ID
     """
-    await manager.destroy_session(client_id)
+    await detection_manager.destroy_session(client_id)
 
 
 async def send_control(websocket: WebSocket, status: str, message: str):
@@ -317,7 +315,7 @@ async def send_error(websocket: WebSocket, error_message: str):
 @pro_detection_stream_router.get("/detectors")
 async def list_detectors():
     """列出所有活跃的检测器"""
-    sessions = await manager.list_sessions()
+    sessions = await detection_manager.list_sessions()
 
     return Res.ok(
         data=sessions,
@@ -328,7 +326,7 @@ async def list_detectors():
 @pro_detection_stream_router.get("/detectors/{client_id}")
 async def get_detector_info(client_id: int):
     """获取指定检测器的信息"""
-    session = await manager.get_session(client_id)
+    session = await detection_manager.get_session(client_id)
 
     if session is None:
         return Res.fail(msg=f"客户端 {client_id} 没有活跃的检测器")
@@ -344,7 +342,7 @@ async def get_detector_info(client_id: int):
 @pro_detection_stream_router.post("/detectors/{client_id}/stop")
 async def stop_detector(client_id: int):
     """强制停止指定检测器"""
-    session = await manager.get_session(client_id)
+    session = await detection_manager.get_session(client_id)
 
     if session is None:
         return Res.fail(msg=f"客户端 {client_id} 没有活跃的检测器")
