@@ -16,6 +16,42 @@ interface AdminLayoutProps {
     children: React.ReactNode;
 }
 
+// ==================== 菜单配置 ====================
+
+/** 用户菜单配置 */
+const userMenuItems = [
+    {
+        key: 'profile',
+        label: 'Profile',
+        icon: <UserCircle className="w-4 h-4"/>,
+        path: '/admin/profile',
+    },
+    {
+        key: 'settings',
+        label: 'Settings',
+        icon: <Settings className="w-4 h-4"/>,
+        path: '/admin/settings',
+    },
+    {
+        key: 'change_password',
+        label: 'Change Password',
+        icon: <KeyRound className="w-4 h-4"/>,
+        path: '/admin/change-password',
+    },
+    {
+        key: 'menu_divider',
+        divider: true,
+    },
+    {
+        key: 'logout',
+        label: 'Logout',
+        icon: <LogOut className="w-4 h-4"/>,
+        danger: true,
+    },
+];
+
+// ==================== 组件 ====================
+
 export function AdminLayout({children}: AdminLayoutProps) {
     const router = useRouter();
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -322,47 +358,18 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                         ),
                                         disabled: true,
                                     },
-                                    // 分隔线
-                                    {
-                                        key: 'divider',
-                                        divider: true,
-                                    },
-                                    // 菜单项
-                                    {
-                                        key: 'profile',
-                                        label: 'Profile',
-                                        icon: <UserCircle className="w-4 h-4"/>,
+                                    {key: 'user_info_divider', divider: true},
+                                    // 从配置生成菜单项
+                                    ...userMenuItems.map(item => ({
+                                        ...item,
                                         onClick: () => {
-                                            router.push('/admin/profile');
+                                            if (item.key === 'logout') {
+                                                handleLogout();
+                                            } else if (item.path) {
+                                                router.push(item.path);
+                                            }
                                         },
-                                    },
-                                    {
-                                        key: 'change_password',
-                                        label: 'Change Password',
-                                        icon: <KeyRound className="w-4 h-4"/>,
-                                        onClick: () => {
-                                            router.push('/admin/change-password');
-                                        },
-                                    },
-                                    {
-                                        key: 'settings',
-                                        label: 'Settings',
-                                        icon: <Settings className="w-4 h-4"/>,
-                                        onClick: () => {
-                                            router.push('/admin/settings');
-                                        },
-                                    },
-                                    {
-                                        key: 'divider2',
-                                        divider: true,
-                                    },
-                                    {
-                                        key: 'logout',
-                                        label: 'Logout',
-                                        icon: <LogOut className="w-4 h-4"/>,
-                                        danger: true,
-                                        onClick: handleLogout,
-                                    },
+                                    })),
                                 ]}
                             />
                         </div>
