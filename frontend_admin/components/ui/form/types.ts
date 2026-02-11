@@ -11,7 +11,8 @@ export type FieldType =
   | 'switch'    // 开关
   | 'checkbox'  // 复选框
   | 'radio'     // 单选框
-  | 'date';     // 日期
+  | 'date'      // 日期
+  | 'color';    // 颜色选择器
 
 /**
  * 选项类型（用于 select、radio）

@@ -10,6 +10,7 @@ from repository.model_draw_config_repository import (
     update_model_draw_config,
     delete_model_draw_config
 )
+from tools.color_tool import update_color_from_hex
 
 pro_model_draw_config_router = APIRouter(
     prefix='/api/model/draw/config',
@@ -46,6 +47,8 @@ async def get_model_draw_config(config_id: int):
 @pro_model_draw_config_router.post('')
 async def add_model_draw_config(data: dict):
     """新增绘图配置"""
+    # 如果前端传了 color_hex，自动生成 color_rgb 和 color_bgr
+    data = update_color_from_hex(data)
     create_model_draw_config(data)
     return Res.ok("新增成功")
 
@@ -53,6 +56,8 @@ async def add_model_draw_config(data: dict):
 @pro_model_draw_config_router.put('/{config_id}')
 async def edit_model_draw_config(config_id: int, data: dict):
     """修改绘图配置"""
+    # 如果前端传了 color_hex，自动生成 color_rgb 和 color_bgr
+    data = update_color_from_hex(data)
     update_model_draw_config(config_id, data)
     return Res.ok("修改成功")
 
