@@ -11,6 +11,7 @@ import {
     Star,
     Check,
     X,
+    Palette,
 } from 'lucide-react';
 import {ModelService} from '@/lib/service/model';
 import {Table, Column} from '@/components/ui/table';
@@ -21,6 +22,7 @@ import {notification} from '@/utils/notification';
 import {confirm} from '@/utils/confirm';
 import {Results} from '@/lib/api';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
+import {DrawConfigModal} from './DrawConfigModal';
 
 export default function ModelsPage() {
     const [models, setModels] = useState<any[]>([]);
@@ -28,6 +30,8 @@ export default function ModelsPage() {
     const [modalOpen, setModalOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [originalModelData, setOriginalModelData] = useState<any>(null);
+    const [drawConfigModalOpen, setDrawConfigModalOpen] = useState(false);
+    const [selectedModelForDrawConfig, setSelectedModelForDrawConfig] = useState<any>(null);
 
     /** 查询参数（搜索 + 分页） */
     const [queryParams, setQueryParams] = useState<Results>({
@@ -351,6 +355,12 @@ export default function ModelsPage() {
         setModalOpen(true);
     };
 
+    /** 打开绘图配置 */
+    const handleDrawConfig = (model: any) => {
+        setSelectedModelForDrawConfig(model);
+        setDrawConfigModalOpen(true);
+    };
+
     /** 新增保存 */
     const handleSaveAdd = async () => {
         const data = Object.fromEntries(
@@ -483,6 +493,12 @@ export default function ModelsPage() {
                             onClick: () => handleEdit(record),
                         },
                         {
+                            key: 'drawConfig',
+                            label: 'Draw Config',
+                            icon: <Palette className="w-4 h-4"/>,
+                            onClick: () => handleDrawConfig(record),
+                        },
+                        {
                             key: 'delete',
                             label: 'Delete',
                             icon: <Trash2 className="w-4 h-4"/>,
@@ -612,6 +628,18 @@ export default function ModelsPage() {
                     </button>
                 </div>
             </Modal>
+
+            {/* 绘图配置对话框 */}
+            {selectedModelForDrawConfig && (
+                <DrawConfigModal
+                    isOpen={drawConfigModalOpen}
+                    onClose={() => {
+                        setDrawConfigModalOpen(false);
+                        setSelectedModelForDrawConfig(null);
+                    }}
+                    model={selectedModelForDrawConfig}
+                />
+            )}
 
         </div>
     );
