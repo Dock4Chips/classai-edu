@@ -16,7 +16,9 @@ import {
     Image as ImageIcon,
     FileText,
     ChevronDown,
-    Video, BrainCircuit,
+    Video,
+    BrainCircuit,
+    Camera,
 } from 'lucide-react';
 import {IdentityService} from "@/lib/service/identity";
 import {notification} from "@/utils/notification";
@@ -49,6 +51,18 @@ const menuItems: MenuItem[] = [
         label: 'Roles',
         icon: <Shield className="w-5 h-5"/>,
         path: '/admin/roles',
+    },
+    {
+        key: 'devices',
+        label: 'Devices',
+        icon: <Camera className="w-5 h-5"/>,
+        path: '/admin/devices',
+    },
+    {
+        key: 'models',
+        label: 'Models',
+        icon: <BrainCircuit className="w-5 h-5"/>,
+        path: '/admin/models',
     },
     {
         key: 'banners',

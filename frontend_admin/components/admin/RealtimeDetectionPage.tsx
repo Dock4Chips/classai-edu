@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Play, Square, Plug, Power, Sparkles, Video, Activity, Wifi, WifiOff } from 'lucide-react';
 import { useDetectionSession } from '@/hooks/useDetectionSession';
 import { Badge } from '@/components/ui/badge';
+import {Select} from "@/components/ui/select";
 
 export default function RealtimeDetectionPage() {
   const {
@@ -159,37 +160,37 @@ export default function RealtimeDetectionPage() {
               value={desiredConfig.source}
               onChange={(e) => updateConfig('source', e.target.value)}
               placeholder="0 (default camera) or rtsp://..."
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20"
+              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-transparent transition-all"
             />
           </div>
 
-          {/* Confidence Threshold */}
+
+          {/* Image Interval */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
-              Confidence Threshold: {desiredConfig.conf_threshold}
-            </label>
-            <input
-              type="range"
-              min="0"
-              max="1"
-              step="0.05"
-              value={desiredConfig.conf_threshold}
-              onChange={(e) => updateConfig('conf_threshold', parseFloat(e.target.value))}
-              className="w-full"
+            <label className="text-sm font-medium text-gray-700">Image Interval (frames)</label>
+            <Select
+              value={desiredConfig.image_interval}
+              onChange={(value) => updateConfig('image_interval', parseInt(value as string))}
+              disabled={!desiredConfig.enable_image}
+              options={[
+                {value: 1, label: 'Every frame'},
+                {value: 3, label: 'Every 3 frames'},
+                {value: 5, label: 'Every 5 frames'},
+              ]}
             />
           </div>
 
           {/* Max FPS */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-700">Max FPS</label>
-            <select
+            <Select
               value={desiredConfig.max_fps}
-              onChange={(e) => updateConfig('max_fps', parseInt(e.target.value))}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20"
-            >
-              <option value={15}>15 FPS</option>
-              <option value={30}>30 FPS</option>
-            </select>
+              onChange={(value) => updateConfig('max_fps', parseInt(value as string))}
+              options={[
+                {value: 15, label: '15 FPS'},
+                {value: 30, label: '30 FPS'},
+              ]}
+            />
           </div>
 
           {/* Enable Image */}
@@ -199,7 +200,7 @@ export default function RealtimeDetectionPage() {
                 type="checkbox"
                 checked={desiredConfig.enable_image}
                 onChange={(e) => updateConfig('enable_image', e.target.checked)}
-                className="w-4 h-4"
+                className="w-4 h-4 accent-black"
               />
               Enable Image Stream
             </label>
@@ -218,23 +219,24 @@ export default function RealtimeDetectionPage() {
               value={desiredConfig.image_quality}
               onChange={(e) => updateConfig('image_quality', parseInt(e.target.value))}
               disabled={!desiredConfig.enable_image}
-              className="w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full accent-black disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
 
-          {/* Image Interval */}
+          {/* Confidence Threshold */}
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Image Interval (frames)</label>
-            <select
-              value={desiredConfig.image_interval}
-              onChange={(e) => updateConfig('image_interval', parseInt(e.target.value))}
-              disabled={!desiredConfig.enable_image}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <option value={1}>Every frame</option>
-              <option value={3}>Every 3 frames</option>
-              <option value={5}>Every 5 frames</option>
-            </select>
+            <label className="text-sm font-medium text-gray-700">
+              Confidence Threshold: {desiredConfig.conf_threshold}
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={desiredConfig.conf_threshold}
+              onChange={(e) => updateConfig('conf_threshold', parseFloat(e.target.value))}
+              className="w-full accent-black"
+            />
           </div>
         </div>
 
