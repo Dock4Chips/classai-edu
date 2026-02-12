@@ -5,11 +5,7 @@ db = DBTools(mysql_client)
 
 
 def get_dashboard_stats():
-    """
-    获取 dashboard 统计数据，多表联查
-    返回：总用户数、在线用户数、总登录数、最近5条登录记录
-    """
-    # 使用 LEFT JOIN 多表联查获取统计数据
+    """获取管理端 dashboard 统计数据"""
     stats = db.query('''
         SELECT
             COUNT(DISTINCT u.user_id) as total_users,
@@ -21,7 +17,6 @@ def get_dashboard_stats():
         WHERE u.is_deleted = 0
     ''')
 
-    # 多表联查获取最近5条登录记录，包含用户信息
     recent_activities = db.query('''
         SELECT
             l.login_id,
@@ -38,9 +33,4 @@ def get_dashboard_stats():
         LIMIT 5
     ''')
 
-    return {
-        'total_users': stats[0]['total_users'] if stats else 0,
-        'online_users': stats[0]['online_users'] if stats else 0,
-        'total_logins': stats[0]['total_logins'] if stats else 0,
-        'recent_activities': recent_activities if recent_activities else []
-    }
+    return stats, recent_activities
