@@ -17,9 +17,21 @@ def get_config_by_key(config_key: str):
                     {'config_key': config_key})
 
 
-def page_list_config(page: int, page_size: int, filters: dict = None):
-    """分页查询配置列表"""
-    return db.page('sys_config', page, page_size, filters)
+def page_list_config(
+        page: int = 1,
+        page_size: int = 10,
+        filters: dict | None = None,
+        order_by: list[tuple[str, str]] | None = None,
+        select_fields: list[str] | None = None
+) -> dict:
+    return db.page(
+        table="sys_config",
+        page=page,
+        page_size=page_size,
+        filters=filters,
+        order_by=order_by,
+        select_fields=select_fields
+    )
 
 
 @db_fill('insert')
@@ -32,6 +44,7 @@ def create_config(data: dict):
 def update_config(config_id: int, data: dict):
     """更新配置"""
     db.update('sys_config', 'config_id', config_id, data)
+
 
 @db_fill('update')
 def delete_config(config_id: int):

@@ -23,7 +23,12 @@ async def list_model_class(
     page_size: int = Query(10, ge=1, le=100)
 ):
     """分页查询模型类别列表"""
-    result = page_list_model_class(page, page_size)
+    result = page_list_model_class(
+        page=page,
+        page_size=page_size,
+        order_by=[("create_time","desc")],
+        select_fields=None
+    )
     return Res.ok(result)
 
 

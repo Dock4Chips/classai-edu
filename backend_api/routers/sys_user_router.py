@@ -20,7 +20,12 @@ async def list_user(page: int = Query(1, ge=1),
                      user_name: str | None = None,
                      email: str | None = None):
     """分页查询用户列表"""
-    result = page_list_user(page, page_size, {'user_name': user_name, 'email': email}, ['password'])
+    filters = {
+        k: v for k, v in {"user_name": user_name, "email": email}.items() if v is not None
+    }
+    result = page_list_user(page=page,page_size=page_size,filters=filters,order_by=[('create_time','desc')])
+    for record in result.get("records", []):
+        record.pop("password", None)
     return Res.ok(result)
 
 

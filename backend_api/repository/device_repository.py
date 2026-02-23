@@ -9,8 +9,21 @@ def get_device_by_id(device_id: int):
     return db.get_by_id('device', 'device_id', device_id)
 
 
-def page_list_device(page: int, page_size: int, filters: dict = None, remove_fields: list = None):
-    return db.page('device', page, page_size, filters, remove_fields)
+def page_list_device(
+        page: int = 1,
+        page_size: int = 10,
+        filters: dict | None = None,
+        order_by: list[tuple[str, str]] | None = None,
+        select_fields: list[str] | None = None
+) -> dict:
+    return db.page(
+        table="device",
+        page=page,
+        page_size=page_size,
+        filters=filters,
+        order_by=order_by,
+        select_fields=select_fields
+    )
 
 
 @db_fill('insert')

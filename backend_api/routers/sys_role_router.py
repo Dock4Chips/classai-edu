@@ -16,20 +16,23 @@ pro_sys_role_router = APIRouter(
     dependencies=[Depends(Authorization.val_token)]
 )
 
-
 @pro_sys_role_router.get('/list')
-async def list_role(page: int = Query(1, ge=1),
-                    page_size: int = Query(10, ge=1, le=100),
-                    role_name: str | None = None,
-                    status: str | None = None):
+async def list_role(
+    page: int = Query(1, ge=1),
+    page_size: int = Query(10, ge=1, le=100),
+    role_name: str | None = None,
+    status: str | None = None
+):
     """分页查询角色列表"""
-    filters = {}
-    if role_name:
-        filters['role_name'] = role_name
-    if status:
-        filters['status'] = status
+    filters = {k: v for k, v in {"role_name": role_name, "status": status}.items() if v is not None}
 
-    result = page_list_role(page, page_size, filters)
+    result = page_list_role(
+        page=page,
+        page_size=page_size,
+        filters=filters,
+        order_by=[("create_time","desc")],
+    )
+
     return Res.ok(result)
 
 

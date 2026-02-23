@@ -11,9 +11,21 @@ def get_notice_by_id(notice_id: int):
                     {'notice_id': notice_id})
 
 
-def page_list_notice(page: int, page_size: int, filters: dict = None):
-    """分页查询通知列表"""
-    return db.page('sys_notice', page, page_size, filters)
+def page_list_notice(
+    page: int = 1,
+    page_size: int = 10,
+    filters: dict | None = None,
+    order_by: list[tuple[str,str]] | None = None,
+    select_fields: list[str] | None = None
+) -> dict:
+    return db.page(
+        table="sys_notice",
+        page=page,
+        page_size=page_size,
+        filters=filters,
+        order_by=order_by,
+        select_fields=select_fields
+    )
 
 
 @db_fill('insert')

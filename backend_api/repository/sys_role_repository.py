@@ -16,11 +16,21 @@ def get_role_by_key(role_key: str):
     return db.query('SELECT * FROM sys_role WHERE role_key = :role_key AND is_deleted = 0',
                     {'role_key': role_key})
 
-
-def page_list_role(page: int, page_size: int, filters: dict = None):
-    """分页查询角色列表"""
-    return db.page('sys_role', page, page_size, filters)
-
+def page_list_role(
+    page: int = 1,
+    page_size: int = 10,
+    filters: dict | None = None,
+    order_by: list[tuple[str,str]] | None = None,
+    select_fields: list[str] | None = None
+) -> dict:
+    return db.page(
+        table="sys_role",
+        page=page,
+        page_size=page_size,
+        filters=filters,
+        order_by=order_by,
+        select_fields=select_fields
+    )
 
 @db_fill('insert')
 def create_role(data: dict):
