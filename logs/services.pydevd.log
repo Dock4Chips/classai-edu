@@ -19,3 +19,528 @@
 2026-02-24 04:05:43.274 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:107 - [ModelConfigService] Loaded 6 colors
 2026-02-24 04:05:43.274 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:128 - [ModelConfigService] Config loaded and cached: ClassAI-8n
 2026-02-24 04:05:43.274 | INFO     | __main__:lifespan:16 - {'model_id': 1, 'model_path': '/Users/dock4chips/Script-P/classai-edu/yolo_edu/dodge_project/classai_model/weights/best.pt', 'model_name': 'ClassAI-8n', 'model_version': 'v1.0', 'model_type': 'yolov8', 'input_size': 640, 'num_classes': 6, 'class_names': ['learning_to_copy', 'looking_around', 'sharing_answers', 'sleeping', 'staff', 'using_mobile'], 'class_map': {0: 'learning_to_copy', 1: 'looking_around', 2: 'sharing_answers', 3: 'sleeping', 4: 'staff', 5: 'using_mobile'}, 'colors': {'learning_to_copy': (0, 0, 255), 'looking_around': (0, 255, 255), 'sharing_answers': (0, 255, 0), 'sleeping': (255, 0, 0), 'staff': (255, 0, 255), 'using_mobile': (255, 255, 0)}, 'border_thickness': 2, 'font_scale': 0.5}
+2026-02-24 04:11:46.991 | DEBUG    | master_tools.db_tools:execute:277 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:11:46.995 | DEBUG    | master_tools.db_tools:execute:277 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:11:46.998 | DEBUG    | master_tools.db_tools:execute:277 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:11:47.003 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: SELECT * FROM class_index_banner WHERE is_deleted = 0 ORDER BY create_time DESC, 返回5条记录
+2026-02-24 04:11:47.011 | DEBUG    | master_tools.db_tools:insert:351 - 成功插入记录到表 sys_oper_log, ID: 9801
+2026-02-24 04:11:47.022 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: SELECT * FROM sys_user WHERE user_id = :user_id AND is_deleted = 0, 返回1条记录
+2026-02-24 04:11:47.026 | DEBUG    | master_tools.db_tools:insert:351 - 成功插入记录到表 sys_oper_log, ID: 9802
+2026-02-24 04:11:47.031 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: SHOW COLUMNS FROM sys_notice, 返回10条记录
+2026-02-24 04:11:47.034 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_notice
+            WHERE is_deleted = :is_deleted
+        , 返回1条记录
+2026-02-24 04:11:47.036 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_notice
+            WHERE is_deleted = :is_deleted
+            
+            LIMIT :limit OFFSET :offset
+        , 返回1条记录
+2026-02-24 04:11:47.038 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: SELECT notice_id FROM sys_notice_read WHERE user_id = :user_id AND is_read = 1, 返回1条记录
+2026-02-24 04:11:47.043 | DEBUG    | master_tools.db_tools:insert:351 - 成功插入记录到表 sys_oper_log, ID: 9803
+2026-02-24 04:11:48.528 | DEBUG    | master_tools.db_tools:execute:277 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:11:48.537 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: SHOW COLUMNS FROM sys_user, 返回18条记录
+2026-02-24 04:11:48.541 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_user
+            WHERE is_deleted = :is_deleted
+        , 返回1条记录
+2026-02-24 04:11:48.544 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_user
+            WHERE is_deleted = :is_deleted
+            
+            LIMIT :limit OFFSET :offset
+        , 返回3条记录
+2026-02-24 04:11:48.552 | DEBUG    | master_tools.db_tools:insert:351 - 成功插入记录到表 sys_oper_log, ID: 9804
+2026-02-24 04:11:48.559 | DEBUG    | master_tools.db_tools:execute:277 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:11:48.568 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: SHOW COLUMNS FROM sys_user, 返回18条记录
+2026-02-24 04:11:48.571 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_user
+            WHERE is_deleted = :is_deleted
+        , 返回1条记录
+2026-02-24 04:11:48.573 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_user
+            WHERE is_deleted = :is_deleted
+            
+            LIMIT :limit OFFSET :offset
+        , 返回3条记录
+2026-02-24 04:11:48.578 | DEBUG    | master_tools.db_tools:insert:351 - 成功插入记录到表 sys_oper_log, ID: 9805
+2026-02-24 04:22:26.697 | INFO     | master_tools.logger_tool:setup_logging:105 - setup logging success for module: pydevd
+2026-02-24 04:22:26.890 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_user
+            WHERE user_name = :user_name
+        , 返回1条记录
+2026-02-24 04:22:26.892 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_user
+            WHERE user_name = :user_name
+            ORDER BY user_id DESC
+            LIMIT :limit OFFSET :offset
+        , 返回1条记录
+2026-02-24 04:26:19.673 | INFO     | master_tools.logger_tool:setup_logging:105 - setup logging success for module: pydevd
+2026-02-24 04:26:19.911 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_user
+            
+        , 返回1条记录
+2026-02-24 04:26:19.916 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_user
+            
+            ORDER BY user_id DESC
+            LIMIT :limit OFFSET :offset
+        , 返回3条记录
+2026-02-24 04:28:38.254 | INFO     | master_tools.logger_tool:setup_logging:105 - setup logging success for module: pydevd
+2026-02-24 04:28:38.511 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_user
+            
+        , 返回1条记录
+2026-02-24 04:28:38.515 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_user
+            
+            ORDER BY user_id DESC
+            LIMIT :limit OFFSET :offset
+        , 返回3条记录
+2026-02-24 04:28:48.702 | INFO     | master_tools.logger_tool:setup_logging:105 - setup logging success for module: pydevd
+2026-02-24 04:28:50.065 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM model_config
+            WHERE is_deleted = :is_deleted
+        , 返回1条记录
+2026-02-24 04:28:50.067 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM model_config
+            WHERE is_deleted = :is_deleted
+            
+            LIMIT :limit OFFSET :offset
+        , 返回1条记录
+2026-02-24 04:28:50.069 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT * FROM model_class WHERE model_id = :model_id AND is_deleted = :is_deleted, 返回6条记录
+2026-02-24 04:28:50.070 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:61 - [ModelConfigService] Loaded 6 classes: ['learning_to_copy', 'looking_around', 'sharing_answers', 'sleeping', 'staff', 'using_mobile']
+2026-02-24 04:28:50.071 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT * FROM model_draw_config WHERE model_id = :model_id AND is_deleted = :is_deleted, 返回6条记录
+2026-02-24 04:28:50.072 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:107 - [ModelConfigService] Loaded 6 colors
+2026-02-24 04:28:50.072 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:128 - [ModelConfigService] Config loaded and cached: ClassAI-8n
+2026-02-24 04:28:50.072 | INFO     | __main__:lifespan:16 - {'model_id': 1, 'model_path': '/Users/dock4chips/Script-P/classai-edu/yolo_edu/dodge_project/classai_model/weights/best.pt', 'model_name': 'ClassAI-8n', 'model_version': 'v1.0', 'model_type': 'yolov8', 'input_size': 640, 'num_classes': 6, 'class_names': ['learning_to_copy', 'looking_around', 'sharing_answers', 'sleeping', 'staff', 'using_mobile'], 'class_map': {0: 'learning_to_copy', 1: 'looking_around', 2: 'sharing_answers', 3: 'sleeping', 4: 'staff', 5: 'using_mobile'}, 'colors': {'learning_to_copy': (0, 0, 255), 'looking_around': (0, 255, 255), 'sharing_answers': (0, 255, 0), 'sleeping': (255, 0, 0), 'staff': (255, 0, 255), 'using_mobile': (255, 255, 0)}, 'border_thickness': 2, 'font_scale': 0.5}
+2026-02-24 04:28:53.888 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:28:53.893 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:28:53.896 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:28:53.906 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_user
+            
+        , 返回1条记录
+2026-02-24 04:28:53.908 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_user
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回3条记录
+2026-02-24 04:28:53.916 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9806
+2026-02-24 04:28:53.919 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_notice
+            WHERE is_deleted = :is_deleted
+        , 返回1条记录
+2026-02-24 04:28:53.921 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_notice
+            WHERE is_deleted = :is_deleted
+            
+            LIMIT :limit OFFSET :offset
+        , 返回1条记录
+2026-02-24 04:28:53.923 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT notice_id FROM sys_notice_read WHERE user_id = :user_id AND is_read = 1, 返回1条记录
+2026-02-24 04:28:53.927 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9807
+2026-02-24 04:28:53.929 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT * FROM sys_user WHERE user_id = :user_id AND is_deleted = 0, 返回1条记录
+2026-02-24 04:28:53.933 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9808
+2026-02-24 04:28:56.538 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:28:56.543 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:28:56.548 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:28:56.553 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_user
+            
+        , 返回1条记录
+2026-02-24 04:28:56.556 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_user
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回3条记录
+2026-02-24 04:28:56.561 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9809
+2026-02-24 04:28:56.564 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT * FROM sys_user WHERE user_id = :user_id AND is_deleted = 0, 返回1条记录
+2026-02-24 04:28:56.568 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9810
+2026-02-24 04:28:56.570 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_notice
+            WHERE is_deleted = :is_deleted
+        , 返回1条记录
+2026-02-24 04:28:56.572 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_notice
+            WHERE is_deleted = :is_deleted
+            
+            LIMIT :limit OFFSET :offset
+        , 返回1条记录
+2026-02-24 04:28:56.574 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT notice_id FROM sys_notice_read WHERE user_id = :user_id AND is_read = 1, 返回1条记录
+2026-02-24 04:28:56.577 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9811
+2026-02-24 04:40:55.770 | INFO     | master_tools.logger_tool:setup_logging:105 - setup logging success for module: pydevd
+2026-02-24 04:40:56.978 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM model_config
+            WHERE is_deleted = :is_deleted
+        , 返回1条记录
+2026-02-24 04:40:56.980 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM model_config
+            WHERE is_deleted = :is_deleted
+            
+            LIMIT :limit OFFSET :offset
+        , 返回1条记录
+2026-02-24 04:40:56.982 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT * FROM model_class WHERE model_id = :model_id AND is_deleted = :is_deleted, 返回6条记录
+2026-02-24 04:40:56.982 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:61 - [ModelConfigService] Loaded 6 classes: ['learning_to_copy', 'looking_around', 'sharing_answers', 'sleeping', 'staff', 'using_mobile']
+2026-02-24 04:40:56.984 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT * FROM model_draw_config WHERE model_id = :model_id AND is_deleted = :is_deleted, 返回6条记录
+2026-02-24 04:40:56.985 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:107 - [ModelConfigService] Loaded 6 colors
+2026-02-24 04:40:56.985 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:128 - [ModelConfigService] Config loaded and cached: ClassAI-8n
+2026-02-24 04:40:56.985 | INFO     | __main__:lifespan:16 - {'model_id': 1, 'model_path': '/Users/dock4chips/Script-P/classai-edu/yolo_edu/dodge_project/classai_model/weights/best.pt', 'model_name': 'ClassAI-8n', 'model_version': 'v1.0', 'model_type': 'yolov8', 'input_size': 640, 'num_classes': 6, 'class_names': ['learning_to_copy', 'looking_around', 'sharing_answers', 'sleeping', 'staff', 'using_mobile'], 'class_map': {0: 'learning_to_copy', 1: 'looking_around', 2: 'sharing_answers', 3: 'sleeping', 4: 'staff', 5: 'using_mobile'}, 'colors': {'learning_to_copy': (0, 0, 255), 'looking_around': (0, 255, 255), 'sharing_answers': (0, 255, 0), 'sleeping': (255, 0, 0), 'staff': (255, 0, 255), 'using_mobile': (255, 255, 0)}, 'border_thickness': 2, 'font_scale': 0.5}
+2026-02-24 04:41:00.889 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:00.893 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:00.895 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:00.904 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_user
+            
+        , 返回1条记录
+2026-02-24 04:41:00.906 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_user
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回3条记录
+2026-02-24 04:41:00.912 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9812
+2026-02-24 04:41:00.915 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT * FROM sys_user WHERE user_id = :user_id AND is_deleted = 0, 返回1条记录
+2026-02-24 04:41:00.919 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9813
+2026-02-24 04:41:00.921 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_notice
+            
+        , 返回1条记录
+2026-02-24 04:41:00.923 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_notice
+            
+            
+            LIMIT :limit OFFSET :offset
+        , 返回1条记录
+2026-02-24 04:41:00.924 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT notice_id FROM sys_notice_read WHERE user_id = :user_id AND is_read = 1, 返回1条记录
+2026-02-24 04:41:00.928 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9814
+2026-02-24 04:41:01.673 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:01.679 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_role
+            
+        , 返回1条记录
+2026-02-24 04:41:01.681 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_role
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回3条记录
+2026-02-24 04:41:01.686 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9815
+2026-02-24 04:41:01.690 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:01.695 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_role
+            
+        , 返回1条记录
+2026-02-24 04:41:01.697 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_role
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回3条记录
+2026-02-24 04:41:01.702 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9816
+2026-02-24 04:41:02.540 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:02.546 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM device
+            
+        , 返回1条记录
+2026-02-24 04:41:02.548 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM device
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回4条记录
+2026-02-24 04:41:02.553 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9817
+2026-02-24 04:41:02.557 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:02.562 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM device
+            
+        , 返回1条记录
+2026-02-24 04:41:02.565 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM device
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回4条记录
+2026-02-24 04:41:02.571 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9818
+2026-02-24 04:41:03.383 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:03.389 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM model_config
+            
+        , 返回1条记录
+2026-02-24 04:41:03.393 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM model_config
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回1条记录
+2026-02-24 04:41:03.398 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9819
+2026-02-24 04:41:03.403 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:03.407 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM model_config
+            
+        , 返回1条记录
+2026-02-24 04:41:03.409 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM model_config
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回1条记录
+2026-02-24 04:41:03.415 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9820
+2026-02-24 04:41:04.137 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:04.141 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT * FROM class_index_banner WHERE is_deleted = 0 ORDER BY create_time DESC, 返回5条记录
+2026-02-24 04:41:04.147 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9821
+2026-02-24 04:41:04.152 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:04.155 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT * FROM class_index_banner WHERE is_deleted = 0 ORDER BY create_time DESC, 返回5条记录
+2026-02-24 04:41:04.162 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9822
+2026-02-24 04:41:07.432 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:07.439 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+        SELECT
+            COUNT(DISTINCT u.user_id) as total_users,
+            COUNT(DISTINCT o.user_id) as online_users,
+            COUNT(l.login_id) as total_logins
+        FROM sys_user u
+        LEFT JOIN sys_user_online o ON u.user_id = o.user_id AND o.status = 'on_line'
+        LEFT JOIN sys_login_log l ON u.user_name = l.user_name
+        WHERE u.is_deleted = 0
+    , 返回1条记录
+2026-02-24 04:41:07.441 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+        SELECT
+            l.login_id,
+            l.user_name,
+            l.ipaddr,
+            l.login_location,
+            l.login_time,
+            l.status,
+            u.avatar
+        FROM sys_login_log l
+        INNER JOIN sys_user u ON l.user_name = u.user_name
+        WHERE u.is_deleted = 0
+        ORDER BY l.login_time DESC
+        LIMIT 5
+    , 返回5条记录
+2026-02-24 04:41:07.447 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9823
+2026-02-24 04:41:07.452 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:07.456 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+        SELECT
+            COUNT(DISTINCT u.user_id) as total_users,
+            COUNT(DISTINCT o.user_id) as online_users,
+            COUNT(l.login_id) as total_logins
+        FROM sys_user u
+        LEFT JOIN sys_user_online o ON u.user_id = o.user_id AND o.status = 'on_line'
+        LEFT JOIN sys_login_log l ON u.user_name = l.user_name
+        WHERE u.is_deleted = 0
+    , 返回1条记录
+2026-02-24 04:41:07.459 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+        SELECT
+            l.login_id,
+            l.user_name,
+            l.ipaddr,
+            l.login_location,
+            l.login_time,
+            l.status,
+            u.avatar
+        FROM sys_login_log l
+        INNER JOIN sys_user u ON l.user_name = u.user_name
+        WHERE u.is_deleted = 0
+        ORDER BY l.login_time DESC
+        LIMIT 5
+    , 返回5条记录
+2026-02-24 04:41:07.463 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9824
+2026-02-24 04:41:09.718 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:09.725 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT * FROM sys_user WHERE user_id = :user_id AND is_deleted = 0, 返回1条记录
+2026-02-24 04:41:09.728 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9825
+2026-02-24 04:41:09.734 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:09.739 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT * FROM sys_user WHERE user_id = :user_id AND is_deleted = 0, 返回1条记录
+2026-02-24 04:41:09.742 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9826
+2026-02-24 04:41:15.802 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:15.814 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_config
+            
+        , 返回1条记录
+2026-02-24 04:41:15.817 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_config
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回10条记录
+2026-02-24 04:41:15.824 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9827
+2026-02-24 04:41:15.832 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:15.837 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_config
+            
+        , 返回1条记录
+2026-02-24 04:41:15.839 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_config
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回10条记录
+2026-02-24 04:41:15.846 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9828
+2026-02-24 04:41:17.980 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:17.984 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_notice
+            
+        , 返回1条记录
+2026-02-24 04:41:17.986 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_notice
+            
+            
+            LIMIT :limit OFFSET :offset
+        , 返回1条记录
+2026-02-24 04:41:17.988 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT notice_id FROM sys_notice_read WHERE user_id = :user_id AND is_read = 1, 返回1条记录
+2026-02-24 04:41:17.991 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9829
+2026-02-24 04:41:17.996 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:18.000 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_notice
+            
+        , 返回1条记录
+2026-02-24 04:41:18.003 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_notice
+            
+            
+            LIMIT :limit OFFSET :offset
+        , 返回1条记录
+2026-02-24 04:41:18.006 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: SELECT notice_id FROM sys_notice_read WHERE user_id = :user_id AND is_read = 1, 返回1条记录
+2026-02-24 04:41:18.010 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9830
+2026-02-24 04:41:18.776 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:18.782 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_login_log
+            
+        , 返回1条记录
+2026-02-24 04:41:18.785 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_login_log
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回10条记录
+2026-02-24 04:41:18.793 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9831
+2026-02-24 04:41:18.800 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:18.810 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_login_log
+            
+        , 返回1条记录
+2026-02-24 04:41:18.813 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+            SELECT *
+            FROM sys_login_log
+            
+            ORDER BY create_time DESC
+            LIMIT :limit OFFSET :offset
+        , 返回10条记录
+2026-02-24 04:41:18.821 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9832
+2026-02-24 04:41:23.888 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:23.893 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+        SELECT
+            COUNT(DISTINCT u.user_id) as total_users,
+            COUNT(DISTINCT o.user_id) as online_users,
+            COUNT(l.login_id) as total_logins
+        FROM sys_user u
+        LEFT JOIN sys_user_online o ON u.user_id = o.user_id AND o.status = 'on_line'
+        LEFT JOIN sys_login_log l ON u.user_name = l.user_name
+        WHERE u.is_deleted = 0
+    , 返回1条记录
+2026-02-24 04:41:23.896 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+        SELECT
+            l.login_id,
+            l.user_name,
+            l.ipaddr,
+            l.login_location,
+            l.login_time,
+            l.status,
+            u.avatar
+        FROM sys_login_log l
+        INNER JOIN sys_user u ON l.user_name = u.user_name
+        WHERE u.is_deleted = 0
+        ORDER BY l.login_time DESC
+        LIMIT 5
+    , 返回5条记录
+2026-02-24 04:41:23.900 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9833
+2026-02-24 04:41:23.906 | DEBUG    | master_tools.db_tools:execute:284 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:41:23.909 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+        SELECT
+            COUNT(DISTINCT u.user_id) as total_users,
+            COUNT(DISTINCT o.user_id) as online_users,
+            COUNT(l.login_id) as total_logins
+        FROM sys_user u
+        LEFT JOIN sys_user_online o ON u.user_id = o.user_id AND o.status = 'on_line'
+        LEFT JOIN sys_login_log l ON u.user_name = l.user_name
+        WHERE u.is_deleted = 0
+    , 返回1条记录
+2026-02-24 04:41:23.911 | DEBUG    | master_tools.db_tools:query:262 - 成功执行查询SQL: 
+        SELECT
+            l.login_id,
+            l.user_name,
+            l.ipaddr,
+            l.login_location,
+            l.login_time,
+            l.status,
+            u.avatar
+        FROM sys_login_log l
+        INNER JOIN sys_user u ON l.user_name = u.user_name
+        WHERE u.is_deleted = 0
+        ORDER BY l.login_time DESC
+        LIMIT 5
+    , 返回5条记录
+2026-02-24 04:41:23.915 | DEBUG    | master_tools.db_tools:insert:358 - 成功插入记录到表 sys_oper_log, ID: 9834
+2026-02-24 04:43:11.274 | INFO     | master_tools.logger_tool:setup_logging:105 - setup logging success for module: pydevd
+2026-02-24 04:43:12.518 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:61 - [ModelConfigService] Loaded 6 classes: ['learning_to_copy', 'looking_around', 'sharing_answers', 'sleeping', 'staff', 'using_mobile']
+2026-02-24 04:43:12.520 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:107 - [ModelConfigService] Loaded 6 colors
+2026-02-24 04:43:12.520 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:128 - [ModelConfigService] Config loaded and cached: ClassAI-8n
+2026-02-24 04:43:12.520 | INFO     | __main__:lifespan:16 - {'model_id': 1, 'model_path': '/Users/dock4chips/Script-P/classai-edu/yolo_edu/dodge_project/classai_model/weights/best.pt', 'model_name': 'ClassAI-8n', 'model_version': 'v1.0', 'model_type': 'yolov8', 'input_size': 640, 'num_classes': 6, 'class_names': ['learning_to_copy', 'looking_around', 'sharing_answers', 'sleeping', 'staff', 'using_mobile'], 'class_map': {0: 'learning_to_copy', 1: 'looking_around', 2: 'sharing_answers', 3: 'sleeping', 4: 'staff', 5: 'using_mobile'}, 'colors': {'learning_to_copy': (0, 0, 255), 'looking_around': (0, 255, 255), 'sharing_answers': (0, 255, 0), 'sleeping': (255, 0, 0), 'staff': (255, 0, 255), 'using_mobile': (255, 255, 0)}, 'border_thickness': 2, 'font_scale': 0.5}
+2026-02-24 04:43:15.268 | DEBUG    | master_tools.db_tools:execute:192 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:43:15.273 | DEBUG    | master_tools.db_tools:execute:192 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:43:15.277 | DEBUG    | master_tools.db_tools:execute:192 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:43:33.608 | DEBUG    | master_tools.db_tools:execute:192 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0
+2026-02-24 04:43:33.626 | DEBUG    | master_tools.db_tools:execute:192 - 成功执行写操作SQL: UPDATE sys_user_online SET last_access_time = :last_access_time WHERE session_id = :id_value, 影响行数: 0

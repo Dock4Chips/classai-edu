@@ -29,18 +29,27 @@ pub_sys_notice_router = APIRouter(prefix='/api/sys/notice')
 
 
 @pub_sys_notice_router.get('/list')
-async def list_notice_public(page: int = Query(1, ge=1),
-                             page_size: int = Query(10, ge=1, le=100),
-                             notice_title: str | None = None,
-                             notice_type: str | None = None):
+async def list_notice_public(
+        page: int = Query(1, ge=1),
+        page_size: int = Query(10, ge=1, le=100),
+        notice_title: str | None = None,
+        notice_type: str | None = None
+):
     """公开接口：分页查询通知列表（只返回正常状态）"""
-    filters = {'status': '0'}  # 只返回正常状态
+    filters = {"status": "0"}  # 只返回正常状态
     if notice_title:
-        filters['notice_title'] = notice_title
+        filters["notice_title"] = notice_title
     if notice_type:
-        filters['notice_type'] = notice_type
+        filters["notice_type"] = notice_type
 
-    result = page_list_notice(page, page_size, filters)
+    result = page_list_notice(
+        page=page,
+        page_size=page_size,
+        filters=filters,
+        order_by=[("create_time", "desc")],  # 默认按创建时间倒序
+        select_fields=None  # None 表示查所有字段
+    )
+
     return Res.ok(result)
 
 

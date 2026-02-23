@@ -1,6 +1,8 @@
+import math
+
 from sqlmodel import SQLModel, Session, create_engine
 from sqlalchemy import text
-from typing import List, Optional, Any, Dict, Union
+from typing import List, Optional, Any, Dict, Union, Tuple
 import os
 from datetime import datetime
 
@@ -83,93 +85,68 @@ class DBTools:
     def page(
             self,
             table: str,
-            page: int,
-            page_size: int,
+            page: int = 1,
+            page_size: int = 10,
             filters: Optional[Dict[str, Any]] = None,
-            remove_fields: Optional[List[str]] = None,
-            order_by: Optional[str] = None
+            order_by: Optional[List[Tuple[str, str]]] = None,
+            select_fields: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
-        """
-        通用分页查询
-        通用分页查询（默认过滤 is_deleted = 0）
-        :param table: 表名
-        :param page: 当前页码（从1开始）
-        :param page_size: 每页条数
-        :param filters: 查询条件字典（None 或字段=值）
-        :param remove_fields: 查询结果中需要移除的字段列表
-        :param order_by: 排序规则
-        :return: 分页结果（records / total / page / page_size）
-        """
+
+        if page < 1:
+            page = 1
         filters = filters or {}
-
-        # ===== 默认软删除条件（如果用户没传）=====
-        if "is_deleted" not in filters:
-            filters["is_deleted"] = 0
-
-        remove_fields = remove_fields or []
         offset = (page - 1) * page_size
-
-        # ===== 查询表字段（防止字段不存在报错）=====
-        try:
-            columns = {
-                row["Field"]
-                for row in self.query(f"SHOW COLUMNS FROM {table}")
-            }
-        except Exception:
-            columns = set()
-
-        where_clauses = []
-        params = {}
-
-        for key, value in filters.items():
-            # 字段不存在，直接忽略
-            if key not in columns:
+        select_sql = ", ".join(select_fields) if select_fields else "*"
+        where_parts = []
+        params: Dict[str, Any] = {}
+        for k, v in filters.items():
+            if v is None:
                 continue
-
-            if value is None:
-                continue
-
-            if isinstance(value, str) and "%" in value:
-                where_clauses.append(f"{key} LIKE :{key}")
+            if isinstance(v, str) and "%" in v:
+                where_parts.append(f"{k} LIKE :{k}")
             else:
-                where_clauses.append(f"{key} = :{key}")
+                where_parts.append(f"{k} = :{k}")
+            params[k] = v
+        where_sql = ""
+        if where_parts:
+            where_sql = "WHERE " + " AND ".join(where_parts)
 
-            params[key] = value
-
-        where_sql = f"WHERE {' AND '.join(where_clauses)}" if where_clauses else ""
-        order_sql = f"ORDER BY {order_by}" if order_by else ""
-
-        total_sql = f"""
+        order_sql = ""
+        if order_by:
+            order_items = [
+                f"{col} {direction.upper()}"
+                for col, direction in order_by
+            ]
+            order_sql = "ORDER BY " + ", ".join(order_items)
+        count_sql = f"""
             SELECT COUNT(1) AS total
             FROM {table}
             {where_sql}
         """
-        total = self.query(total_sql, params)[0]["total"]
-
-        page_sql = f"""
-            SELECT *
+        total_result = self.query(count_sql, params)
+        total = total_result[0]["total"] if total_result else 0
+        params.update({
+            "limit": page_size,
+            "offset": offset
+        })
+        data_sql = f"""
+            SELECT {select_sql}
             FROM {table}
             {where_sql}
             {order_sql}
             LIMIT :limit OFFSET :offset
         """
-
-        params.update({
-            "limit": page_size,
-            "offset": offset
-        })
-
-        records = self.query(page_sql, params)
-
-        for row in records:
-            for f in remove_fields:
-                row.pop(f, None)
+        records = self.query(data_sql, params)
+        pages = math.ceil(total / page_size) if page_size else 0
 
         return {
             "records": records,
             "total": total,
-            "page": page,
-            "page_size": page_size
+            "size": page_size,
+            "current": page,
+            "pages": pages,
+            "hasNext": page < pages,
+            "hasPrevious": page > 1,
         }
 
     def query(self, sql: str, params: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
@@ -190,34 +167,10 @@ class DBTools:
                         row_dict = dict(row._mapping)
                         results.append(row_dict)
 
-                    log.debug(f"成功执行查询SQL: {sql}, 返回{len(results)}条记录")
                     return results
 
             except Exception as e:
                 log.error(f"执行查询SQL失败: {sql}, 错误: {str(e)}")
-                raise
-
-    def execute(self, sql: str, params: Optional[Dict[str, Any]] = None) -> int:
-        """
-        执行写操作SQL（INSERT/UPDATE/DELETE等）
-        :param sql: 写操作SQL语句
-        :param params: SQL参数
-        :return: 受影响的行数
-        """
-        with self.db_config.get_session() as session:
-            try:
-                with session.connection() as conn:
-                    query = text(sql)
-                    result_proxy = conn.execute(query, params or {})
-                    session.commit()
-
-                    affected_rows = result_proxy.rowcount
-                    log.debug(f"成功执行写操作SQL: {sql}, 影响行数: {affected_rows}")
-                    return affected_rows
-
-            except Exception as e:
-                session.rollback()
-                log.error(f"执行写操作SQL失败: {sql}, 错误: {str(e)}")
                 raise
 
     def get_by_id(self, table: str, id_column: str, id_value: Any) -> Optional[Dict[str, Any]]:
@@ -286,7 +239,6 @@ class DBTools:
 
                     # 尝试获取最后插入的ID
                     last_id = result.lastrowid
-                    log.debug(f"成功插入记录到表 {table}, ID: {last_id}")
                     return last_id if last_id else result.rowcount
 
             except Exception as e:
@@ -367,6 +319,29 @@ class DBTools:
         # 对于写操作，调用execute方法
         else:
             return self.execute(sql, params)
+
+    def execute(self, sql: str, params: Optional[Dict[str, Any]] = None) -> int:
+        """
+        执行写操作SQL（INSERT/UPDATE/DELETE等）
+        :param sql: 写操作SQL语句
+        :param params: SQL参数
+        :return: 受影响的行数
+        """
+        with self.db_config.get_session() as session:
+            try:
+                with session.connection() as conn:
+                    query = text(sql)
+                    result_proxy = conn.execute(query, params or {})
+                    session.commit()
+
+                    affected_rows = result_proxy.rowcount
+                    log.debug(f"成功执行写操作SQL: {sql}, 影响行数: {affected_rows}")
+                    return affected_rows
+
+            except Exception as e:
+                session.rollback()
+                log.error(f"执行写操作SQL失败: {sql}, 错误: {str(e)}")
+                raise
 
 
 if __name__ == '__main__':

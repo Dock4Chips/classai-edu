@@ -1,0 +1,44 @@
+2026-02-24 04:20:43.056 | ERROR    | master_tools.db_tools:query:266 - 执行查询SQL失败: 
+            SELECT COUNT(1) AS total
+            FROM sys_user
+            WHERE username = :username
+        , 错误: (pymysql.err.OperationalError) (1054, "Unknown column 'username' in 'where clause'")
+[SQL: 
+            SELECT COUNT(1) AS total
+            FROM sys_user
+            WHERE username = %(username)s
+        ]
+[parameters: {'username': 'admin'}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-02-24 04:20:58.549 | ERROR    | master_tools.db_tools:query:266 - 执行查询SQL失败: 
+            SELECT username, email
+            FROM sys_user
+            WHERE user_name = :user_name
+            ORDER BY id DESC
+            LIMIT :limit OFFSET :offset
+        , 错误: (pymysql.err.OperationalError) (1054, "Unknown column 'username' in 'field list'")
+[SQL: 
+            SELECT username, email
+            FROM sys_user
+            WHERE user_name = %(user_name)s
+            ORDER BY id DESC
+            LIMIT %(limit)s OFFSET %(offset)s
+        ]
+[parameters: {'user_name': 'admin', 'limit': 10, 'offset': 0}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-02-24 04:21:23.860 | ERROR    | master_tools.db_tools:query:266 - 执行查询SQL失败: 
+            SELECT user_name, email
+            FROM sys_user
+            WHERE user_name = :user_name
+            ORDER BY id DESC
+            LIMIT :limit OFFSET :offset
+        , 错误: (pymysql.err.OperationalError) (1054, "Unknown column 'id' in 'order clause'")
+[SQL: 
+            SELECT user_name, email
+            FROM sys_user
+            WHERE user_name = %(user_name)s
+            ORDER BY id DESC
+            LIMIT %(limit)s OFFSET %(offset)s
+        ]
+[parameters: {'user_name': 'admin', 'limit': 10, 'offset': 0}]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)

@@ -17,8 +17,21 @@ def get_user_by_username(user_name: str):
                     {'user_name': user_name})
 
 
-def page_list_user(page: int,page_size: int,filters: Dict[str, Any] | None = None,remove_fields: list | None = None) -> Dict[str, Any]:
-    return db.page('sys_user',page,page_size,filters,remove_fields)
+def page_list_user(
+        page: int = 1,
+        page_size: int = 10,
+        filters: dict | None = None,
+        order_by: list[tuple[str, str]] | None = None,
+        select_fields: list[str] | None = None
+) -> dict:
+    return db.page(
+        table="sys_user",
+        page=page,
+        page_size=page_size,
+        filters=filters,
+        order_by=order_by,
+        select_fields=select_fields
+    )
 
 
 @db_fill('insert')
@@ -31,7 +44,15 @@ def create_user(data: dict):
 def update_user(user_id: int, data: dict):
     db.update('sys_user', 'user_id', user_id, data)
 
+
 @db_fill('update')
 def delete_user(user_id: int):
     """软删除用户"""
     db.update('sys_user', 'user_id', user_id, {'is_deleted': 1})
+
+
+if __name__ == '__main__':
+    username = 'admin'
+    result = page_list_user(page=1,page_size=10,order_by=[('user_id','desc')])
+
+    print(result)

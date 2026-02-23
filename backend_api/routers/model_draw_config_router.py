@@ -24,7 +24,12 @@ async def list_model_draw_config(
     page_size: int = Query(10, ge=1, le=100)
 ):
     """分页查询绘图配置列表"""
-    result = page_list_model_draw_config(page, page_size)
+    result = page_list_model_draw_config(
+        page=page,
+        page_size=page_size,
+        order_by=[("create_time","desc")],
+        select_fields=None
+    )
     return Res.ok(result)
 
 

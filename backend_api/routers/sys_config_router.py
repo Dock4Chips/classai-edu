@@ -18,18 +18,22 @@ pro_sys_config_router = APIRouter(
 
 
 @pro_sys_config_router.get('/list')
-async def list_config(page: int = Query(1, ge=1),
-                      page_size: int = Query(10, ge=1, le=100),
-                      config_name: str | None = None,
-                      group_name: str | None = None):
+async def list_config(
+        page: int = Query(1, ge=1),
+        page_size: int = Query(10, ge=1, le=100),
+        config_name: str | None = None,
+        group_name: str | None = None
+):
     """分页查询配置列表"""
-    filters = {}
-    if config_name:
-        filters['config_name'] = config_name
-    if group_name:
-        filters['group_name'] = group_name
+    filters = {k: v for k, v in {"config_name": config_name, "group_name": group_name}.items() if v is not None}
 
-    result = page_list_config(page, page_size, filters)
+    result = page_list_config(
+        page=page,
+        page_size=page_size,
+        filters=filters,
+        order_by=[("create_time", "desc")]
+    )
+
     return Res.ok(result)
 
 
