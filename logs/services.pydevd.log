@@ -1,0 +1,21 @@
+2026-02-24 04:05:23.653 | INFO     | master_tools.logger_tool:setup_logging:105 - setup logging success for module: pydevd
+2026-02-24 04:05:41.977 | INFO     | master_tools.logger_tool:setup_logging:105 - setup logging success for module: pydevd
+2026-02-24 04:05:43.266 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: SHOW COLUMNS FROM model_config, 返回24条记录
+2026-02-24 04:05:43.268 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: 
+            SELECT COUNT(1) AS total
+            FROM model_config
+            WHERE is_deleted = :is_deleted
+        , 返回1条记录
+2026-02-24 04:05:43.269 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: 
+            SELECT *
+            FROM model_config
+            WHERE is_deleted = :is_deleted
+            
+            LIMIT :limit OFFSET :offset
+        , 返回1条记录
+2026-02-24 04:05:43.271 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: SELECT * FROM model_class WHERE model_id = :model_id AND is_deleted = :is_deleted, 返回6条记录
+2026-02-24 04:05:43.272 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:61 - [ModelConfigService] Loaded 6 classes: ['learning_to_copy', 'looking_around', 'sharing_answers', 'sleeping', 'staff', 'using_mobile']
+2026-02-24 04:05:43.274 | DEBUG    | master_tools.db_tools:query:255 - 成功执行查询SQL: SELECT * FROM model_draw_config WHERE model_id = :model_id AND is_deleted = :is_deleted, 返回6条记录
+2026-02-24 04:05:43.274 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:107 - [ModelConfigService] Loaded 6 colors
+2026-02-24 04:05:43.274 | INFO     | yolo_edu.services.model_config_service:load_active_model_config:128 - [ModelConfigService] Config loaded and cached: ClassAI-8n
+2026-02-24 04:05:43.274 | INFO     | __main__:lifespan:16 - {'model_id': 1, 'model_path': '/Users/dock4chips/Script-P/classai-edu/yolo_edu/dodge_project/classai_model/weights/best.pt', 'model_name': 'ClassAI-8n', 'model_version': 'v1.0', 'model_type': 'yolov8', 'input_size': 640, 'num_classes': 6, 'class_names': ['learning_to_copy', 'looking_around', 'sharing_answers', 'sleeping', 'staff', 'using_mobile'], 'class_map': {0: 'learning_to_copy', 1: 'looking_around', 2: 'sharing_answers', 3: 'sleeping', 4: 'staff', 5: 'using_mobile'}, 'colors': {'learning_to_copy': (0, 0, 255), 'looking_around': (0, 255, 255), 'sharing_answers': (0, 255, 0), 'sleeping': (255, 0, 0), 'staff': (255, 0, 255), 'using_mobile': (255, 255, 0)}, 'border_thickness': 2, 'font_scale': 0.5}
