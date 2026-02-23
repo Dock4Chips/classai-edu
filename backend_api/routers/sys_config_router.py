@@ -10,6 +10,7 @@ from repository.sys_config_repository import (
     update_config,
     delete_config
 )
+from schema.sys_config_schema import ConfigQuerySchema, ConfigCreateSchema, ConfigUpdateSchema
 
 pro_sys_config_router = APIRouter(
     prefix='/api/sys/config',
@@ -18,22 +19,14 @@ pro_sys_config_router = APIRouter(
 
 
 @pro_sys_config_router.get('/list')
-async def list_config(
-        page: int = Query(1, ge=1),
-        page_size: int = Query(10, ge=1, le=100),
-        config_name: str | None = None,
-        group_name: str | None = None
-):
-    """分页查询配置列表"""
-    filters = {k: v for k, v in {"config_name": config_name, "group_name": group_name}.items() if v is not None}
-
+async def list_config(query: ConfigQuerySchema = Depends()):
+    filters = {k: v for k, v in {"config_name": query.config_name, "group_name": query.group_name}.items() if v is not None}
     result = page_list_config(
-        page=page,
-        page_size=page_size,
+        page=query.page,
+        page_size=query.page_size,
         filters=filters,
         order_by=[("create_time", "desc")]
     )
-
     return Res.ok(result)
 
 
@@ -56,31 +49,24 @@ async def get_config_by_key_endpoint(config_key: str):
 
 
 @pro_sys_config_router.post('')
-async def add_config(data: dict = Body(...)):
-    """新增配置"""
-    # 检查配置键是否已存在
-    existing = get_config_by_key(data.get('config_key'))
+async def add_config(data: ConfigCreateSchema):
+    existing = get_config_by_key(data.config_key)
     if existing:
         raise ServiceException(msg="配置键已存在")
-
-    create_config(data)
+    create_config(data.dict())
     return Res.ok("新增成功")
 
 
 @pro_sys_config_router.put('/{config_id}')
-async def edit_config(config_id: int, data: dict = Body(...)):
-    """修改配置"""
+async def edit_config(config_id: int, data: ConfigUpdateSchema):
     config_list = get_config_by_id(config_id)
     if not config_list:
         raise ServiceException(msg="配置不存在")
-
-    # 如果修改了 config_key，检查是否重复
-    if 'config_key' in data and data['config_key'] != config_list[0]['config_key']:
-        existing = get_config_by_key(data['config_key'])
+    if 'config_key' in data.dict(exclude_unset=True) and data.config_key != config_list[0]['config_key']:
+        existing = get_config_by_key(data.config_key)
         if existing:
             raise ServiceException(msg="配置键已存在")
-
-    update_config(config_id, data)
+    update_config(config_id, data.dict(exclude_unset=True))
     return Res.ok("修改成功")
 
 

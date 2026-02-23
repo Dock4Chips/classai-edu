@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Body
 from auth.authorization import Authorization
 from models.exceptions import ServiceException
 from models.result import Res
@@ -10,6 +10,7 @@ from repository.model_class_repository import (
     update_model_class,
     delete_model_class
 )
+from schema.model_class_schema import ModelClassCreateSchema, ModelClassUpdateSchema
 
 pro_model_class_router = APIRouter(
     prefix='/api/model/class',
@@ -49,16 +50,13 @@ async def get_model_class(class_id: int):
 
 
 @pro_model_class_router.post('')
-async def add_model_class(data: dict):
-    """新增模型类别"""
-    create_model_class(data)
+async def add_model_class(data: ModelClassCreateSchema = Body(...)):
+    create_model_class(data.dict())
     return Res.ok("新增成功")
 
-
 @pro_model_class_router.put('/{class_id}')
-async def edit_model_class(class_id: int, data: dict):
-    """修改模型类别"""
-    update_model_class(class_id, data)
+async def edit_model_class(class_id: int, data: ModelClassUpdateSchema = Body(...)):
+    update_model_class(class_id, data.dict(exclude_unset=True))
     return Res.ok("修改成功")
 
 

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Body
 from auth.authorization import Authorization
 from models.exceptions import ServiceException
 from models.result import Res
@@ -10,6 +10,7 @@ from repository.model_draw_config_repository import (
     update_model_draw_config,
     delete_model_draw_config
 )
+from schema.model_draw_config_schema import ModelDrawConfigCreateSchema, ModelDrawConfigUpdateSchema
 from tools.color_tool import update_color_from_hex
 
 pro_model_draw_config_router = APIRouter(
@@ -50,25 +51,20 @@ async def get_model_draw_config(config_id: int):
 
 
 @pro_model_draw_config_router.post('')
-async def add_model_draw_config(data: dict):
-    """新增绘图配置"""
-    # 如果前端传了 color_hex，自动生成 color_rgb 和 color_bgr
-    data = update_color_from_hex(data)
-    create_model_draw_config(data)
+async def add_model_draw_config(data: ModelDrawConfigCreateSchema = Body(...)):
+    payload = update_color_from_hex(data.dict())
+    create_model_draw_config(payload)
     return Res.ok("新增成功")
 
 
 @pro_model_draw_config_router.put('/{config_id}')
-async def edit_model_draw_config(config_id: int, data: dict):
-    """修改绘图配置"""
-    # 如果前端传了 color_hex，自动生成 color_rgb 和 color_bgr
-    data = update_color_from_hex(data)
-    update_model_draw_config(config_id, data)
+async def edit_model_draw_config(config_id: int, data: ModelDrawConfigUpdateSchema = Body(...)):
+    payload = update_color_from_hex(data.dict(exclude_unset=True))
+    update_model_draw_config(config_id, payload)
     return Res.ok("修改成功")
 
 
 @pro_model_draw_config_router.delete('/{config_id}')
 async def remove_model_draw_config(config_id: int):
-    """删除绘图配置"""
     delete_model_draw_config(config_id)
     return Res.ok("删除成功")

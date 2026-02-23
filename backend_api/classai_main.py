@@ -12,8 +12,7 @@ from yolo_edu.services.model_config_service import ModelConfigService
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    model_config =  ModelConfigService.load_active_model_config()
-    log.info(model_config)
+    ModelConfigService.load_active_model_config()
     yield
 
 

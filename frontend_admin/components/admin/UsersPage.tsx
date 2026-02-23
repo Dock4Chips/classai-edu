@@ -140,8 +140,8 @@ export default function UsersPage() {
     const fetchUsers = async () => {
         setLoading(true);
         const params = buildParams({
-            page: queryParams.current,
-            page_size: queryParams.pageSize,
+            page: Number(queryParams.current),
+            page_size: Number(queryParams.pageSize),
             user_name: queryParams.user_name,
             email: queryParams.email,
         });
