@@ -1,16 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-模型配置服务
-从数据库加载模型配置、类别配置和绘图配置
-
-职责边界：
-- 从数据库加载配置
-- 缓存配置（进程级，单活模型）
-- 提供统一的配置获取接口
-- 不依赖 YOLOConfig（是最底层）
-- 不做热更新（重启进程模型）
-"""
-
 import ast
 from typing import Dict, List, Tuple
 from master_tools.logger_tool import log
@@ -34,31 +21,12 @@ class ModelConfigService:
 
     @classmethod
     def load_active_model_config(cls) -> Dict:
-        """
-        加载激活的模型配置（内部方法，带缓存）
-
-        Returns:
-            {
-                'model_id': int,
-                'model_path': str,
-                'model_name': str,
-                'model_version': str,
-                'model_type': str,
-                'input_size': int,
-                'num_classes': int,
-                'class_names': List[str],  # 按 class_index 排序
-                'class_map': Dict[int, str],  # {class_index: class_name}
-                'colors': Dict[str, Tuple[int, int, int]],  # {class_name: (B, G, R)}
-                'border_thickness': int,
-                'font_scale': float,
-            }
-        """
         # 已缓存，直接返回
         if cls._cached_config is not None:
             return cls._cached_config
 
 
-        # 1️⃣ 获取默认模型或激活的模型
+        # 获取默认模型或激活的模型
         result = page_list_model(1, 100, {'is_deleted': 0})
         models = result.get('records', [])
 
@@ -81,24 +49,9 @@ class ModelConfigService:
         if active_model is None:
             active_model = models[0]  # 兜底：用第一个
 
-        # 打印原始数据用于调试
-        log.info(f"[ModelConfigService] Selected model data: {active_model}")
-
-        # 安全获取字段
         model_id = active_model.get('model_id')
-        if not model_id:
-            raise RuntimeError(f"model_id is missing in model_config: {active_model}")
 
-        model_name = active_model.get('model_name', 'Unknown')
-        model_path = active_model.get('model_path')
-
-        log.info(f"[ModelConfigService] Loading model_id={model_id}, name={model_name}, path={model_path}")
-
-        # 2️⃣ 加载类别配置（按 class_index 排序）
-        log.info(f"[ModelConfigService] Loading classes for model_id={model_id}")
         classes = get_model_class_by_model_id(model_id)
-        if not classes:
-            raise RuntimeError(f"No classes found for model_id: {model_id}")
 
         # 按 class_index 排序（YOLO 系统要求索引顺序正确）
         sorted_classes = sorted(classes, key=lambda x: x['class_index'])
@@ -107,7 +60,6 @@ class ModelConfigService:
 
         log.info(f"[ModelConfigService] Loaded {len(class_names)} classes: {class_names}")
 
-        # 3️⃣ 加载绘图配置（颜色）
         draw_configs = get_model_draw_config_by_model_id(model_id)
 
         colors = {}
@@ -156,19 +108,6 @@ class ModelConfigService:
         else:
             log.warning(f"[ModelConfigService] No draw configs for model_id={model_id}, using default colors")
 
-            # 默认颜色（6个常用颜色）
-            default_colors = [
-                (255, 0, 0),      # 蓝 (B, G, R)
-                (0, 255, 0),      # 绿
-                (0, 0, 255),      # 红
-                (255, 255, 0),    # 青
-                (255, 0, 255),    # 洋红
-                (0, 255, 255),    # 黄
-            ]
-            for i, class_name in enumerate(class_names):
-                colors[class_name] = default_colors[i % len(default_colors)]
-
-        # 4️⃣ 构建配置字典
         config = {
             'model_id': model_id,
             'model_path': active_model['model_path'],
@@ -189,8 +128,6 @@ class ModelConfigService:
         log.info(f"[ModelConfigService] Config loaded and cached: {active_model['model_name']}")
 
         return config
-
-    # ==================== 公开接口 ====================
 
     @classmethod
     def get_model_path(cls) -> str:

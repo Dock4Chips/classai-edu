@@ -1,5 +1,8 @@
-import torch
 import sys
+import torch
+
+print(torch.backends.mps.is_available())
+print(torch.backends.mps.is_built())
 
 print(f"PyTorch version: {torch.__version__}")
 print(f"Python version: {sys.version}")
