@@ -9,9 +9,9 @@ from repository.class_index_banner_repository import (
     update_banner,
     delete_banner, count_banners
 )
-from services.detetion.detect_service import frame_to_np, process_image_detection
+from services.detect_service import frame_to_np, process_image_detection
 from tools.file_tool import delete_minio_file
-from yolo_edu.core import Det, YOLOConfig
+from yolo_edu.services.model_config_service import ModelConfigService
 
 pub_class_index_banner_router = APIRouter(prefix='/api/class/index/banner')
 
@@ -36,7 +36,6 @@ async def add_banner(file: UploadFile = File(...)):
     img = await frame_to_np(file)
     _, image_url, serialized = process_image_detection(img)
 
-    detector = Det()
 
     insert_data = {
         "resource_type": "image",
@@ -45,9 +44,9 @@ async def add_banner(file: UploadFile = File(...)):
         "height": serialized["height"],
         "fps": None,
         "model_id": None,
-        "model_name": YOLOConfig.DEFAULT_MODEL,
+        "model_name": ModelConfigService.get_model_path(),
         "model_version": "v1.0",
-        "conf_threshold": detector.conf,
+        "conf_threshold": None,
         "iou_threshold": 0.45,
         "num_boxes": serialized["num_boxes"],
         "cls_counts": serialized["cls_counts_json"],

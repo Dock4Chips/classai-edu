@@ -70,13 +70,7 @@ const mainMenuItems: MenuItem[] = [
         label: 'Banners',
         icon: <ImageIcon className="w-5 h-5"/>,
         path: '/admin/banners',
-    },
-    {
-        key: 'realtime-detection',
-        label: 'Realtime Detection',
-        icon: <Video className="w-5 h-5"/>,
-        path: '/admin/realtime-detection',
-    },
+    }
 ];
 
 // Settings 模块菜单 - 系统配置

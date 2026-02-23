@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 
+from .predict_ws_router import predict_ws_router
 from .identity_router import pro_identity_router, pub_identity_router
 from .class_index_banner_router import pub_class_index_banner_router, pro_class_index_banner_router
 from .sys_user_router import pro_sys_user_router
@@ -12,10 +13,6 @@ from .model_config_router import pro_model_config_router
 from .model_class_router import pro_model_class_router
 from .model_draw_config_router import pro_model_draw_config_router
 from .device_router import pro_device_router
-from .detection_task_router import pro_detection_task_router
-from .detection_result_router import pro_detection_result_router
-from .detection_stream_router import pro_detection_stream_router
-from .chat_stream_router import pro_chat_router
 
 api_router = APIRouter()
 
@@ -35,9 +32,7 @@ api_router.include_router(pro_model_config_router)
 api_router.include_router(pro_model_class_router)
 api_router.include_router(pro_model_draw_config_router)
 api_router.include_router(pro_device_router)
-api_router.include_router(pro_detection_task_router)
-api_router.include_router(pro_detection_result_router)
-api_router.include_router(pro_detection_stream_router)
-api_router.include_router(pro_chat_router)
+
+api_router.include_router(predict_ws_router)
 
 

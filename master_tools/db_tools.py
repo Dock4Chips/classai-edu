@@ -3,9 +3,8 @@ from sqlalchemy import text
 from typing import List, Optional, Any, Dict, Union
 import os
 from datetime import datetime
-from master_tools.logger_tool import logging_config
 
-log = logging_config.setup_basic_logging()
+from master_tools.logger_tool import log
 
 
 # MySQL数据库配置

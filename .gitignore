@@ -8,7 +8,5 @@ yolo_edu/datasets/active/
 *.zip
 
 yolo_edu/datasets/*.mp4
-req_lib/**
-logs/*.log
 
 .DS_Store
