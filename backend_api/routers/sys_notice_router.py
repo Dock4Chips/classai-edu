@@ -11,6 +11,7 @@ from repository.sys_notice_repository import (
     update_notice,
     delete_notice
 )
+from schema.sys_notice_schema import NoticeListQuerySchema, NoticeCreateUpdateSchema
 from tools.security_tool import SecurityTool
 from repository.sys_notice_read_repository import (
     get_unread_notice_count,
@@ -29,27 +30,20 @@ pub_sys_notice_router = APIRouter(prefix='/api/sys/notice')
 
 
 @pub_sys_notice_router.get('/list')
-async def list_notice_public(
-        page: int = Query(1, ge=1),
-        page_size: int = Query(10, ge=1, le=100),
-        notice_title: str | None = None,
-        notice_type: str | None = None
-):
-    """公开接口：分页查询通知列表（只返回正常状态）"""
-    filters = {"status": "0"}  # 只返回正常状态
-    if notice_title:
-        filters["notice_title"] = notice_title
-    if notice_type:
-        filters["notice_type"] = notice_type
+async def list_notice_public(query: NoticeListQuerySchema = Depends()):
+    filters = {"status": "0"}
+    if query.notice_title:
+        filters["notice_title"] = query.notice_title
+    if query.notice_type:
+        filters["notice_type"] = query.notice_type
 
     result = page_list_notice(
-        page=page,
-        page_size=page_size,
+        page=query.page,
+        page_size=query.page_size,
         filters=filters,
-        order_by=[("create_time", "desc")],  # 默认按创建时间倒序
-        select_fields=None  # None 表示查所有字段
+        order_by=[("create_time", "desc")],
+        select_fields=None
     )
-
     return Res.ok(result)
 
 
@@ -64,25 +58,6 @@ async def get_notice_public(notice_id: int):
     return Res.ok(notice_list[0])
 
 
-@pro_sys_notice_router.get('/list')
-async def list_notice(page: int = Query(1, ge=1),
-                      page_size: int = Query(10, ge=1, le=100),
-                      notice_title: str | None = None,
-                      notice_type: str | None = None,
-                      status: str | None = None):
-    """分页查询通知列表（管理员可查看所有）"""
-    filters = {}
-    if notice_title:
-        filters['notice_title'] = notice_title
-    if notice_type:
-        filters['notice_type'] = notice_type
-    if status:
-        filters['status'] = status
-
-    result = page_list_notice(page, page_size, filters)
-    return Res.ok(result)
-
-
 @pro_sys_notice_router.get('/{notice_id}')
 async def get_notice(notice_id: int):
     """根据ID获取通知"""
@@ -93,20 +68,18 @@ async def get_notice(notice_id: int):
 
 
 @pro_sys_notice_router.post('')
-async def add_notice(data: dict = Body(...)):
-    """新增通知"""
-    create_notice(data)
+async def add_notice(data: NoticeCreateUpdateSchema = Body(...)):
+    create_notice(data.dict())
     return Res.ok("新增成功")
 
 
 @pro_sys_notice_router.put('/{notice_id}')
-async def edit_notice(notice_id: int, data: dict = Body(...)):
-    """修改通知"""
+async def edit_notice(notice_id: int, data: NoticeCreateUpdateSchema = Body(...)):
     notice_list = get_notice_by_id(notice_id)
     if not notice_list:
         raise ServiceException(msg="通知不存在")
 
-    update_notice(notice_id, data)
+    update_notice(notice_id, data.dict())
     return Res.ok("修改成功")
 
 
@@ -140,23 +113,15 @@ async def list_notices_with_read_status(page: int = Query(1, ge=1),
 
 @pro_sys_notice_router.post('/{notice_id}/read')
 async def mark_as_read(notice_id: int):
-    """标记通知为已读"""
-
     user_id = SecurityTool.get_user_id()
-
-    # 检查是否已有记录
     existing = get_user_notice_read_status(user_id, notice_id)
-
     if existing:
-        # 更新已有记录
         update_notice_read(existing[0]['id'], {'is_read': 1, 'read_time': datetime.now()})
     else:
-        # 创建新记录
         create_notice_read({
             'notice_id': notice_id,
             'user_id': user_id,
             'is_read': 1,
             'read_time': datetime.now()
         })
-
     return Res.ok("标记成功")

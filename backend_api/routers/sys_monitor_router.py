@@ -7,6 +7,7 @@ from repository.sys_user_online_repository import (
     update_online_user,
     force_offline_by_user_id
 )
+from schema.sys_monitor_schema import LoginLogQuerySchema, OnlineUserQuerySchema
 
 pro_sys_monitor_router = APIRouter(
     prefix='/api/sys/monitor',
@@ -15,38 +16,21 @@ pro_sys_monitor_router = APIRouter(
 
 
 @pro_sys_monitor_router.get('/login/log/list')
-async def list_login_log(
-        page: int = Query(1, ge=1),
-        page_size: int = Query(10, ge=1, le=100),
-        user_name: str | None = None,
-        status: str | None = None
-):
-    """分页查询登录日志"""
-    filters = {k: v for k, v in {"user_name": user_name, "status": status}.items() if v is not None}
-
+async def list_login_log(query: LoginLogQuerySchema = Depends()):
+    filters = {k: v for k, v in {"user_name": query.user_name, "status": query.status}.items() if v is not None}
     result = page_list_login_log(
-        page=page,
-        page_size=page_size,
+        page=query.page,
+        page_size=query.page_size,
         filters=filters,
-        order_by=[("create_time", "desc")]
+        order_by=[("create_time","desc")]
     )
-
     return Res.ok(result)
 
 
 @pro_sys_monitor_router.get('/user/online/list')
-async def list_online_users(page: int = Query(1, ge=1),
-                            page_size: int = Query(10, ge=1, le=100),
-                            user_name: str | None = None,
-                            status: str | None = None):
-    """分页查询在线用户"""
-    filters = {}
-    if user_name:
-        filters['user_name'] = user_name
-    if status:
-        filters['status'] = status
-
-    result = page_list_online_users(page, page_size, filters)
+async def list_online_users(query: OnlineUserQuerySchema = Depends()):
+    filters = {k: v for k, v in {"user_name": query.user_name, "status": query.status}.items() if v is not None}
+    result = page_list_online_users(query.page, query.page_size, filters)
     return Res.ok(result)
 
 

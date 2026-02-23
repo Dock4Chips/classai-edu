@@ -15,34 +15,12 @@ from repository.device_repository import (
     delete_device,
     update_device_status
 )
+from schema.device_schema import DeviceCreateSchema, DeviceUpdateSchema
 
 pro_device_router = APIRouter(
     prefix='/api/device',
     dependencies=[Depends(Authorization.val_token)]
 )
-
-
-class DeviceCreateReq(BaseModel):
-    device_name: str
-    device_type: DeviceType
-    connection_type: DeviceConnectionType
-    device_code: Optional[str] = None
-    rtsp_url: Optional[str] = None
-    http_url: Optional[str] = None
-    location: Optional[str] = None
-    description: Optional[str] = None
-
-
-class DeviceUpdateReq(BaseModel):
-    device_name: Optional[str] = None
-    device_type: Optional[DeviceType] = None
-    connection_type: Optional[DeviceConnectionType] = None
-    device_code: Optional[str] = None
-    rtsp_url: Optional[str] = None
-    http_url: Optional[str] = None
-    location: Optional[str] = None
-    description: Optional[str] = None
-    status: Optional[int] = None
 
 
 @pro_device_router.get('/list')
@@ -70,26 +48,21 @@ async def get_device(device_id: int):
 
 
 @pro_device_router.post('')
-async def add_device(data: DeviceCreateReq):
-    """新增设备"""
+async def add_device(data: DeviceCreateSchema):
     payload = data.model_dump()
     payload["device_type"] = data.device_type.value
     payload["connection_type"] = data.connection_type.value
-
     create_device(payload)
     return Res.ok("新增成功")
 
 
 @pro_device_router.put('/{device_id}')
-async def edit_device(device_id: int, data: DeviceUpdateReq):
+async def edit_device(device_id: int, data: DeviceUpdateSchema):
     payload = data.model_dump(exclude_unset=True)
-
     if "device_type" in payload:
         payload["device_type"] = payload["device_type"].value
-
     if "connection_type" in payload:
         payload["connection_type"] = payload["connection_type"].value
-
     update_device(device_id, payload)
     return Res.ok("修改成功")
 

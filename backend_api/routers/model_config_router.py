@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Body
 from auth.authorization import Authorization
 from models.exceptions import ServiceException
 from models.result import Res
@@ -9,6 +9,7 @@ from repository.model_config_repository import (
     update_model,
     delete_model
 )
+from schema.model_config_schema import ModelConfigCreateSchema, ModelConfigUpdateSchema
 
 pro_model_config_router = APIRouter(
     prefix='/api/model/config',
@@ -41,16 +42,13 @@ async def get_model_config(model_id: int):
 
 
 @pro_model_config_router.post('')
-async def add_model_config(data: dict):
-    """新增模型配置"""
-    create_model(data)
+async def add_model_config(data: ModelConfigCreateSchema = Body(...)):
+    create_model(data.dict())
     return Res.ok("新增成功")
 
-
 @pro_model_config_router.put('/{model_id}')
-async def edit_model_config(model_id: int, data: dict):
-    """修改模型配置"""
-    update_model(model_id, data)
+async def edit_model_config(model_id: int, data: ModelConfigUpdateSchema = Body(...)):
+    update_model(model_id, data.dict(exclude_unset=True))
     return Res.ok("修改成功")
 
 
