@@ -46,7 +46,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
 async def start_predict(ws: WebSocket, client_id: int, data: dict):
     await stop_task(client_id)
     source = data.get("source")
-    conf = data.get("conf")
+    conf = data.get("conf",0.4)
     engine = YOLOInferenceEngine(conf=conf)
     active_engines[client_id] = engine
 
@@ -89,7 +89,7 @@ async def start_predict(ws: WebSocket, client_id: int, data: dict):
 async def start_track(ws: WebSocket, client_id: int, data: dict):
     await stop_task(client_id)
     source = data.get("source")
-    conf = data.get("conf")
+    conf = data.get("conf",0.4)
     engine = YOLOTrackingSystem(conf=conf)
     active_engines[client_id] = engine
 
