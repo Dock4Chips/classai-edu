@@ -7,16 +7,7 @@ from repository.model_draw_config_repository import get_model_draw_config_by_mod
 
 
 class ModelConfigService:
-    """
-    模型配置服务
 
-    缓存策略：
-    - 第一次调用时从数据库加载所有配置
-    - 后续调用直接返回缓存
-    - 进程生命周期内不会自动刷新
-    """
-
-    # 缓存字典
     _cached_config: Dict = None
 
     @classmethod
