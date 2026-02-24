@@ -47,6 +47,7 @@ class YOLOInferenceEngine:
                 "confidence": float(box.conf[0]),
                 "bbox_xyxy": box.xyxy[0].cpu().numpy().tolist(),
                 "bbox_xywhn": box.xywhn[0].cpu().numpy().tolist(),
+                "orig_shape": result.orig_shape,
             })
         return dets
 
