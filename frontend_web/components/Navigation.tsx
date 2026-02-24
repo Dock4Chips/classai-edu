@@ -63,7 +63,7 @@ export default function Navigation() {
                 className="bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl shadow-gray-200/50 border border-gray-100 px-6 py-3">
                 <div className="flex items-center gap-8">
                     {/* Logo */}
-                    <Link href="/dashboard">
+                    <Link href="/">
                         <motion.div
                             whileHover={{scale: 1.05, rotate: 5}}
                             className="flex items-center gap-3"
