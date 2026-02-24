@@ -60,7 +60,8 @@ class YOLOTrackingSystem:
                             "class_id": cls_id,
                             "class_name": r.names[cls_id],
                             "confidence": float(box.conf[0]),
-                            "bbox": box.xyxy[0].cpu().numpy().tolist()
+                            "bbox": box.xyxy[0].cpu().numpy().tolist(),
+                            "orig_shape":r.orig_shape,
                         })
 
                 yield frame_id, frame_dets

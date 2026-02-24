@@ -34,5 +34,3 @@ api_router.include_router(pro_model_draw_config_router)
 api_router.include_router(pro_device_router)
 
 api_router.include_router(predict_ws_router)
-
-

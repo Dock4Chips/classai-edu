@@ -15,7 +15,6 @@ active_tasks: dict[int, asyncio.Task] = {}
 active_engines: dict[int, Union[YOLOInferenceEngine, YOLOTrackingSystem]] = {}
 
 
-
 @predict_ws_router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket, token: str):
     client = Authorization.val_token(token)
@@ -46,7 +45,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
 async def start_predict(ws: WebSocket, client_id: int, data: dict):
     await stop_task(client_id)
     source = data.get("source")
-    conf = data.get("conf",0.4)
+    conf = data.get("conf", 0.4)
     engine = YOLOInferenceEngine(conf=conf)
     active_engines[client_id] = engine
 
@@ -57,7 +56,6 @@ async def start_predict(ws: WebSocket, client_id: int, data: dict):
             loop = asyncio.get_running_loop()
 
             while True:
-
                 try:
                     frame_id, dets, _ = await loop.run_in_executor(
                         None,
@@ -66,7 +64,6 @@ async def start_predict(ws: WebSocket, client_id: int, data: dict):
                     )
                 except StopIteration:
                     break
-
                 await ws.send_json({
                     "type": Action.PREDICT,
                     "frame_id": frame_id,
@@ -86,10 +83,11 @@ async def start_predict(ws: WebSocket, client_id: int, data: dict):
     task = asyncio.create_task(runner())
     active_tasks[client_id] = task
 
+
 async def start_track(ws: WebSocket, client_id: int, data: dict):
     await stop_task(client_id)
     source = data.get("source")
-    conf = data.get("conf",0.4)
+    conf = data.get("conf", 0.4)
     engine = YOLOTrackingSystem(conf=conf)
     active_engines[client_id] = engine
 
@@ -117,8 +115,7 @@ async def start_track(ws: WebSocket, client_id: int, data: dict):
             pass
 
         except Exception as e:
-            await _send_json(ws,str(e))
-
+            await _send_json(ws, str(e))
 
         finally:
             engine.stop()
@@ -126,6 +123,7 @@ async def start_track(ws: WebSocket, client_id: int, data: dict):
 
     task = asyncio.create_task(runner())
     active_tasks[client_id] = task
+
 
 async def stop_task(client_id: int):
     engine = active_engines.pop(client_id, None)
@@ -145,7 +143,7 @@ async def stop_task(client_id: int):
     active_tasks.pop(client_id, None)
 
 
-async def _send_json(ws: WebSocket,msg):
+async def _send_json(ws: WebSocket, msg: str):
     await ws.send_json({
         "type": "error",
         "message": msg
