@@ -7,24 +7,17 @@ from ultralytics import YOLO
 RUN_DIR = Path("../dodge_project/classai_model")
 OUT_DIR = Path("./metrics")
 DATA_YAML = "../datasets/dataset.yaml"
-
 OUT_DIR.mkdir(exist_ok=True)
 
-
-def export_results():
+def export_all_metrics():
     df = pd.read_csv(RUN_DIR / "results.csv")
-    data = df.to_dict(orient="list")
     with open(OUT_DIR / "results.json", "w") as f:
-        json.dump(data, f, indent=2)
-    print("✓ results exported")
+        json.dump(df.to_dict(orient="list"), f, indent=2)
 
-
-def export_box_curves():
     model = YOLO(RUN_DIR / "weights/best.pt")
-    metrics = model.val(data=DATA_YAML, verbose=False)
+    metrics = model.val(data=DATA_YAML, verbose=False,project='dodge_project',name='classai_model_val')
 
     curves_raw = metrics.box.curves_results
-
     curves = {
         "confidence": curves_raw[0][0].tolist(),
         "precision": curves_raw[0][1].tolist(),
@@ -33,28 +26,15 @@ def export_box_curves():
         "pr_recall": curves_raw[3][0].tolist(),
         "pr_precision": curves_raw[3][1].tolist(),
     }
-
     with open(OUT_DIR / "box_curves.json", "w") as f:
         json.dump(curves, f, indent=2)
 
-
     matrix = np.array(metrics.confusion_matrix.matrix)
     normalized = matrix / (matrix.sum(axis=1, keepdims=True) + 1e-9)
-
-    data = {
-        "raw": matrix.tolist(),
-        "normalized": normalized.tolist(),
-    }
-
     with open(OUT_DIR / "confusion_matrix.json", "w") as f:
-        json.dump(data, f, indent=2)
+        json.dump({"raw": matrix.tolist(), "normalized": normalized.tolist()}, f, indent=2)
 
-    print("✓ confusion matrix exported")
-
-
-
+    print('ok')
 
 if __name__ == "__main__":
-    export_results()
-    export_box_curves()
-    # export_confusion_matrix()
+    export_all_metrics()

@@ -41,7 +41,7 @@ def train_model():
         cache=True,
         val=True,
         project="dodge_project",
-        name="classai_model",
+        name="classai_model_train",
         patience=50,
         lr0=0.01,
         lrf=0.01,
