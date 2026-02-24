@@ -19,15 +19,9 @@ import {Dropdown, DropdownButton} from '@/components/ui/dropdown';
 const navItems = ['Dashboard', 'Projects', 'Detection', 'Reports'];
 
 export default function Navigation() {
-    const [currentTime, setCurrentTime] = useState(new Date());
     const pathname = usePathname();
     const router = useRouter();
     const [userInfo, setUserInfo] = useState<any>(null);
-
-    useEffect(() => {
-        const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-        return () => clearInterval(timer);
-    }, []);
 
     useEffect(() => {
         void fetchUserInfo();
@@ -50,7 +44,9 @@ export default function Navigation() {
 
     const getActivePage = () => {
         const path = pathname.replace('/', '');
-        if (path === 'detection') return 'Detection';
+        if (path.startsWith('detection')) return 'Detection';
+        if (path.startsWith('predict')) return 'Predict';
+        if (path.startsWith('track')) return 'Track';
         return path.charAt(0).toUpperCase() + path.slice(1) || 'Dashboard';
     };
 
@@ -83,7 +79,7 @@ export default function Navigation() {
                     <div className="hidden md:flex items-center gap-1">
                         {navItems.map((item) => {
                             const isActive = item === activePage;
-                            const href = item === 'Detection' ? '/detection' : `/${item.toLowerCase()}`;
+                            const href = `/${item.toLowerCase()}`;
                             return (
                                 <Link
                                     key={item}

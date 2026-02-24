@@ -1,0 +1,116 @@
+'use client';
+
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState } from 'react';
+
+interface DetectionItem {
+  id: number;
+  class: string;
+  confidence: number;
+  color?: string;
+}
+
+interface DetectionListProps {
+  detections: DetectionItem[];
+  sortBy?: 'confidence' | 'class' | 'id';
+  onItemClick?: (id: number) => void;
+  highlightedId?: number;
+}
+
+const defaultColors = [
+  '#ef4444', '#f97316', '#eab308', '#22c55e', '#06b6d4',
+  '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#14b8a6'
+];
+
+export function DetectionList({
+  detections,
+  sortBy = 'confidence',
+  onItemClick,
+  highlightedId,
+}: DetectionListProps) {
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
+
+  // Sort detections
+  const sortedDetections = [...detections].sort((a, b) => {
+    if (sortBy === 'confidence') return b.confidence - a.confidence;
+    if (sortBy === 'class') return a.class.localeCompare(b.class);
+    return a.id - b.id;
+  });
+
+  const getDetectionColor = (detection: DetectionItem, index: number) => {
+    return detection.color || defaultColors[index % defaultColors.length];
+  };
+
+  return (
+    <div className="space-y-2">
+      {/* Header */}
+      <div className="flex items-center justify-between px-2 py-2">
+        <h3 className="text-sm font-semibold text-gray-700">Detections</h3>
+        <span className="text-xs text-gray-500">{detections.length} objects</span>
+      </div>
+
+      {/* List */}
+      <div className="space-y-1.5 max-h-64 overflow-auto">
+        <AnimatePresence mode="popLayout">
+          {sortedDetections.map((detection, index) => {
+            const color = getDetectionColor(detection, index);
+            const isHighlighted = highlightedId === detection.id || hoveredId === detection.id;
+
+            return (
+              <motion.div
+                key={detection.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ delay: index * 0.03 }}
+                onClick={() => onItemClick?.(detection.id)}
+                onMouseEnter={() => setHoveredId(detection.id)}
+                onMouseLeave={() => setHoveredId(null)}
+                className={`
+                  flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all
+                  ${isHighlighted ? 'bg-white shadow-md' : 'hover:bg-gray-100'}
+                `}
+                style={{
+                  borderLeft: isHighlighted ? `3px solid ${color}` : '3px solid transparent',
+                }}
+              >
+                {/* Color Indicator */}
+                <div
+                  className="w-2 h-2 rounded-full flex-shrink-0"
+                  style={{ backgroundColor: color }}
+                />
+
+                {/* Class Name */}
+                <span className="flex-1 text-sm font-medium text-gray-700">
+                  {detection.class}
+                </span>
+
+                {/* Confidence */}
+                <span className="text-sm font-mono text-gray-500">
+                  {Math.round(detection.confidence * 100)}%
+                </span>
+
+                {/* Highlight Dot */}
+                {isHighlighted && (
+                  <motion.div
+                    layoutId="highlightDot"
+                    className="w-1.5 h-1.5 rounded-full"
+                    style={{ backgroundColor: color }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+                  />
+                )}
+              </motion.div>
+            );
+          })}
+        </AnimatePresence>
+
+        {/* Empty State */}
+        {sortedDetections.length === 0 && (
+          <div className="px-3 py-8 text-center">
+            <p className="text-sm text-gray-500">No detections yet</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

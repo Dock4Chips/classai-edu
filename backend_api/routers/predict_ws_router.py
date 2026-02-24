@@ -1,11 +1,13 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import asyncio
+import cv2
 import json
 from typing import Union
 
 from auth.authorization import Authorization
 from enums.detection_type import Action
 from master_tools.logger_tool import log
+from models.exceptions import ServiceException
 from yolo_edu.engines.yolo_inference_engine import YOLOInferenceEngine
 from yolo_edu.engines.yolo_tracking_system import YOLOTrackingSystem
 
@@ -13,6 +15,15 @@ predict_ws_router = APIRouter(prefix="/api/stream")
 
 active_tasks: dict[int, asyncio.Task] = {}
 active_engines: dict[int, Union[YOLOInferenceEngine, YOLOTrackingSystem]] = {}
+
+
+def _encode_image_to_jpeg(image, quality: int = 80) -> bytes:
+    """将 numpy 图像编码为 JPEG 字节"""
+    encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), quality]
+    result, encoded = cv2.imencode('.jpg', image, encode_param)
+    if not result:
+        raise ServiceException(msg="图像编码失败")
+    return encoded.tobytes()
 
 
 @predict_ws_router.websocket("/ws")
@@ -50,25 +61,31 @@ async def start_predict(ws: WebSocket, client_id: int, data: dict):
     active_engines[client_id] = engine
 
     async def runner():
-        global frame_id, dets
         try:
             iterator = engine.stream(source)
             loop = asyncio.get_running_loop()
 
             while True:
                 try:
-                    frame_id, dets, _ = await loop.run_in_executor(
+                    frame_id, dets, vis = await loop.run_in_executor(
                         None,
                         next,
                         iterator
                     )
                 except StopIteration:
                     break
+
+                # 先发送 JSON 检测数据
                 await ws.send_json({
                     "type": Action.PREDICT,
                     "frame_id": frame_id,
                     "detections": dets
                 })
+
+                # 再发送二进制图像帧
+                if vis is not None:
+                    jpg_bytes = _encode_image_to_jpeg(vis)
+                    await ws.send_bytes(jpg_bytes)
 
         except asyncio.CancelledError:
             pass
@@ -92,24 +109,30 @@ async def start_track(ws: WebSocket, client_id: int, data: dict):
     active_engines[client_id] = engine
 
     async def runner():
-        global frame_id, dets
         try:
             iterator = engine.track_cap(source)
             loop = asyncio.get_running_loop()
             while True:
                 try:
-                    frame_id, dets = await loop.run_in_executor(
+                    frame_id, dets, vis = await loop.run_in_executor(
                         None,
                         next,
                         iterator
                     )
                 except StopIteration:
                     break
+
+                # 先发送 JSON 检测数据
                 await ws.send_json({
                     "type": Action.TRACK,
                     "frame_id": frame_id,
                     "detections": dets
                 })
+
+                # 再发送二进制图像帧
+                if vis is not None:
+                    jpg_bytes = _encode_image_to_jpeg(vis)
+                    await ws.send_bytes(jpg_bytes)
 
         except asyncio.CancelledError:
             pass

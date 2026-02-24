@@ -3,6 +3,7 @@ from ultralytics import YOLO
 
 from yolo_edu.services.model_config_service import ModelConfigService
 from master_tools.logger_tool import log
+from yolo_edu.yolo_tools.draw_tool import DrawTool
 
 class YOLOTrackingSystem:
 
@@ -32,7 +33,21 @@ class YOLOTrackingSystem:
         cls._model = YOLO(model_path)
         return cls._model
 
-    def track_cap(self, source):
+    def _draw(self, image: cv2.Mat, dets: list) -> cv2.Mat:
+        """绘制跟踪结果到图像上"""
+        vis = image.copy()
+        for det in dets:
+            label = f"{det['class_name']} #{det['track_id']}" if det['track_id'] > -1 else det['class_name']
+            vis = DrawTool.draw_bbox(
+                image=vis,
+                bbox=det['bbox'],
+                label=label,
+                conf=det['confidence'],
+                color=ModelConfigService.get_color(det['class_name'])
+            )
+        return vis
+
+    def track_cap(self, source, draw: bool = True):
         self.cap = cv2.VideoCapture(source)
         if not self.cap.isOpened():
             raise RuntimeError(f"Cannot open source: {source}")
@@ -64,7 +79,8 @@ class YOLOTrackingSystem:
                             "orig_shape":r.orig_shape,
                         })
 
-                yield frame_id, frame_dets
+                vis = self._draw(frame, frame_dets) if draw else None
+                yield frame_id, frame_dets, vis
                 frame_id += 1
         finally:
             if self.cap:
