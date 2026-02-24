@@ -73,14 +73,6 @@ export class ApiClient {
         return token;
     }
 
-    // ✅ 解析 token 获取 user_id
-    getUserId(): number {
-        const token = this.getToken();
-        const payload = token.split('.')[1];
-        const decoded = JSON.parse(atob(payload));
-        return decoded.user_id;
-    }
-
     // ✅ GET
     get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
         return this.instance.get(endpoint, {params});
