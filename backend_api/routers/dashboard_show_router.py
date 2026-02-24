@@ -1,11 +1,7 @@
-from fastapi import APIRouter, Depends, Request
-from datetime import datetime
+from fastapi import APIRouter, Depends
 from auth.authorization import Authorization
 from models.result import Res
-from repository.dashboard_repository import (
-    get_dashboard_stats,
-)
-from tools.security_tool import SecurityTool
+from repository.dashboard_repository import get_admin_dashboard_stats
 
 pro_dashboard_router = APIRouter(
     prefix='/api/dashboard',
@@ -14,9 +10,8 @@ pro_dashboard_router = APIRouter(
 
 
 @pro_dashboard_router.get('/admin/stats')
-async def dashboard_stats():
-    """获取管理端 dashboard 统计数据"""
-    stats, recent_activities = get_dashboard_stats()
+async def admin_dashboard_stats():
+    stats, recent_activities = get_admin_dashboard_stats()
 
     return Res.ok({
         'total_users': stats[0]['total_users'] if stats else 0,

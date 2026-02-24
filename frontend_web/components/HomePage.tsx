@@ -26,7 +26,6 @@ import { SpotlightCard } from '@/components/ui/spotlight-card';
 import { AnimatedContent } from '@/components/ui/animated-content';
 import { GradientText } from '@/components/ui/gradient-text';
 import { SubtleParticles } from '@/components/ui/subtle-particles';
-import { MagneticButton } from '@/components/ui/magnetic-button';
 import { Carousel } from '@/components/ui/carousel';
 import { Results } from '@/lib/api';
 import { ClassIndexBanner } from '@/lib/service/class_index_banner';
@@ -39,48 +38,44 @@ interface DetectionResult {
   status: 'loading' | 'completed';
 }
 
-// How it works steps
-const steps = [
-  {
-    number: '01',
-    title: 'Upload Source',
-    description: 'Choose image, video, or connect live camera feed',
-    iconComponent: ImageIcon,
-  },
-  {
-    number: '02',
-    title: 'AI Analysis',
-    description: 'Our AI detects and tracks student behaviors in real-time',
-    iconComponent: BrainCircuit,
-  },
-  {
-    number: '03',
-    title: 'Get Insights',
-    description: 'View detailed behavior breakdown and analytics',
-    iconComponent: BarChart3,
-  },
+interface ResultsData {
+  epoch: number[];
+  'metrics/precision(B)': number[];
+  'metrics/recall(B)': number[];
+  'metrics/mAP50(B)': number[];
+}
+
+interface ConfusionMatrixData {
+  normalized: number[][];
+}
+
+// Class names matching YOLO dataset
+const CLASS_NAMES = [
+  'Learning to Copy',
+  'Looking Around',
+  'Sharing Answers',
+  'Sleeping',
+  'Staff',
+  'Using Mobile'
 ];
 
-// Testimonials
-const testimonials = [
-  {
-    content: "ClassAI has transformed how I monitor my classroom. The accuracy is incredible and it saves me hours of work.",
-    author: "Sarah Chen",
-    role: "High School Teacher",
-  },
-  {
-    content: "The real-time detection helps me identify students who need attention immediately. Game changer for education.",
-    author: "Michael Park",
-    role: "University Professor",
-  },
+const CLASS_COLORS = [
+  'bg-emerald-500',
+  'bg-amber-500',
+  'bg-rose-500',
+  'bg-blue-500',
+  'bg-gray-500',
+  'bg-violet-500'
 ];
 
-// Behavior types
-const behaviorTypes = [
-  { name: 'Attentive', color: 'bg-emerald-500', count: 72 },
-  { name: 'Distracted', color: 'bg-amber-500', count: 18 },
-  { name: 'Sleeping', color: 'bg-rose-500', count: 6 },
-  { name: 'On Phone', color: 'bg-violet-500', count: 4 },
+// Behavior types (will be updated from confusion matrix data)
+const defaultBehaviorTypes = [
+  { name: 'Learning to Copy', color: 'bg-emerald-500', count: 79 },
+  { name: 'Looking Around', color: 'bg-amber-500', count: 74 },
+  { name: 'Sharing Answers', color: 'bg-rose-500', count: 92 },
+  { name: 'Sleeping', color: 'bg-blue-500', count: 98 },
+  { name: 'Staff', color: 'bg-gray-500', count: 51 },
+  { name: 'Using Mobile', color: 'bg-violet-500', count: 74 },
 ];
 
 export default function HomePage() {
@@ -90,9 +85,18 @@ export default function HomePage() {
     { id: 3, status: 'loading', num_boxes: 0 },
   ]);
   const [currentResultIndex, setCurrentResultIndex] = useState(0);
+  const [stats, setStats] = useState([
+    { icon: Target, value: '79.6%', label: 'Accuracy' },
+    { icon: Zap, value: '<50ms', label: 'Latency' },
+    { icon: BarChart3, value: '6', label: 'Behaviors' },
+    { icon: TrendingUp, value: '0', label: 'Epochs' },
+  ]);
+  const [behaviorTypes, setBehaviorTypes] = useState(defaultBehaviorTypes);
+  const [accuracy, setAccuracy] = useState(79.6);
 
   useEffect(() => {
     void fetchData();
+    void loadMetrics();
   }, []);
 
   const fetchData = async () => {
@@ -111,14 +115,49 @@ export default function HomePage() {
     }
   };
 
-  const currentResult = detectionResults[currentResultIndex] || detectionResults[0];
+  const loadMetrics = async () => {
+    try {
+      const [resultsRes, matrixRes] = await Promise.all([
+        fetch('/metrics/results.json'),
+        fetch('/metrics/confusion_matrix.json')
+      ]);
 
-  const stats = [
-    { icon: Target, value: '99.2%', label: 'Accuracy' },
-    { icon: Zap, value: '<50ms', label: 'Latency' },
-    { icon: BarChart3, value: '15+', label: 'Behaviors' },
-    { icon: TrendingUp, value: '10K+', label: 'Analyses' },
-  ];
+      const [resultsData, matrixData] = await Promise.all([
+        resultsRes.json(),
+        matrixRes.json()
+      ]);
+
+      if (resultsData) {
+        const finalPrecision = resultsData['metrics/precision(B)'][resultsData['metrics/precision(B)'].length - 1];
+        const finalRecall = resultsData['metrics/recall(B)'][resultsData['metrics/recall(B)'].length - 1];
+        const epochs = resultsData.epoch?.length || 0;
+
+        const avgAccuracy = ((finalPrecision + finalRecall) / 2 * 100).toFixed(1);
+        setAccuracy(parseFloat(avgAccuracy));
+
+        setStats([
+          { icon: Target, value: `${avgAccuracy}%`, label: 'Accuracy' },
+          { icon: Zap, value: '<50ms', label: 'Latency' },
+          { icon: BarChart3, value: '6', label: 'Behaviors' },
+          { icon: TrendingUp, value: `${epochs}`, label: 'Epochs' },
+        ]);
+      }
+
+      if (matrixData && matrixData.normalized) {
+        // Calculate per-class accuracy from confusion matrix diagonal
+        const newBehaviorTypes = matrixData.normalized.slice(0, 6).map((row: number[], i: number) => ({
+          name: CLASS_NAMES[i],
+          color: CLASS_COLORS[i],
+          count: Math.round(row[i] * 100), // Diagonal element is the accuracy for this class
+        }));
+        setBehaviorTypes(newBehaviorTypes);
+      }
+    } catch (error) {
+      console.error('Failed to load metrics:', error);
+    }
+  };
+
+  const currentResult = detectionResults[currentResultIndex] || detectionResults[0];
 
   const features = [
     {
@@ -161,9 +200,9 @@ export default function HomePage() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5 }}
               >
-                <span className="inline-flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-full text-sm text-gray-700">
-                  <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-                  AI Classroom Monitoring
+                <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200 shadow-sm">
+                  <Sparkles className="text-purple-500" size={18} />
+                  <span className="text-sm text-gray-700 font-medium">AI Classroom Monitoring</span>
                 </span>
               </motion.div>
 
@@ -190,7 +229,7 @@ export default function HomePage() {
                 transition={{ delay: 0.2, duration: 0.6 }}
                 className="text-lg text-gray-600 max-w-lg leading-relaxed"
               >
-                Real-time AI analysis of classroom behaviors with 99.2% accuracy.
+                Real-time AI analysis of classroom behaviors with {accuracy}% accuracy.
                 Support for images, videos, live cameras, and drone feeds.
               </motion.p>
 
@@ -201,16 +240,16 @@ export default function HomePage() {
                 className="flex flex-wrap gap-3"
               >
                 <Link href="/detection">
-                  <MagneticButton className="flex items-center gap-2 px-6 py-3 bg-black text-white rounded-lg font-medium hover:bg-gray-800 transition-colors">
-                    <Play size={18} />
+                  <button className="flex items-center gap-2 px-6 py-3.5 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-lg">
+                    <Play size={20} />
                     Start Detection
-                  </MagneticButton>
+                  </button>
                 </Link>
                 <Link href="/dashboard">
-                  <MagneticButton className="flex items-center gap-2 px-6 py-3 bg-white text-gray-700 rounded-lg font-medium border border-gray-200 hover:border-gray-300 transition-colors">
+                  <button className="flex items-center gap-2 px-6 py-3.5 bg-white text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all border border-gray-200 shadow-sm">
                     View Dashboard
                     <ArrowRight size={18} />
-                  </MagneticButton>
+                  </button>
                 </Link>
               </motion.div>
 
@@ -303,27 +342,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Stats Banner */}
-      <section className="relative py-12 px-6 bg-gray-50/80 backdrop-blur-sm border-y border-gray-100">
-        <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {[
-              { value: '10K+', label: 'Active Users' },
-              { value: '1M+', label: 'Detections Made' },
-              { value: '99.2%', label: 'Accuracy Rate' },
-              { value: '24/7', label: 'Availability' },
-            ].map((stat, i) => (
-              <AnimatedContent key={i} delay={i * 0.05}>
-                <div className="text-center">
-                  <div className="text-3xl lg:text-4xl font-bold text-gray-900 mb-1">{stat.value}</div>
-                  <div className="text-sm text-gray-600">{stat.label}</div>
-                </div>
-              </AnimatedContent>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Features Section */}
       <section className="relative py-20 px-6 bg-white/90 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
@@ -355,74 +373,102 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* How It Works */}
+      {/* Data Insights */}
       <section className="relative py-20 px-6 bg-gray-50/80 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
           <AnimatedContent className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
-              How It Works
+              Data-Driven Insights
             </h2>
-            <p className="text-gray-600">Get started in three simple steps</p>
+            <p className="text-gray-600">Turn classroom observations into actionable intelligence</p>
           </AnimatedContent>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {steps.map((step, i) => (
-              <AnimatedContent key={i} delay={i * 0.1}>
-                <motion.div
-                  whileHover={{ y: -4 }}
-                  className="relative p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="text-5xl font-bold text-gray-200 mb-4">{step.number}</div>
-                  <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mb-4">
-                    <step.iconComponent className="text-gray-700" size={24} />
+          <div className="grid md:grid-cols-2 gap-8">
+            <AnimatedContent delay={0}>
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="p-8 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center">
+                    <BarChart3 className="text-gray-700" size={28} />
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{step.title}</h3>
-                  <p className="text-gray-600">{step.description}</p>
-                  {i < steps.length - 1 && (
-                    <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2">
-                      <ArrowRight className="text-gray-300" size={24} />
-                    </div>
-                  )}
-                </motion.div>
-              </AnimatedContent>
-            ))}
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900">Real-time Analytics</h3>
+                    <p className="text-sm text-gray-500">Live behavior tracking</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Detection Frequency</span>
+                    <span className="font-semibold text-gray-900">30 FPS</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Processing Time</span>
+                    <span className="font-semibold text-gray-900">&lt;50ms</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Concurrent Students</span>
+                    <span className="font-semibold text-gray-900">50+</span>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatedContent>
+
+            <AnimatedContent delay={0.1}>
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="p-8 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all"
+              >
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-14 h-14 bg-gray-100 rounded-xl flex items-center justify-center">
+                    <TrendingUp className="text-gray-700" size={28} />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold text-gray-900">Trend Analysis</h3>
+                    <p className="text-sm text-gray-500">Long-term patterns</p>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Data Retention</span>
+                    <span className="font-semibold text-gray-900">90 Days</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Export Options</span>
+                    <span className="font-semibold text-gray-900">CSV, JSON, PDF</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-600">Report Generation</span>
+                    <span className="font-semibold text-gray-900">Automated</span>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatedContent>
           </div>
         </div>
       </section>
 
       {/* Behavior Types */}
-      <section className="relative py-20 px-6 bg-white/90 backdrop-blur-sm">
+      <section className="relative py-16 px-6 bg-white/90 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto">
-          <AnimatedContent className="text-center mb-12">
+          <AnimatedContent className="text-center mb-8">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
               Behaviors We Detect
             </h2>
             <p className="text-gray-600">Comprehensive analysis of student engagement</p>
           </AnimatedContent>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="flex flex-wrap justify-center gap-3">
             {behaviorTypes.map((behavior, i) => (
-              <AnimatedContent key={i} delay={i * 0.08}>
+              <AnimatedContent key={i} delay={i * 0.05}>
                 <motion.div
                   whileHover={{ scale: 1.02 }}
-                  className="p-5 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-full hover:bg-gray-100 transition-colors"
                 >
-                  <div className="flex items-center justify-between mb-3">
-                    <h3 className="font-semibold text-gray-900">{behavior.name}</h3>
-                    <div className={`w-3 h-3 ${behavior.color} rounded-full`} />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        whileInView={{ width: `${behavior.count}%` }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 1, delay: i * 0.1 }}
-                        className={`h-full ${behavior.color}`}
-                      />
-                    </div>
-                    <span className="ml-3 text-sm font-medium text-gray-700">{behavior.count}%</span>
-                  </div>
+                  <div className={`w-2 h-2 ${behavior.color} rounded-full`} />
+                  <span className="text-sm font-medium text-gray-900">{behavior.name}</span>
+                  <span className="text-sm text-gray-500 ml-1">{behavior.count}%</span>
                 </motion.div>
               </AnimatedContent>
             ))}
@@ -430,38 +476,61 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials */}
+      {/* Technology */}
       <section className="relative py-20 px-6 bg-gray-50/80 backdrop-blur-sm">
         <div className="max-w-5xl mx-auto">
           <AnimatedContent className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
-              Trusted by Educators
+              Powered by Advanced AI
             </h2>
-            <p className="text-gray-600">See what teachers are saying about ClassAI</p>
+            <p className="text-gray-600">State-of-the-art computer vision technology</p>
           </AnimatedContent>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            {testimonials.map((testimonial, i) => (
-              <AnimatedContent key={i} delay={i * 0.1}>
-                <motion.div
-                  whileHover={{ y: -4 }}
-                  className="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all"
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                      <span className="text-gray-700 font-semibold text-lg">
-                        {testimonial.author.charAt(0)}
-                      </span>
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-900">{testimonial.author}</div>
-                      <div className="text-sm text-gray-500">{testimonial.role}</div>
-                    </div>
-                  </div>
-                  <p className="text-gray-600 leading-relaxed">"{testimonial.content}"</p>
-                </motion.div>
-              </AnimatedContent>
-            ))}
+          <div className="grid md:grid-cols-3 gap-6">
+            <AnimatedContent delay={0}>
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all"
+              >
+                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mb-4">
+                  <BrainCircuit className="text-gray-700" size={24} />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">YOLO Detection</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  Real-time object detection with state-of-the-art accuracy and speed
+                </p>
+              </motion.div>
+            </AnimatedContent>
+
+            <AnimatedContent delay={0.1}>
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all"
+              >
+                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mb-4">
+                  <Users className="text-gray-700" size={24} />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Multi-Object Tracking</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  Track multiple students simultaneously across video frames
+                </p>
+              </motion.div>
+            </AnimatedContent>
+
+            <AnimatedContent delay={0.2}>
+              <motion.div
+                whileHover={{ y: -4 }}
+                className="p-6 bg-white rounded-2xl shadow-sm hover:shadow-md transition-all"
+              >
+                <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center mb-4">
+                  <BarChart3 className="text-gray-700" size={24} />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Smart Analytics</h3>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  Comprehensive behavior analysis with detailed reports and insights
+                </p>
+              </motion.div>
+            </AnimatedContent>
           </div>
         </div>
       </section>
@@ -482,7 +551,7 @@ export default function HomePage() {
               { icon: Shield, title: 'Privacy First', desc: 'Your data is encrypted and secure' },
               { icon: Clock, title: 'Time Saving', desc: 'Automated monitoring saves hours' },
               { icon: BarChart3, title: 'Detailed Reports', desc: 'Comprehensive behavior analytics' },
-              { icon: Sparkles, title: 'High Accuracy', desc: '99.2% detection accuracy rate' },
+              { icon: Sparkles, title: 'High Accuracy', desc: `${accuracy}% detection accuracy rate` },
               { icon: CheckCircle2, title: 'Easy to Use', desc: 'Simple interface, powerful results' },
             ].map((feature, i) => (
               <AnimatedContent key={i} delay={i * 0.06}>
@@ -520,10 +589,10 @@ export default function HomePage() {
               Start detecting classroom behaviors with AI today
             </p>
             <Link href="/detection">
-              <MagneticButton className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 rounded-xl font-medium hover:bg-gray-100 transition-colors">
+              <button className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 rounded-xl font-medium hover:bg-gray-100 transition-colors cursor-pointer">
                 Get Started Free
                 <ArrowRight size={18} />
-              </MagneticButton>
+              </button>
             </Link>
           </AnimatedContent>
         </div>
