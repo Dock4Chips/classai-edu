@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Play,
   ArrowRight,
@@ -29,6 +30,8 @@ import { SubtleParticles } from '@/components/ui/subtle-particles';
 import { Carousel } from '@/components/ui/carousel';
 import { Results } from '@/lib/api';
 import { ClassIndexBanner } from '@/lib/service/class_index_banner';
+import { apiClient } from '@/lib/api';
+import Cookies from 'js-cookie';
 
 interface DetectionResult {
   id: number;
@@ -79,6 +82,7 @@ const defaultBehaviorTypes = [
 ];
 
 export default function HomePage() {
+  const router = useRouter();
   const [detectionResults, setDetectionResults] = useState<DetectionResult[]>([
     { id: 1, status: 'loading', num_boxes: 0 },
     { id: 2, status: 'loading', num_boxes: 0 },
@@ -154,6 +158,15 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error('Failed to load metrics:', error);
+    }
+  };
+
+  const checkAuthAndRedirect = (path: string) => {
+    try {
+      apiClient.getToken();
+      router.push(path);
+    } catch (error) {
+      router.push('/identity');
     }
   };
 
@@ -239,18 +252,20 @@ export default function HomePage() {
                 transition={{ delay: 0.3, duration: 0.6 }}
                 className="flex flex-wrap gap-3"
               >
-                <Link href="/detection">
-                  <button className="flex items-center gap-2 px-6 py-3.5 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-lg">
-                    <Play size={20} />
-                    Start Detection
-                  </button>
-                </Link>
-                <Link href="/dashboard">
-                  <button className="flex items-center gap-2 px-6 py-3.5 bg-white text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all border border-gray-200 shadow-sm">
-                    View Dashboard
-                    <ArrowRight size={18} />
-                  </button>
-                </Link>
+                <button
+                  onClick={() => checkAuthAndRedirect('/detection')}
+                  className="flex items-center gap-2 px-6 py-3.5 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-lg cursor-pointer"
+                >
+                  <Play size={20} />
+                  Start Detection
+                </button>
+                <button
+                  onClick={() => checkAuthAndRedirect('/dashboard')}
+                  className="flex items-center gap-2 px-6 py-3.5 bg-white text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all border border-gray-200 shadow-sm cursor-pointer"
+                >
+                  View Dashboard
+                  <ArrowRight size={18} />
+                </button>
               </motion.div>
 
               <motion.div
@@ -588,12 +603,13 @@ export default function HomePage() {
             <p className="text-lg text-gray-400 mb-8">
               Start detecting classroom behaviors with AI today
             </p>
-            <Link href="/detection">
-              <button className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 rounded-xl font-medium hover:bg-gray-100 transition-colors cursor-pointer">
-                Get Started Free
-                <ArrowRight size={18} />
-              </button>
-            </Link>
+            <button
+              onClick={() => checkAuthAndRedirect('/detection')}
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-900 rounded-xl font-medium hover:bg-gray-100 transition-colors cursor-pointer"
+            >
+              Get Started Free
+              <ArrowRight size={18} />
+            </button>
           </AnimatedContent>
         </div>
       </section>
