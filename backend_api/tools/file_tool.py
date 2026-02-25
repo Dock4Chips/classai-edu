@@ -1,6 +1,6 @@
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Optional
 
 import cv2
@@ -12,9 +12,10 @@ from master_tools.logger_tool import log
 from models.exceptions import ServiceException
 
 
-async def upload_file_to_minio(file: UploadFile) -> str:
+async def upload_file_to_minio(file: UploadFile,presign_save: bool = False) -> str:
     """
     上传文件到MinIO（普通IO数据）
+    :param presign_save:
     :param file: FastAPI UploadFile对象
     :return: 文件URL
     """
@@ -28,12 +29,20 @@ async def upload_file_to_minio(file: UploadFile) -> str:
         data=data,
         content_type=file.content_type
     )
+    if presign_save:
+        url = bucket.minioClient.presigned_get_object(
+            MINIO_BUCKET_NAME,
+            object_name,
+            expires=timedelta(days=7)
+        )
+        return url
     return f"http://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
 
 
-def upload_np_image_to_minio(img: np.ndarray, suffix: str = ".jpg") -> str:
+def upload_np_image_to_minio(img: np.ndarray, suffix: str = ".jpg",presign_save: bool = False) -> str:
     """
     上传numpy图片数据到MinIO（cv2编码后的数据）
+    :param presign_save: 是否是返回签名链接
     :param img: numpy图片数组
     :param suffix: 文件后缀
     :return: 预签名URL
@@ -49,6 +58,14 @@ def upload_np_image_to_minio(img: np.ndarray, suffix: str = ".jpg") -> str:
         data=buffer,
         content_type="image/jpeg"
     )
+    if presign_save:
+        url = bucket.minioClient.presigned_get_object(
+            MINIO_BUCKET_NAME,
+            object_name,
+            expires=timedelta(days=7)
+        )
+        return url
+
     return f"http://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
 
 
