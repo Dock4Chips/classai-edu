@@ -39,6 +39,29 @@ async def upload_file_to_minio(file: UploadFile,presign_save: bool = False) -> s
     return f"http://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
 
 
+def upload_bytes_to_minio(data: bytes, filename: str, content_type: str , presign_save: bool = False) -> str:
+    suffix = os.path.splitext(filename)[1]
+    date_path = datetime.now().strftime("%Y/%m/%d")
+    object_name = f"{date_path}/{uuid.uuid4().hex}{suffix}"
+
+    bucket.upload_data_to_bucket(
+        bucket_name=MINIO_BUCKET_NAME,
+        object_name=object_name,
+        data=data,
+        content_type=content_type
+    )
+
+    if presign_save:
+        url = bucket.minioClient.presigned_get_object(
+            MINIO_BUCKET_NAME,
+            object_name,
+            expires=timedelta(days=7)
+        )
+        return url
+
+    return f"http://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
+
+
 def upload_np_image_to_minio(img: np.ndarray, suffix: str = ".jpg",presign_save: bool = False) -> str:
     """
     上传numpy图片数据到MinIO（cv2编码后的数据）
