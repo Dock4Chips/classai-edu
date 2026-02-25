@@ -1,18 +1,20 @@
+import io
 import json
-from typing import Dict, List, Union, Any
+from typing import Dict, List, Union, AsyncGenerator, Tuple, Any
 
+import av
 import cv2
 import numpy as np
 from fastapi import UploadFile
 
-from enums.detection_type import DetectionTaskStatus
+from enums.detection_type import DetectionTaskStatus, DetectionTaskType
 from models.exceptions import ServiceException
 from repository.detection_class_count_repository import batch_create_detection_class_count
 from repository.detection_detail_repository import batch_create_detection_detail
 from repository.detection_task_repository import batch_create_detection_task
 from schema.detection_task_schema import DetectionTaskCreateSchema
 from tools.color_tool import bgr_to_json
-from tools.file_tool import upload_np_image_to_minio
+from tools.file_tool import upload_np_image_to_minio, upload_file_to_minio, upload_bytes_to_minio
 from tools.security_tool import SecurityTool
 from yolo_edu.engines.yolo_inference_engine import YOLOInferenceEngine
 from yolo_edu.services.model_config_service import ModelConfigService
@@ -35,6 +37,39 @@ def process_image_detection(imgs: List[np.ndarray], presign_save: bool = False) 
     return detections
 
 
+async def process_cap_detection(file: UploadFile) -> io.BytesIO:
+    file_bytes = await file.read()
+    input_buffer = io.BytesIO(file_bytes)
+    container = av.open(input_buffer)
+    stream = container.streams.video[0]
+
+    output_buffer = io.BytesIO()
+    output_container = av.open(output_buffer, mode="w", format="mp4")
+    output_stream = output_container.add_stream("mpeg4", rate=stream.average_rate)
+    output_stream.width = stream.width
+    output_stream.height = stream.height
+    output_stream.pix_fmt = "yuv420p"
+
+    engine = YOLOInferenceEngine(conf=0.4)
+
+    for frame in container.decode(stream):
+        img = frame.to_ndarray(format="bgr24")
+        dets, vis = engine.infer_frame(img, draw=True)
+
+        new_frame = av.VideoFrame.from_ndarray(vis, format="bgr24")
+        for packet in output_stream.encode(new_frame):
+            output_container.mux(packet)
+
+    for packet in output_stream.encode():
+        output_container.mux(packet)
+
+    output_container.close()
+    container.close()
+    output_buffer.seek(0)
+
+    return output_buffer
+
+
 async def frame_to_np(files: Union[UploadFile, List[UploadFile]]) -> List[np.ndarray]:
     if not isinstance(files, list):
         files = [files]
@@ -54,14 +89,29 @@ async def frame_to_np(files: Union[UploadFile, List[UploadFile]]) -> List[np.nda
 async def detection_img_task_service(data: DetectionTaskCreateSchema, files: List[UploadFile]) -> List[Dict]:
     np_imgs = await frame_to_np(files)
     results = process_image_detection(imgs=np_imgs, presign_save=True)
-    valid_entity_before_save(data,results)
+    task_id =  valid_entity_before_save(data, results)
+    for item in results:
+        item["task_id"] = task_id
     return results
 
 
-async def detection_cap_task_service(data: DetectionTaskCreateSchema, files: List[UploadFile]) -> None:
-    ...
+async def detection_cap_task_service(data: DetectionTaskCreateSchema, file: UploadFile) -> List[Dict]:
+    output_buffer = await process_cap_detection(file)
+    url = upload_bytes_to_minio(
+        data=output_buffer.read(),
+        filename=file.filename,
+        content_type=file.content_type,
+        presign_save=True
+    )
+    detections: List[Dict[str, Any]] = [{"image_url": url}]
+    task_id = valid_entity_before_save(data, detections)
+    detections.append({
+        'task_id': task_id
+    })
+    return detections
 
-def valid_entity_before_save(data: DetectionTaskCreateSchema, detections: List[Dict])-> int:
+
+def valid_entity_before_save(data: DetectionTaskCreateSchema, detections: List[Dict] | Any) -> int:
     img_urls = [item["image_url"] for item in detections]
     json_img_urls = json.dumps(img_urls)
 
@@ -74,6 +124,7 @@ def valid_entity_before_save(data: DetectionTaskCreateSchema, detections: List[D
         "iou_threshold": data.iou_threshold,
         "device_id": data.device_id,
         "output_path": json_img_urls,
+        'progress_pct': 100,
         "user_id": SecurityTool.get_user_id(),
         "created_by": SecurityTool.get_user_id(),
         "updated_by": SecurityTool.get_user_id(),
@@ -81,6 +132,8 @@ def valid_entity_before_save(data: DetectionTaskCreateSchema, detections: List[D
     task_ids = batch_create_detection_task(task_data)
     task_id = task_ids[0]
 
+    if DetectionTaskType(data.task_type) == DetectionTaskType.CAP:
+        return task_id
 
     detail_rows = []
     class_count_rows = []

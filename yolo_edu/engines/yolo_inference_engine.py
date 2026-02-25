@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple, Generator
+from typing import List, Dict, Tuple, Generator, AsyncGenerator
 
 import cv2
 import numpy as np
@@ -98,6 +98,63 @@ class YOLOInferenceEngine:
             raise ValueError(f"无法读取图片: {image_path}")
 
         return self.infer_frame(image, **kwargs)
+    #
+    # def infer_image_np(
+    #     self,
+    #     img: np.ndarray,
+    #     draw: bool = True,
+    #     conf: float | None = None
+    # ) -> Tuple[List[Dict], np.ndarray | None]:
+    #     if not isinstance(img, np.ndarray):
+    #         raise ValueError("输入必须是 np.ndarray")
+    #     return self.infer_frame(img, draw=draw, conf=conf)
+    #
+    # def infer_cap(
+    #     self,
+    #     video_path: str,
+    #     draw: bool = True,
+    #     conf: float | None = None
+    # ) -> Generator[Tuple[int, List[Dict], np.ndarray | None], None, None]:
+    #     cap = cv2.VideoCapture(video_path)
+    #     if not cap.isOpened():
+    #         raise RuntimeError(f"无法打开视频: {video_path}")
+    #     frame_id = 0
+    #     conf = conf or self.conf
+    #     try:
+    #         while True:
+    #             ret, frame = cap.read()
+    #             if not ret:
+    #                 break
+    #             dets, vis = self.infer_frame(frame, draw=draw, conf=conf)
+    #             yield frame_id, dets, vis
+    #             frame_id += 1
+    #     finally:
+    #         cap.release()
+    #
+    # def infer_cap_np(
+    #     self,
+    #     frame_gen: Generator[np.ndarray, None, None] | AsyncGenerator[np.ndarray, None],
+    #     draw: bool = True,
+    #     conf: float | None = None
+    # ) -> Generator[Tuple[int, List[Dict], np.ndarray | None], None, None]:
+    #     frame_id = 0
+    #     conf = conf or self.conf
+    #     try:
+    #         if hasattr(frame_gen, "__aiter__"):
+    #             async def async_runner():
+    #                 async for frame in frame_gen:
+    #                     dets, vis = self.infer_frame(frame, draw=draw, conf=conf)
+    #                     yield frame_id, dets, vis
+    #                     nonlocal frame_id
+    #                     frame_id += 1
+    #             return async_runner()
+    #         else:
+    #             for frame in frame_gen:
+    #                 dets, vis = self.infer_frame(frame, draw=draw, conf=conf)
+    #                 yield frame_id, dets, vis
+    #                 frame_id += 1
+    #     except Exception as e:
+    #         raise e
 
     def stream(
         self,

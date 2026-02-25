@@ -36,19 +36,23 @@ async def add_detection_task(data: DetectionTaskCreateSchema = Depends(), files:
         DetectionTaskType.CAP: ('.mp4', '.avi', '.mov'),
     }
 
-    allowed_ext = ext_map.get(data.task_type)
+    task_type = DetectionTaskType(data.task_type)
+    allowed_ext = ext_map.get(task_type)
     if not allowed_ext:
         raise ServiceException(msg='未知任务类型')
 
     for file in files:
-        if not file.filename or not file.filename.lower().endswith(allowed_ext):
+        filename = (file.filename or "").lower().strip()
+        if not filename.endswith(allowed_ext):
             raise ServiceException(msg=f'不支持的文件格式: {file.filename}')
     results = None
-    match data.task_type:
+    match task_type:
         case DetectionTaskType.IMAGE:
             results = await detection_img_task_service(data, files)
         case DetectionTaskType.CAP:
-            results = await detection_cap_task_service(data, files)
+            if len(files)>1:
+                raise ServiceException(msg='视频检测只支持单个视频')
+            results = await detection_cap_task_service(data, files[0])
 
     return Res.ok(results)
 
