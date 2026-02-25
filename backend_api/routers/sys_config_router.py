@@ -20,7 +20,13 @@ pro_sys_config_router = APIRouter(
 
 @pro_sys_config_router.get('/list')
 async def list_config(query: ConfigQuerySchema = Depends()):
-    filters = {k: v for k, v in {"config_name": query.config_name, "group_name": query.group_name}.items() if v is not None}
+    filters = {
+        k: v for k, v in {
+            "config_name": query.config_name,
+            "group_name": query.group_name,
+            "is_deleted": 0
+        }.items() if v is not None
+    }
     result = page_list_config(
         page=query.page,
         page_size=query.page_size,
@@ -32,7 +38,6 @@ async def list_config(query: ConfigQuerySchema = Depends()):
 
 @pro_sys_config_router.get('/{config_id}')
 async def get_config(config_id: int):
-    """根据ID获取配置"""
     config_list = get_config_by_id(config_id)
     if not config_list:
         raise ServiceException(msg="配置不存在")
@@ -41,7 +46,6 @@ async def get_config(config_id: int):
 
 @pro_sys_config_router.get('/key/{config_key}')
 async def get_config_by_key_endpoint(config_key: str):
-    """根据配置键获取配置值"""
     config_list = get_config_by_key(config_key)
     if not config_list:
         raise ServiceException(msg="配置不存在")
@@ -72,12 +76,10 @@ async def edit_config(config_id: int, data: ConfigUpdateSchema):
 
 @pro_sys_config_router.delete('/{config_id}')
 async def remove_config(config_id: int):
-    """删除配置"""
     config_list = get_config_by_id(config_id)
     if not config_list:
         raise ServiceException(msg="配置不存在")
 
-    # 系统配置不允许删除
     if config_list[0].get('is_system') == 1:
         raise ServiceException(msg="系统配置不允许删除")
 

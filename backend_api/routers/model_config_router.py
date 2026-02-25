@@ -22,11 +22,11 @@ async def list_model_config(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100)
 ):
-    """分页查询模型配置列表"""
     result = page_list_model(
         page=page,
         page_size=page_size,
         order_by=[("create_time","desc")],
+        filters={"is_deleted": 0},
         select_fields=None
     )
     return Res.ok(result)
@@ -34,7 +34,6 @@ async def list_model_config(
 
 @pro_model_config_router.get('/{model_id}')
 async def get_model_config(model_id: int):
-    """根据ID获取模型配置"""
     model = get_model_by_id(model_id)
     if not model:
         raise ServiceException(msg="模型配置不存在")

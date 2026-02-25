@@ -28,6 +28,7 @@ async def list_model_class(
         page=page,
         page_size=page_size,
         order_by=[("create_time","desc")],
+        filters={'is_deleted':0},
         select_fields=None
     )
     return Res.ok(result)
@@ -35,14 +36,12 @@ async def list_model_class(
 
 @pro_model_class_router.get('/by_model/{model_id}')
 async def get_model_class_by_model(model_id: int):
-    """根据模型ID获取所有类别"""
     classes = get_model_class_by_model_id(model_id)
     return Res.ok(classes)
 
 
 @pro_model_class_router.get('/{class_id}')
 async def get_model_class(class_id: int):
-    """根据ID获取模型类别"""
     model_class = get_model_class_by_id(class_id)
     if not model_class:
         raise ServiceException(msg="模型类别不存在")

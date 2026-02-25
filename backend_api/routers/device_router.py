@@ -28,11 +28,11 @@ async def list_device(
         page: int = Query(1, ge=1),
         page_size: int = Query(10, ge=1, le=100)
 ):
-    """分页查询设备列表"""
     result = page_list_device(
         page=page,
         page_size=page_size,
         order_by=[("create_time", "desc")],
+        filters={'is_deleted':0},
         select_fields=None
     )
     return Res.ok(result)

@@ -9,7 +9,10 @@ class NoticeListQuerySchema(BaseModel):
     status: Optional[str] = None
 
 class NoticeCreateUpdateSchema(BaseModel):
-    notice_title: str
-    notice_type: str
+    notice_title: Optional[str] = None
+    notice_type: Optional[str] = None
     status: Optional[str] = "0"
     content: Optional[str] = None
+
+    class Config:
+        extra = 'forbid'

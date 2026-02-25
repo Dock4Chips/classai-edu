@@ -19,7 +19,13 @@ pro_sys_role_router = APIRouter(
 
 @pro_sys_role_router.get('/list')
 async def list_role(query: RoleListQuerySchema = Depends()):
-    filters = {k: v for k, v in {"role_name": query.role_name, "status": query.status}.items() if v is not None}
+    filters = {
+        k: v for k, v in {
+            "role_name": query.role_name,
+            "status": query.status,
+            "is_deleted": 0
+        }.items() if v is not None
+    }
     result = page_list_role(
         page=query.page,
         page_size=query.page_size,
@@ -31,7 +37,6 @@ async def list_role(query: RoleListQuerySchema = Depends()):
 
 @pro_sys_role_router.get('/{role_id}')
 async def get_role(role_id: int):
-    """根据ID获取角色"""
     role_list = get_role_by_id(role_id)
     if not role_list:
         raise ServiceException(msg="角色不存在")
