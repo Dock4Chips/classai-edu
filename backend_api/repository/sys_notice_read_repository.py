@@ -42,11 +42,11 @@ def update_notice_read(id: int, data: dict):
 def get_notices_with_read_status(user_id: int, page: int = 1, page_size: int = 10):
     """获取通知列表及当前用户的阅读状态"""
     # 获取通知列表
-    notices = page_list_notice(page, page_size)
+    notices = page_list_notice(page, page_size, order_by=[('create_time', 'desc')])
 
     # 获取已读记录
     read_records = db.query(
-        'SELECT notice_id FROM sys_notice_read WHERE user_id = :user_id AND is_read = 1',
+        'SELECT notice_id FROM sys_notice_read WHERE user_id = :user_id AND is_read = 1 order by create_time desc',
         {'user_id': user_id}
     )
 

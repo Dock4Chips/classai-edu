@@ -13,6 +13,8 @@ import {
     FileText,
     ChevronLeft,
     ChevronRight,
+    UserCircle,
+    KeyRound,
 } from 'lucide-react';
 import {usePathname, useRouter} from 'next/navigation';
 import {IdentityService} from '@/lib/service/identity';
@@ -278,6 +280,22 @@ export default function Navigation() {
                                 },
                                 {
                                     key: 'divider',
+                                    divider: true,
+                                },
+                                {
+                                    key: 'profile',
+                                    label: 'Profile',
+                                    icon: <UserCircle className="w-4 h-4"/>,
+                                    onClick: () => router.push('/profile'),
+                                },
+                                {
+                                    key: 'change_password',
+                                    label: 'Change Password',
+                                    icon: <KeyRound className="w-4 h-4"/>,
+                                    onClick: () => router.push('/change-password'),
+                                },
+                                {
+                                    key: 'divider2',
                                     divider: true,
                                 },
                                 {
