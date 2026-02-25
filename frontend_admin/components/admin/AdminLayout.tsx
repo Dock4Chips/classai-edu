@@ -3,7 +3,7 @@
 import {useState, useEffect} from 'react';
 import {motion} from 'framer-motion';
 import {Sidebar} from './Sidebar';
-import {Bell, Search, User, UserCircle, KeyRound, LogOut, FileText, Settings} from 'lucide-react';
+import {Bell, Search, User, UserCircle, KeyRound, LogOut, FileText, Settings, ChevronLeft, ChevronRight} from 'lucide-react';
 import {IdentityService} from '@/lib/service/identity';
 import {NoticeService} from '@/lib/service/notice';
 import {apiClient, Results} from "@/lib/api";
@@ -63,6 +63,14 @@ export function AdminLayout({children}: AdminLayoutProps) {
     const [viewingNotice, setViewingNotice] = useState<any>(null);
     const [notificationOpen, setNotificationOpen] = useState(false);
 
+    // 通知列表 Modal 状态
+    const [noticeListModalOpen, setNoticeListModalOpen] = useState(false);
+    const [allNotices, setAllNotices] = useState<any[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize] = useState(10);
+    const [total, setTotal] = useState(0);
+    const [loadingNotices, setLoadingNotices] = useState(false);
+
     useEffect(() => {
         void fetchUserInfo();
         void fetchNotices();
@@ -85,6 +93,32 @@ export function AdminLayout({children}: AdminLayoutProps) {
             setUnreadCount(noticeList.filter((n: any) => !n.is_read).length);
         }
     }
+
+    const fetchAllNotices = async (page: number) => {
+        setLoadingNotices(true);
+        const result = await NoticeService.getNoticeList({
+            page,
+            page_size: pageSize,
+        });
+        if (result?.data) {
+            const noticeList = result.data.records || result.data || [];
+            setAllNotices(noticeList);
+            setTotal(result.data.total || noticeList.length);
+        }
+        setLoadingNotices(false);
+    };
+
+    const handleOpenNoticeList = () => {
+        setNoticeListModalOpen(true);
+        setNotificationOpen(false);
+        setCurrentPage(1);
+        void fetchAllNotices(1);
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        void fetchAllNotices(page);
+    };
 
     const handleViewNotice = async (notice: any) => {
         setViewingNotice(notice);
@@ -295,10 +329,7 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                         key: 'view_all',
                                         label: 'View All Notices',
                                         icon: <FileText className="w-4 h-4"/>,
-                                        onClick: () => {
-                                            router.push('/admin/notices');
-                                            setNotificationOpen(false);
-                                        },
+                                        onClick: handleOpenNoticeList,
                                     },
                                 ]}
                             />
@@ -412,6 +443,89 @@ export function AdminLayout({children}: AdminLayoutProps) {
                         </div>
                     </div>
                 )}
+            </Modal>
+
+            {/* Notice List Modal */}
+            <Modal isOpen={noticeListModalOpen} onClose={() => setNoticeListModalOpen(false)} title="All Notices" size="lg">
+                <div className="space-y-4">
+                    {/* Notice List */}
+                    <div className="space-y-2 max-h-[50vh] overflow-y-auto">
+                        {loadingNotices ? (
+                            <div className="text-center py-8 text-gray-500">Loading...</div>
+                        ) : allNotices.length === 0 ? (
+                            <div className="text-center py-8 text-gray-500">No notices found</div>
+                        ) : (
+                            allNotices.map((notice) => (
+                                <motion.div
+                                    key={notice.notice_id}
+                                    whileHover={{ scale: 1.01, x: 4 }}
+                                    whileTap={{ scale: 0.99 }}
+                                    onClick={() => {
+                                        setViewingNotice(notice);
+                                        setNoticeModalOpen(true);
+                                        setNoticeListModalOpen(false);
+                                    }}
+                                    className={`p-4 rounded-xl cursor-pointer transition-all border ${
+                                        notice.status === '1'
+                                            ? 'bg-gray-50 border-gray-200 opacity-60'
+                                            : 'bg-white border-gray-100 hover:border-blue-200 hover:shadow-md'
+                                    }`}
+                                >
+                                    <div className="flex items-start gap-3">
+                                        <div className={`mt-1 ${!notice.is_read ? 'w-2 h-2 bg-blue-500 rounded-full flex-shrink-0' : ''}`}/>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <p className={`text-sm font-medium truncate ${!notice.is_read ? 'text-gray-900' : 'text-gray-600'}`}>
+                                                    {notice.notice_title}
+                                                </p>
+                                                {notice.notice_type === '1' ? (
+                                                    <span className="px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full flex-shrink-0">Notice</span>
+                                                ) : (
+                                                    <span className="px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full flex-shrink-0">Announcement</span>
+                                                )}
+                                            </div>
+                                            <p className="text-xs text-gray-400">
+                                                {notice.create_time ? new Date(notice.create_time).toLocaleString() : '-'}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* Pagination */}
+                    {allNotices.length > 0 && (
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                            <span className="text-sm text-gray-500">
+                                Total: {total || allNotices.length} notices
+                            </span>
+                            <div className="flex items-center gap-2">
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => handlePageChange(currentPage - 1)}
+                                    disabled={currentPage === 1}
+                                    className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                </motion.button>
+                                <span className="text-sm text-gray-700 px-3">
+                                    Page {currentPage} of {Math.max(1, Math.ceil((total || allNotices.length) / pageSize))}
+                                </span>
+                                <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => handlePageChange(currentPage + 1)}
+                                    disabled={currentPage >= Math.ceil((total || allNotices.length) / pageSize)}
+                                    className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                >
+                                    <ChevronRight className="w-4 h-4" />
+                                </motion.button>
+                            </div>
+                        </div>
+                    )}
+                </div>
             </Modal>
         </div>
     );
