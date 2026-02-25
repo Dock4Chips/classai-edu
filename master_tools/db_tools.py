@@ -166,7 +166,7 @@ class DBTools:
                     for row in result_proxy:
                         row_dict = dict(row._mapping)
                         results.append(row_dict)
-
+                    log.debug(f"成功执行操作SQL: {sql}")
                     return results
 
             except Exception as e:

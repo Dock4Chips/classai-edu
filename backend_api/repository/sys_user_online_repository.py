@@ -44,3 +44,9 @@ def force_offline_by_user_id(user_id: int):
     """根据用户ID强制下线（更新状态为 off_line）"""
     db.execute_sql('UPDATE sys_user_online SET status = :status WHERE user_id = :user_id',
                    {'status': 'off_line', 'user_id': user_id})
+
+
+def delete_online_user_by_session_id(session_id: str):
+    """根据会话ID删除在线用户记录"""
+    db.execute_sql('delete from sys_user_online where session_id = :session_id',
+                   {'session_id': session_id})
