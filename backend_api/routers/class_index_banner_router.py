@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter, Depends, UploadFile, File
 from auth.authorization import Authorization
 from models.exceptions import ServiceException
@@ -24,35 +26,39 @@ pro_class_index_banner_router = APIRouter(
 
 @pub_class_index_banner_router.get('')
 async def list_banner():
-    """查询Banner列表"""
     return Res.ok(list_banners())
 
 
 @pro_class_index_banner_router.post('')
 async def add_banner(file: UploadFile = File(...)):
-    """新增Banner"""
     if count_banners()[0].get('total_count') >= 6:
         raise ServiceException(msg="最多只能添加6个Banner")
     img = await frame_to_np(file)
-    _, image_url, serialized = process_image_detection(img)
-
+    results = process_image_detection(img)
+    model_info = ModelConfigService.get_model_info()
+    dets = results[0].get('dets', [])
+    height, width = results[0].get('dets')[0].get('orig_shape')
+    cls_counts = {}
+    for det in dets:
+        class_name = det.get('class_name')
+        cls_counts[class_name] = cls_counts.get(class_name, 0) + 1
 
     insert_data = {
         "resource_type": "image",
-        "resource_url": image_url,
-        "width": serialized["width"],
-        "height": serialized["height"],
+        "resource_url": results[0].get('image_url'),
+        "width": width,
+        "height": height,
         "fps": None,
-        "model_id": None,
-        "model_name": ModelConfigService.get_model_path(),
-        "model_version": "v1.0",
-        "conf_threshold": None,
-        "iou_threshold": 0.45,
-        "num_boxes": serialized["num_boxes"],
-        "cls_counts": serialized["cls_counts_json"],
-        "max_confidence": serialized["max_confidence"],
-        "det_list": serialized["det_list_json"],
-        "raw_result": serialized["raw_result_json"],
+        "model_id":  model_info.get('model_id'),
+        "model_name": model_info.get('model_name'),
+        "model_version": model_info.get('model_version'),
+        "conf_threshold": max([det.get('confidence', 0) for det in dets], default=0),
+        "iou_threshold": None,
+        "num_boxes": len(dets),
+        "cls_counts": json.dumps(cls_counts),
+        "max_confidence": max([det.get('confidence', 0) for det in dets], default=0),
+        "det_list": json.dumps(dets),
+        "raw_result": json.dumps(results),
     }
     create_banner(insert_data)
     return Res.ok("新增成功")
@@ -60,22 +66,35 @@ async def add_banner(file: UploadFile = File(...)):
 
 @pro_class_index_banner_router.put('/{id}')
 async def edit_banner(id: int, file: UploadFile = File(...)):
-    """修改Banner"""
     old_record = get_banner_by_id(id)
     if not old_record:
         raise ServiceException(msg="记录不存在")
     delete_minio_file(old_record[0].get("resource_url"))
+    
     img = await frame_to_np(file)
-    _, image_url, serialized = process_image_detection(img)
+    results = process_image_detection(img)
+    model_info = ModelConfigService.get_model_info()
+    dets = results[0].get('dets', [])
+    height, width = results[0].get('dets')[0].get('orig_shape')
+    
+    cls_counts = {}
+    for det in dets:
+        class_name = det.get('class_name')
+        cls_counts[class_name] = cls_counts.get(class_name, 0) + 1
+
     update_data = {
-        "resource_url": image_url,
-        "width": serialized["width"],
-        "height": serialized["height"],
-        "num_boxes": serialized["num_boxes"],
-        "cls_counts": serialized["cls_counts_json"],
-        "max_confidence": serialized["max_confidence"],
-        "det_list": serialized["det_list_json"],
-        "raw_result": serialized["raw_result_json"],
+        "resource_url": results[0].get('image_url'),
+        "width": width,
+        "height": height,
+        "model_id": model_info.get('model_id'),
+        "model_name": model_info.get('model_name'),
+        "model_version": model_info.get('model_version'),
+        "conf_threshold": max([det.get('confidence', 0) for det in dets], default=0),
+        "num_boxes": len(dets),
+        "cls_counts": json.dumps(cls_counts),  # 转换为JSON字符串
+        "max_confidence": max([det.get('confidence', 0) for det in dets], default=0),
+        "det_list": json.dumps(dets),  # 转换为JSON字符串
+        "raw_result": json.dumps(results),  # 转换为JSON字符串
     }
     update_banner(id, update_data)
     return Res.ok("修改成功")
@@ -83,7 +102,6 @@ async def edit_banner(id: int, file: UploadFile = File(...)):
 
 @pro_class_index_banner_router.delete('/{id}')
 async def remove_banner(id: int):
-    """删除Banner"""
     old_record = get_banner_by_id(id)
     if not old_record:
         raise ServiceException(msg="记录不存在")
