@@ -24,11 +24,11 @@ async def list_model_draw_config(
     page: int = Query(1, ge=1),
     page_size: int = Query(10, ge=1, le=100)
 ):
-    """分页查询绘图配置列表"""
     result = page_list_model_draw_config(
         page=page,
         page_size=page_size,
         order_by=[("create_time","desc")],
+        filters={"is_deleted": 0},
         select_fields=None
     )
     return Res.ok(result)
@@ -36,14 +36,12 @@ async def list_model_draw_config(
 
 @pro_model_draw_config_router.get('/by_model/{model_id}')
 async def get_model_draw_config_by_model(model_id: int):
-    """根据模型ID获取所有绘图配置"""
     configs = get_model_draw_config_by_model_id(model_id)
     return Res.ok(configs)
 
 
 @pro_model_draw_config_router.get('/{config_id}')
 async def get_model_draw_config(config_id: int):
-    """根据ID获取绘图配置"""
     config = get_model_draw_config_by_id(config_id)
     if not config:
         raise ServiceException(msg="绘图配置不存在")

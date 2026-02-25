@@ -31,12 +31,14 @@ pub_sys_notice_router = APIRouter(prefix='/api/sys/notice')
 
 @pub_sys_notice_router.get('/list')
 async def list_notice_public(query: NoticeListQuerySchema = Depends()):
-    filters = {"status": "0"}
-    if query.notice_title:
-        filters["notice_title"] = query.notice_title
-    if query.notice_type:
-        filters["notice_type"] = query.notice_type
-
+    filters = {
+        k: v for k, v in {
+            "notice_title": query.notice_title,
+            "notice_type": query.notice_type,
+            "is_deleted": 0,
+            "status": "0"
+        }.items() if v is not None
+    }
     result = page_list_notice(
         page=query.page,
         page_size=query.page_size,

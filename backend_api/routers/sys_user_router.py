@@ -17,7 +17,13 @@ pro_sys_user_router = APIRouter(
 
 @pro_sys_user_router.get('/list')
 async def list_user(query: UserListQuerySchema = Depends()):
-    filters = {k: v for k, v in query.dict().items() if k in ['user_name','email'] and v is not None}
+    filters = {
+        k: v for k, v in {
+            "user_name": query.user_name,
+            "email": query.email,
+            "is_deleted": 0
+        }.items() if v is not None
+    }
     result = page_list_user(page=query.page, page_size=query.page_size, filters=filters, order_by=[('create_time','desc')])
     for record in result.get("records", []):
         record.pop("password", None)
@@ -27,7 +33,6 @@ async def list_user(query: UserListQuerySchema = Depends()):
 
 @pro_sys_user_router.get('/{user_id}')
 async def get_user(user_id: int):
-    """根据ID获取用户"""
     user_list = get_user_by_id(user_id)
     if not user_list:
         raise ServiceException(msg="用户不存在")
@@ -37,14 +42,15 @@ async def get_user(user_id: int):
 
 @pro_sys_user_router.post('')
 async def add_user(data: UserCreateSchema = Body(...)):
-    """新增用户"""
+    if data.user_name:
+        if get_user_by_username(data.user_name):
+            raise ServiceException(msg="用户名已存在")
     create_user(data.dict())
     return Res.ok("新增成功")
 
 
 @pro_sys_user_router.put('/{user_id}')
 async def edit_user(user_id: int, data: UserUpdateSchema = Body(...)):
-    """修改用户"""
     user_list = get_user_by_id(user_id)
     if not user_list:
         raise ServiceException(msg="用户不存在")
@@ -58,7 +64,6 @@ async def edit_user(user_id: int, data: UserUpdateSchema = Body(...)):
 
 @pro_sys_user_router.delete('/{user_id}')
 async def remove_user(user_id: int):
-    """删除用户"""
     user_list = get_user_by_id(user_id)
     if not user_list:
         raise ServiceException(msg="用户不存在")
@@ -68,7 +73,6 @@ async def remove_user(user_id: int):
 
 @pro_sys_user_router.post('/avatar')
 async def update_avatar(file: UploadFile = File(...)):
-    """上传头像"""
     user_id = SecurityTool.get_user_id()
     image_url = await upload_file_to_minio(file)
     update_user(user_id, {'avatar': image_url})

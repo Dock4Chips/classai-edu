@@ -19,7 +19,13 @@ pro_detection_task_router = APIRouter(
 
 @pro_detection_task_router.get('/list')
 async def list_detection_task(query: DetectionTaskListQuerySchema = Depends()):
-    filters = {k: v for k, v in query.dict().items() if k in ['task_status', 'task_name'] and v is not None}
+    filters = {
+        k: v for k, v in {
+            "task_status": query.task_status,
+            "task_name": query.task_name,
+            "is_deleted": 0,
+        }.items() if v is not None
+    }
     results = page_list_task_detail(page=query.page, page_size=query.page_size, filters=filters,
                                     order_by=[('create_time', 'desc')])
     for task in results['records']:
