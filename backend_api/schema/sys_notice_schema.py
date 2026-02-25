@@ -11,6 +11,7 @@ class NoticeListQuerySchema(BaseModel):
 class NoticeCreateUpdateSchema(BaseModel):
     notice_title: Optional[str] = None
     notice_type: Optional[str] = None
+    notice_content: Optional[str] = None
     status: Optional[str] = "0"
     content: Optional[str] = None
 

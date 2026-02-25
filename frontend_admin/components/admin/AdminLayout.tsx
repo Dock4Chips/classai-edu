@@ -27,16 +27,16 @@ const userMenuItems = [
         path: '/admin/profile',
     },
     {
-        key: 'settings',
-        label: 'Settings',
-        icon: <Settings className="w-4 h-4"/>,
-        path: '/admin/settings',
-    },
-    {
         key: 'change_password',
         label: 'Change Password',
         icon: <KeyRound className="w-4 h-4"/>,
         path: '/admin/change-password',
+    },
+    {
+        key: 'settings',
+        label: 'Settings',
+        icon: <Settings className="w-4 h-4"/>,
+        path: '/admin/settings',
     },
     {
         key: 'menu_divider',
