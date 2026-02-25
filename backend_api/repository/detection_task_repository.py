@@ -19,10 +19,3 @@ def page_list_task_detail(
         order_by=order_by,
         select_fields=select_fields
     )
-
-def get_by_id(task_id):
-    return db.get_by_id('detection_task', 'task_id',task_id)
-
-if __name__ == '__main__':
-    task_id = 12
-    print(get_by_id(task_id))
