@@ -270,7 +270,7 @@ class DBTools:
         sql = f"DELETE FROM {table} WHERE {id_column} = :id"
         return self.execute(sql, {"id": id_value})
 
-    def batch_insert(self, table: str, data_list: List[Dict[str, Any]]) -> int:
+    def batch_insert(self, table: str, data_list: List[Dict[str, Any]]) -> List[int]:
         """
         批量插入记录
         :param table: 表名
@@ -278,7 +278,7 @@ class DBTools:
         :return: 影响的行数
         """
         if not data_list:
-            return 0
+            return []
 
         # 获取所有字段名（使用第一条记录的键）
         columns = list(data_list[0].keys())
@@ -301,7 +301,21 @@ class DBTools:
         values_str = ", ".join(values_parts)
         sql = f"INSERT INTO {table} ({columns_str}) VALUES {values_str}"
 
-        return self.execute(sql, all_params)
+        with self.db_config.get_session() as session:
+            try:
+                with session.connection() as conn:
+                    result = conn.execute(text(sql), all_params)
+                    session.commit()
+                    first_id = result.lastrowid
+                    if not first_id:
+                        return []
+                    count = len(data_list)
+                    return [first_id + i for i in range(count)]
+
+            except Exception as e:
+                session.rollback()
+                log.error(f"批量插入失败: {sql}, 错误: {str(e)}")
+                raise
 
     def execute_sql(self, sql: str, params: Optional[Dict[str, Any]] = None) -> Union[List[Dict[str, Any]], int]:
         """
