@@ -38,7 +38,6 @@ async def list_online_users(query: OnlineUserQuerySchema = Depends()):
         k: v for k, v in {
             "user_name": query.user_name,
             "status": query.status,
-            "is_deleted": 0
         }.items() if v is not None
     }
     result = page_list_online_users(query.page, query.page_size, filters)

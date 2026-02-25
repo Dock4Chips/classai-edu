@@ -1,94 +1,99 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import Navigation from './Navigation';
+import { ReportService } from '@/lib/service/report';
 import {
   FileText,
   Download,
-  Plus,
   Calendar,
   Clock,
-  CheckCircle2,
   Eye,
   Trash2,
-  Edit,
   Search,
   Filter,
-  ChevronRight,
-  FileSpreadsheet,
-  FileImage,
-  BarChart3,
-  MoreVertical
+  MoreVertical,
+  Box,
+  FileJson,
+  Cpu,
+  Network,
+  Activity,
+  Grid3x3
 } from 'lucide-react';
 
-// Mock data
 const reportsData = [
   {
-    id: 1,
-    title: 'Weekly Summary - Classroom 3A',
-    type: 'summary',
-    date: '2024-01-30',
-    period: 'Jan 24 - Jan 30, 2024',
+    id: 'onnx',
+    title: 'Model Export - ONNX Format',
+    type: 'model',
+    date: '2025-12-23',
+    period: 'ONNX',
     status: 'completed',
-    size: '2.4 MB'
+    size: 'model.onnx',
+    downloadType: 'model' as const,
+    downloadKey: 'onnx' as const
   },
   {
-    id: 2,
-    title: 'Behavior Analysis - Lecture Hall B',
-    type: 'analysis',
-    date: '2024-01-29',
-    period: 'Jan 22 - Jan 29, 2024',
+    id: 'coreml',
+    title: 'Model Export - CoreML Format',
+    type: 'model',
+    date: '2025-12-23',
+    period: 'CoreML',
     status: 'completed',
-    size: '3.1 MB'
+    size: 'model.mlmodel',
+    downloadType: 'model' as const,
+    downloadKey: 'coreml' as const
   },
   {
-    id: 3,
-    title: 'Monthly Overview - All Classes',
-    type: 'overview',
-    date: '2024-01-28',
-    period: 'January 2024',
+    id: 'torchscript',
+    title: 'Model Export - TorchScript Format',
+    type: 'model',
+    date: '2025-12-23',
+    period: 'TorchScript',
     status: 'completed',
-    size: '8.7 MB'
+    size: 'model.torchscript',
+    downloadType: 'model' as const,
+    downloadKey: 'torchscript' as const
   },
   {
-    id: 4,
-    title: 'Comparison Report - Week 3 vs Week 4',
-    type: 'comparison',
-    date: '2024-01-27',
-    period: 'Week 3-4, January',
+    id: 'box-curves',
+    title: 'Metrics - Box Curves Data',
+    type: 'metrics',
+    date: '2025-12-23',
+    period: 'Box Curves',
     status: 'completed',
-    size: '1.9 MB'
+    size: 'box_curves.json',
+    downloadType: 'metrics' as const,
+    downloadKey: 'box-curves' as const
   },
   {
-    id: 5,
-    title: 'Classroom 2B Detailed Analysis',
-    type: 'detailed',
-    date: '2024-01-26',
-    period: 'Jan 20 - Jan 26, 2024',
+    id: 'confusion-matrix',
+    title: 'Metrics - Confusion Matrix',
+    type: 'metrics',
+    date: '2025-12-23',
+    period: 'Confusion Matrix',
     status: 'completed',
-    size: '4.2 MB'
+    size: 'confusion_matrix.json',
+    downloadType: 'metrics' as const,
+    downloadKey: 'confusion-matrix' as const
+  },
+  {
+    id: 'results',
+    title: 'Metrics - Training Results',
+    type: 'metrics',
+    date: '2025-12-23',
+    period: 'Results',
+    status: 'completed',
+    size: 'results.json',
+    downloadType: 'metrics' as const,
+    downloadKey: 'results' as const
   }
 ];
 
-// Create Report Modal
-const CreateReportModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) => {
-  const [step, setStep] = useState(1);
-  const [selectedType, setSelectedType] = useState('');
-  const [selectedPeriod, setSelectedPeriod] = useState('');
-  const [selectedClasses, setSelectedClasses] = useState<string[]>([]);
-
+// JSON Preview Modal
+const JsonPreviewModal = ({ isOpen, onClose, title, data }: { isOpen: boolean; onClose: () => void; title: string; data: any }) => {
   if (!isOpen) return null;
-
-  const reportTypes = [
-    { id: 'summary', label: 'Weekly Summary', icon: BarChart3, desc: 'Overview of the week' },
-    { id: 'analysis', label: 'Behavior Analysis', icon: FileSpreadsheet, desc: 'Detailed behavior breakdown' },
-    { id: 'comparison', label: 'Comparison', icon: FileImage, desc: 'Compare multiple periods' },
-    { id: 'detailed', label: 'Detailed Report', icon: FileText, desc: 'Comprehensive analysis' }
-  ];
-
-  const periods = ['This Week', 'Last Week', 'This Month', 'Last Month', 'Custom Range'];
-  const classes = ['Classroom 3A', 'Classroom 2B', 'Lecture Hall B', 'Lab Room 101'];
 
   return (
     <motion.div
@@ -101,143 +106,28 @@ const CreateReportModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () =
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[80vh] overflow-hidden flex flex-col"
       >
-        <div className="p-6 border-b border-gray-100">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Generate New Report</h2>
-            <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
-              <Trash2 size={18} className="text-gray-400" />
-            </button>
-          </div>
+        <div className="p-6 border-b border-gray-100 flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
+          <button onClick={onClose} className="p-2 hover:bg-gray-100 rounded-xl transition-colors">
+            <Trash2 size={18} className="text-gray-400" />
+          </button>
         </div>
 
-        <div className="p-6">
-          {step === 1 && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="space-y-4"
-            >
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Report Type</h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {reportTypes.map((type) => (
-                    <button
-                      key={type.id}
-                      onClick={() => setSelectedType(type.id)}
-                      className={`p-4 rounded-xl border-2 text-left transition-all ${
-                        selectedType === type.id
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className={`mb-2 ${selectedType === type.id ? 'text-blue-600' : 'text-gray-400'}`}>
-                        <type.icon size={24} />
-                      </div>
-                      <div className="font-semibold text-gray-900">{type.label}</div>
-                      <div className="text-xs text-gray-500">{type.desc}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 2 && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="space-y-4"
-            >
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Time Period</h3>
-                <div className="space-y-2">
-                  {periods.map((period) => (
-                    <button
-                      key={period}
-                      onClick={() => setSelectedPeriod(period)}
-                      className={`w-full p-3 rounded-xl border text-left transition-all ${
-                        selectedPeriod === period
-                          ? 'border-blue-500 bg-blue-50 text-blue-700'
-                          : 'border-gray-200 hover:border-gray-300 text-gray-700'
-                      }`}
-                    >
-                      {period}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 3 && (
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="space-y-4"
-            >
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Select Classes</h3>
-                <div className="space-y-2">
-                  {classes.map((cls) => (
-                    <button
-                      key={cls}
-                      onClick={() => {
-                        setSelectedClasses(prev =>
-                          prev.includes(cls)
-                            ? prev.filter(c => c !== cls)
-                            : [...prev, cls]
-                        );
-                      }}
-                      className={`w-full p-3 rounded-xl border text-left transition-all flex items-center justify-between ${
-                        selectedClasses.includes(cls)
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <span className={selectedClasses.includes(cls) ? 'text-blue-700' : 'text-gray-700'}>{cls}</span>
-                      {selectedClasses.includes(cls) && (
-                        <CheckCircle2 size={18} className="text-blue-600" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </motion.div>
-          )}
+        <div className="p-6 overflow-auto flex-1 bg-gray-50">
+          <pre className="text-sm text-gray-800 font-mono whitespace-pre-wrap">
+            {JSON.stringify(data, null, 2)}
+          </pre>
         </div>
 
-        <div className="p-6 border-t border-gray-100 flex items-center justify-between">
-          {step > 1 && (
-            <button
-              onClick={() => setStep(step - 1)}
-              className="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium"
-            >
-              Back
-            </button>
-          )}
-          <div className="flex items-center gap-3 ml-auto">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-900 font-medium"
-            >
-              Cancel
-            </button>
-            <button
-              onClick={() => {
-                if (step < 3) {
-                  setStep(step + 1);
-                } else {
-                  // Generate report
-                  onClose();
-                }
-              }}
-              className="px-6 py-2 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all"
-            >
-              {step === 3 ? 'Generate Report' : 'Next'}
-            </button>
-          </div>
+        <div className="p-6 border-t border-gray-100">
+          <button
+            onClick={onClose}
+            className="w-full px-6 py-3 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all"
+          >
+            Close
+          </button>
         </div>
       </motion.div>
     </motion.div>
@@ -245,9 +135,14 @@ const CreateReportModal = ({ isOpen, onClose }: { isOpen: boolean; onClose: () =
 };
 
 export default function ReportsPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState<'all' | 'summary' | 'analysis' | 'comparison' | 'detailed'>('all');
+  const [filterType, setFilterType] = useState<'all' | 'model' | 'metrics'>('all');
+  const [previewModal, setPreviewModal] = useState<{ isOpen: boolean; title: string; data: any }>({
+    isOpen: false,
+    title: '',
+    data: null
+  });
+  const [isFilterExpanded, setIsFilterExpanded] = useState(true);
 
   const filteredReports = reportsData.filter(report =>
     (filterType === 'all' || report.type === filterType) &&
@@ -255,50 +150,80 @@ export default function ReportsPage() {
      report.period.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const getTypeIcon = (type: string) => {
-    switch (type) {
-      case 'summary': return BarChart3;
-      case 'analysis': return FileSpreadsheet;
-      case 'comparison': return FileImage;
+  const getTypeIcon = (id: string) => {
+    switch (id) {
+      case 'onnx': return Box;
+      case 'coreml': return Cpu;
+      case 'torchscript': return Network;
+      case 'box-curves': return Activity;
+      case 'confusion-matrix': return Grid3x3;
+      case 'results': return FileJson;
       default: return FileText;
     }
   };
 
-  const getTypeColor = (type: string) => {
-    switch (type) {
-      case 'summary': return 'bg-blue-50 text-blue-600';
-      case 'analysis': return 'bg-emerald-50 text-emerald-600';
-      case 'comparison': return 'bg-violet-50 text-violet-600';
-      case 'detailed': return 'bg-amber-50 text-amber-600';
+  const getTypeColor = (id: string) => {
+    switch (id) {
+      case 'onnx': return 'bg-blue-50 text-blue-600';
+      case 'coreml': return 'bg-purple-50 text-purple-600';
+      case 'torchscript': return 'bg-orange-50 text-orange-600';
+      case 'box-curves': return 'bg-emerald-50 text-emerald-600';
+      case 'confusion-matrix': return 'bg-rose-50 text-rose-600';
+      case 'results': return 'bg-cyan-50 text-cyan-600';
       default: return 'bg-gray-50 text-gray-600';
+    }
+  };
+
+  const handleDownload = (report: typeof reportsData[0]) => {
+    if (report.downloadType === 'model') {
+      ReportService.downloadModel(report.downloadKey);
+    } else {
+      ReportService.downloadMetrics(report.downloadKey);
+    }
+  };
+
+  const handlePreview = async (report: typeof reportsData[0]) => {
+    try {
+      const fileMap = {
+        'box-curves': '/metrics/box_curves.json',
+        'confusion-matrix': '/metrics/confusion_matrix.json',
+        'results': '/metrics/results.json'
+      };
+
+      const response = await fetch(fileMap[report.downloadKey as keyof typeof fileMap]);
+      const data = await response.json();
+
+      setPreviewModal({
+        isOpen: true,
+        title: report.title,
+        data
+      });
+    } catch (error) {
+      console.error('Failed to load JSON:', error);
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Navigation />
-      <CreateReportModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <JsonPreviewModal
+        isOpen={previewModal.isOpen}
+        onClose={() => setPreviewModal({ isOpen: false, title: '', data: null })}
+        title={previewModal.title}
+        data={previewModal.data}
+      />
 
       <main className="max-w-7xl mx-auto px-6 pt-28 pb-12">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-8"
+          className="mb-8"
         >
           <div>
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Reports</h1>
             <p className="text-gray-500">View and generate analysis reports</p>
           </div>
-
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="group px-6 py-3 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-lg flex items-center gap-2"
-          >
-            <Plus size={20} />
-            Generate Report
-            <FileText size={18} className="group-hover:translate-x-1 transition-transform" />
-          </button>
         </motion.div>
 
         {/* Search and Filters */}
@@ -319,12 +244,21 @@ export default function ReportsPage() {
             />
           </div>
 
-          <div className="flex items-center gap-2 p-1 bg-white rounded-xl border border-gray-200 shadow-sm">
-            {(['all', 'summary', 'analysis', 'comparison', 'detailed'] as const).map((type) => (
+          <motion.div
+            initial={false}
+            animate={{
+              width: isFilterExpanded ? 'auto' : '0px',
+              opacity: isFilterExpanded ? 1 : 0,
+              overflow: 'hidden'
+            }}
+            transition={{ duration: 0.3 }}
+            className="flex items-center gap-2 p-1 bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden"
+          >
+            {(['all', 'model', 'metrics'] as const).map((type) => (
               <button
                 key={type}
                 onClick={() => setFilterType(type)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-all ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-all whitespace-nowrap ${
                   filterType === type
                     ? 'bg-black text-white shadow-md'
                     : 'text-gray-600 hover:bg-gray-50'
@@ -333,11 +267,16 @@ export default function ReportsPage() {
                 {type}
               </button>
             ))}
-          </div>
+          </motion.div>
 
-          <button className="p-2.5 bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-colors">
-            <Filter size={18} className="text-gray-600" />
-          </button>
+          <motion.button
+            onClick={() => setIsFilterExpanded(!isFilterExpanded)}
+            animate={{ rotate: isFilterExpanded ? 180 : 0 }}
+            transition={{ duration: 0.3 }}
+            className="p-2.5 bg-white rounded-xl border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-colors flex-shrink-0"
+          >
+            <Filter size={18} className={isFilterExpanded ? "text-blue-600" : "text-gray-600"} />
+          </motion.button>
         </motion.div>
 
         {/* Reports Grid */}
@@ -348,7 +287,7 @@ export default function ReportsPage() {
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
         >
           {filteredReports.map((report, index) => {
-            const TypeIcon = getTypeIcon(report.type);
+            const TypeIcon = getTypeIcon(report.id);
 
             return (
               <motion.div
@@ -359,7 +298,7 @@ export default function ReportsPage() {
                 className="group bg-white rounded-2xl p-6 shadow-lg shadow-gray-100 hover:shadow-2xl transition-all"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-xl ${getTypeColor(report.type)}`}>
+                  <div className={`p-3 rounded-xl ${getTypeColor(report.id)}`}>
                     <TypeIcon size={24} />
                   </div>
                   <button className="p-2 hover:bg-gray-100 rounded-xl transition-colors opacity-0 group-hover:opacity-100">
@@ -385,12 +324,22 @@ export default function ReportsPage() {
                 <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                   <span className="text-xs text-gray-500">{report.size}</span>
                   <div className="flex items-center gap-2">
-                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="Download">
+                    <button
+                      onClick={() => handleDownload(report)}
+                      className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      title="Download"
+                    >
                       <Download size={18} className="text-gray-600" />
                     </button>
-                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" title="View">
-                      <Eye size={18} className="text-gray-600" />
-                    </button>
+                    {report.downloadType === 'metrics' && (
+                      <button
+                        onClick={() => handlePreview(report)}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        title="View"
+                      >
+                        <Eye size={18} className="text-gray-600" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </motion.div>
