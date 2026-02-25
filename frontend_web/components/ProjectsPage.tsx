@@ -40,10 +40,10 @@ interface Project {
     name: string;
     type: 'image' | 'cap' | 'stream' | 'batch';
     date: string;
-    duration: string;
-    frames: number;
+    objects: number;
+    classes: number;
+    conf: number;
     status: 'pending' | 'running' | 'failed' | 'completed';
-    progress: number;
     thumbnail?: string;
 }
 
@@ -89,32 +89,29 @@ export default function ProjectsPage() {
                     const paths = JSON.parse(record.output_path);
                     if (Array.isArray(paths) && paths.length > 0) {
                         thumbnail = paths[0];
+                    } else if (typeof paths === 'string') {
+                        thumbnail = paths;
                     }
                 } catch (e) {
-                    // ignore
+                    // If output_path is a direct URL string
+                    if (record.output_path && !record.output_path.startsWith('[')) {
+                        thumbnail = record.output_path;
+                    }
                 }
 
-                // Format duration
-                let duration = '-';
-                if (record.duration_seconds !== null) {
-                    const seconds = record.duration_seconds;
-                    const hours = Math.floor(seconds / 3600);
-                    const minutes = Math.floor((seconds % 3600) / 60);
-                    const secs = seconds % 60;
-                    duration = hours > 0
-                        ? `${hours}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
-                        : `${minutes}:${String(secs).padStart(2, '0')}`;
-                }
+                // Calculate objects and classes from details
+                const objects = record.details?.length || 0;
+                const classes = record.details ? [...new Set(record.details.map((d: any) => d.class_name))].length : 0;
 
                 return {
                     id: record.task_id,
                     name: record.task_name,
                     type: typeMap[record.task_type] || 'image',
                     date: record.create_time.split('T')[0],
-                    duration,
-                    frames: record.total_frames,
+                    objects,
+                    classes,
+                    conf: record.conf_threshold,
                     status: statusMap[record.task_status] || 'pending',
-                    progress: record.progress_pct,
                     thumbnail,
                 };
             });
@@ -192,16 +189,16 @@ export default function ProjectsPage() {
 
                 <div className="grid grid-cols-4 gap-4 mb-4">
                     <div>
-                        <div className="text-xs text-gray-500 mb-1">Duration</div>
-                        <div className="text-sm font-medium text-gray-900">{project.duration}</div>
+                        <div className="text-xs text-gray-500 mb-1">Objects</div>
+                        <div className="text-sm font-medium text-gray-900">{project.objects}</div>
                     </div>
                     <div>
-                        <div className="text-xs text-gray-500 mb-1">Frames</div>
-                        <div className="text-sm font-medium text-gray-900">{project.frames}</div>
+                        <div className="text-xs text-gray-500 mb-1">Classes</div>
+                        <div className="text-sm font-medium text-gray-900">{project.classes}</div>
                     </div>
                     <div>
-                        <div className="text-xs text-gray-500 mb-1">Progress</div>
-                        <div className="text-sm font-medium text-gray-900">{project.progress}%</div>
+                        <div className="text-xs text-gray-500 mb-1">Conf</div>
+                        <div className="text-sm font-medium text-gray-900">{project.conf.toFixed(2)}</div>
                     </div>
                     <div>
                         <div className="text-xs text-gray-500 mb-1">Status</div>
@@ -349,19 +346,16 @@ export default function ProjectsPage() {
                                         {/* Stats */}
                                         <div className="flex items-center gap-8">
                                             <div className="text-center">
-                                                <div className="text-xs text-gray-500">Frames</div>
-                                                <div
-                                                    className="text-sm font-medium text-gray-900">{project.frames}</div>
+                                                <div className="text-xs text-gray-500">Objects</div>
+                                                <div className="text-sm font-medium text-gray-900">{project.objects}</div>
                                             </div>
                                             <div className="text-center">
-                                                <div className="text-xs text-gray-500">Progress</div>
-                                                <div className="text-sm font-medium text-gray-900">{project.progress}%
-                                                </div>
+                                                <div className="text-xs text-gray-500">Classes</div>
+                                                <div className="text-sm font-medium text-gray-900">{project.classes}</div>
                                             </div>
                                             <div className="text-center">
-                                                <div className="text-xs text-gray-500">Duration</div>
-                                                <div
-                                                    className="text-sm font-medium text-gray-900">{project.duration}</div>
+                                                <div className="text-xs text-gray-500">Conf</div>
+                                                <div className="text-sm font-medium text-gray-900">{project.conf.toFixed(2)}</div>
                                             </div>
                                         </div>
 
