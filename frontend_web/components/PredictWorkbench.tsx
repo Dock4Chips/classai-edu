@@ -12,7 +12,7 @@ import {
     ControlBar,
     SessionStatus,
 } from '@/components/detection/workbench';
-import {FileInput, CameraInput, VideoPlayer} from '@/components/detection/input';
+import {FileInput, CameraInput} from '@/components/detection/input';
 import {DetectionPreview, DetectionList, PerformanceStats} from '@/components/detection/output';
 import {DetectionTaskService, DetectionTaskType} from '@/lib/service/detection_task';
 
@@ -37,6 +37,7 @@ export default function PredictWorkbench() {
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const [selectedFileName, setSelectedFileName] = useState<string>('');
     const [previewUrl, setPreviewUrl] = useState<string>('');
+    const [isVideoFile, setIsVideoFile] = useState<boolean>(false);
     const [isProcessing, setIsProcessing] = useState(false);
     const [taskName, setTaskName] = useState('');
     const [results, setResults] = useState<DetectionResult[]>([]);
@@ -62,6 +63,8 @@ export default function PredictWorkbench() {
         setTaskName(`${baseName}_${timestamp}`);
         setResults([]);
         setPreviewUrl(URL.createObjectURL(file));
+        // 根据文件类型判断，而不是任务类型
+        setIsVideoFile(file.type.startsWith('video/'));
     }, []);
 
     // 根据文件扩展名自动判断类型
@@ -198,7 +201,7 @@ export default function PredictWorkbench() {
                                 {selectedFileName && (
                                     <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
                                         <div className="flex items-center gap-3">
-                                            {getTaskType() === DetectionTaskType.CAP ? (
+                                            {isVideoFile ? (
                                                 <FileVideo className="text-blue-500" size={24}/>
                                             ) : (
                                                 <Image className="text-green-500" size={24}/>
@@ -243,7 +246,31 @@ export default function PredictWorkbench() {
                         ) : (
                             <CameraInput/>
                         )}
-                        <VideoPlayer src={previewUrl} isVideo={getTaskType() === DetectionTaskType.CAP}/>
+
+                        {previewUrl ? (
+                            <div className="aspect-video bg-black rounded-lg overflow-hidden">
+                                {isVideoFile ? (
+                                    <video
+                                        src={previewUrl}
+                                        controls
+                                        className="w-full h-full object-contain"
+                                    />
+                                ) : (
+                                    <img
+                                        src={previewUrl}
+                                        alt="Preview"
+                                        className="w-full h-full object-contain"
+                                    />
+                                )}
+                            </div>
+                        ) : (
+                            <div className="aspect-video flex items-center justify-center bg-gray-900 rounded-lg">
+                                <div className="text-center">
+                                    <Image className="mx-auto text-gray-600 mb-2" size={32}/>
+                                    <p className="text-gray-500 text-sm">No file loaded</p>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </InputPanel>
 
@@ -251,7 +278,7 @@ export default function PredictWorkbench() {
                     <div className="h-full flex flex-col gap-4">
                         {results.length > 0 && results[0].image_url && (
                             <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
-                                {getTaskType() === DetectionTaskType.CAP ? (
+                                {isVideoFile ? (
                                     <video src={results[0].image_url} controls className="w-full h-full object-contain" crossOrigin="anonymous"/>
                                 ) : (
                                     <img src={results[0].image_url} alt="Detection Result" className="w-full h-full object-contain"/>

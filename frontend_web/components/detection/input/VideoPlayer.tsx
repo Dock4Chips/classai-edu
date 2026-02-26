@@ -19,7 +19,7 @@ export function VideoPlayer({
   showControls = true,
   onFrameChange,
   className = '',
-  isVideo = true,
+  isVideo = false,
 }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -65,7 +65,7 @@ export function VideoPlayer({
   };
 
   return (
-    <div className={`relative bg-black rounded-lg overflow-hidden ${className}`}>
+    <div className={`relative bg-black rounded-lg overflow-hidden aspect-video ${className}`}>
       {/* Image or Video Element */}
       {src ? (
         isVideo ? (
@@ -73,7 +73,7 @@ export function VideoPlayer({
             ref={videoRef}
             src={src}
             poster={poster}
-            className="w-full h-full"
+            className="w-full h-full object-contain"
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
           />
