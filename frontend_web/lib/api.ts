@@ -2,7 +2,7 @@ import axios, { type AxiosInstance, type AxiosResponse, type AxiosError } from '
 import type { InternalAxiosRequestConfig } from 'axios';
 
 import Cookies from 'js-cookie';
-import {notification} from "@/utils/notification"; // ✅ 用于管理 token
+import {notification} from "@/utils/notification"; // 用于管理 token
 
 export class ApiClient {
     private baseURL: string;
@@ -19,7 +19,7 @@ export class ApiClient {
             withCredentials: false,
         });
 
-        // ✅ 请求拦截器
+        // 请求拦截器
         this.instance.interceptors.request.use(
             (config: InternalAxiosRequestConfig) => {
                 const publicEndpoints = ['/api/strategies/identity/captcha', '/api/strategies/identity/login', '/api/strategies/identity/register','/api/class/index/banner'];
@@ -42,7 +42,7 @@ export class ApiClient {
             (error: AxiosError) => Promise.reject(error)
         );
 
-        // ✅ 响应拦截器
+        // 响应拦截器
         this.instance.interceptors.response.use(
             (response: AxiosResponse) => response.data,
             (error: AxiosError) => {
@@ -53,7 +53,7 @@ export class ApiClient {
         );
     }
 
-    // ✅ 设置 token（登录成功时调用）
+    // 设置 token（登录成功时调用）
     setToken(token: string): void {
         Cookies.set('AUTH_TOKEN', token, {
             expires: 3,
@@ -61,13 +61,13 @@ export class ApiClient {
         localStorage.setItem('is_logged_in', 'true');
     }
 
-    // ✅ 清除 token（退出登录时调用）
+    // 清除 token（退出登录时调用）
     clearToken(): void {
         Cookies.remove('AUTH_TOKEN');
         localStorage.removeItem('is_logged_in');
     }
 
-    // ✅ 获取 token (已登陆或校验登陆信息)
+    // 获取 token (已登陆或校验登陆信息)
     getToken(): string {
         const token = Cookies.get('AUTH_TOKEN');
         if (!token) {
@@ -76,22 +76,22 @@ export class ApiClient {
         return token;
     }
 
-    // ✅ GET
+    // GET
     get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
         return this.instance.get(endpoint, { params });
     }
 
-    // ✅ POST
+    // POST
     post<T>(endpoint: string, data?: any, config?: any): Promise<T> {
         return this.instance.post(endpoint, data, config);
     }
 
-    // ✅ PUT
+    // PUT
     put<T>(endpoint: string, data?: any, config?: any): Promise<T> {
         return this.instance.put(endpoint, data, config);
     }
 
-    // ✅ DELETE
+    // DELETE
     delete<T>(endpoint: string): Promise<T> {
         return this.instance.delete(endpoint);
     }

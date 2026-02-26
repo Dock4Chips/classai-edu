@@ -15,6 +15,7 @@ import {
     Zap
 } from 'lucide-react';
 import {motion, AnimatePresence} from 'framer-motion';
+import {Dropdown, DropdownButton} from '@/components/ui/dropdown';
 import {
     WorkbenchHeader,
     ModeTabs,
@@ -28,7 +29,7 @@ import {DetectionPreview, DetectionList} from '@/components/detection/output';
 import {DetectionTaskService, DetectionTaskType} from '@/lib/service/detection_task';
 import {ModelConfigService} from '@/lib/service/model_config';
 import {DeviceService} from '@/lib/service/device';
-import {Results} from "./api";
+import {Results} from "@/lib/api";
 
 type Mode = 'file' | 'camera';
 
@@ -48,13 +49,20 @@ function StatusIndicator({status}: { status: SessionStatus }) {
             bg: 'bg-gray-100',
             dot: 'bg-gray-500',
             text: 'text-gray-600',
-            label: 'Ready',
+            label: 'Idle',
             pulse: false
+        },
+        ready: {
+            bg: 'bg-blue-50',
+            dot: 'bg-blue-500',
+            text: 'text-blue-600',
+            label: 'Ready',
+            pulse: true
         },
         running: {
             bg: 'bg-blue-50',
             dot: 'bg-blue-500',
-            text: 'text-blue-600',
+            text: 'text-amber-600',
             label: 'Processing',
             pulse: true
         },
@@ -65,7 +73,7 @@ function StatusIndicator({status}: { status: SessionStatus }) {
             label: 'Completed',
             pulse: false
         },
-        failed: {
+        error: {
             bg: 'bg-rose-50',
             dot: 'bg-rose-500',
             text: 'text-rose-600',
@@ -172,7 +180,7 @@ function TaskInfoBadge({
 
 export default function PredictWorkbench() {
     const [mode, setMode] = useState<Mode>('file');
-    const [status, setStatus] = useState<SessionStatus>('idle');
+    const [status, setStatus] = useState<SessionStatus>('ready');
     const [confidence, setConfidence] = useState(0.5);
     const [highlightedId, setHighlightedId] = useState<number | undefined>();
 
@@ -267,12 +275,11 @@ export default function PredictWorkbench() {
                     setResults(response.data as DetectionResult[]);
                     setStatus('completed');
                 } else {
-                    setStatus('failed');
+                    setStatus('error');
                 }
             })
             .catch((err) => {
-                console.error('检测任务失败', err);
-                setStatus('failed');
+                setStatus('error');
             })
             .finally(() => {
                 setIsProcessing(false);
@@ -280,7 +287,7 @@ export default function PredictWorkbench() {
     };
 
     const handleStopDetection = () => {
-        setStatus('idle');
+        setStatus('ready');
         setIsProcessing(false);
     };
 
@@ -290,7 +297,7 @@ export default function PredictWorkbench() {
         setTaskName('');
         setResults([]);
         setPreviewUrl('');
-        setStatus('idle');
+        setStatus('ready');
     };
 
     const handleModeChange = (modeId: string) => {
@@ -332,36 +339,42 @@ export default function PredictWorkbench() {
                 }}
                 leftContent={
                     <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
+                        <div
+                            className={`flex items-center gap-2 ${isProcessing ? 'pointer-events-none opacity-50' : ''}`}>
                             <span className="text-sm text-gray-600">Model:</span>
-                            <select
-                                value={selectedModelId}
-                                onChange={(e) => setSelectedModelId(Number(e.target.value))}
-                                disabled={isProcessing}
-                                className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                {modelList.map((model) => (
-                                    <option key={model.model_id} value={model.model_id}>
-                                        {model.model_name}
-                                    </option>
-                                ))}
-                            </select>
+                            <Dropdown
+                                trigger={
+                                    <DropdownButton variant="default" className="justify-between min-w-[120px]">
+                                        <span className="text-sm">
+                                            {modelList.find(m => m.model_id === selectedModelId)?.model_name || 'Select Model'}
+                                        </span>
+                                    </DropdownButton>
+                                }
+                                items={modelList.map((model) => ({
+                                    key: model.model_id.toString(),
+                                    label: model.model_name,
+                                    onClick: () => setSelectedModelId(model.model_id)
+                                }))}
+                            />
                         </div>
                         {mode === 'camera' && deviceList.length > 0 && (
-                            <div className="flex items-center gap-2">
+                            <div
+                                className={`flex items-center gap-2 ${isProcessing ? 'pointer-events-none opacity-50' : ''}`}>
                                 <span className="text-sm text-gray-600">Device:</span>
-                                <select
-                                    value={selectedDeviceId}
-                                    onChange={(e) => setSelectedDeviceId(Number(e.target.value))}
-                                    disabled={isProcessing}
-                                    className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                >
-                                    {deviceList.map((device) => (
-                                        <option key={device.device_id} value={device.device_id}>
-                                            {device.device_name}
-                                        </option>
-                                    ))}
-                                </select>
+                                <Dropdown
+                                    trigger={
+                                        <DropdownButton variant="default" className="justify-between min-w-[120px]">
+                                            <span className="text-sm">
+                                                {deviceList.find(d => d.device_id === selectedDeviceId)?.device_name || 'Select Device'}
+                                            </span>
+                                        </DropdownButton>
+                                    }
+                                    items={deviceList.map((device) => ({
+                                        key: device.device_id.toString(),
+                                        label: device.device_name,
+                                        onClick: () => setSelectedDeviceId(device.device_id)
+                                    }))}
+                                />
                             </div>
                         )}
                         <div className="flex items-center gap-2">
