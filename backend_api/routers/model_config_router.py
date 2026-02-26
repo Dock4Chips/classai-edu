@@ -9,7 +9,7 @@ from repository.model_config_repository import (
     update_model,
     delete_model
 )
-from schema.model_config_schema import ModelConfigCreateSchema, ModelConfigUpdateSchema
+from schema.model_config_schema import ModelConfigCreateUpdateSchema
 
 pro_model_config_router = APIRouter(
     prefix='/api/model/config',
@@ -41,12 +41,12 @@ async def get_model_config(model_id: int):
 
 
 @pro_model_config_router.post('')
-async def add_model_config(data: ModelConfigCreateSchema = Body(...)):
+async def add_model_config(data: ModelConfigCreateUpdateSchema = Body(...)):
     create_model(data.dict())
     return Res.ok("新增成功")
 
 @pro_model_config_router.put('/{model_id}')
-async def edit_model_config(model_id: int, data: ModelConfigUpdateSchema = Body(...)):
+async def edit_model_config(model_id: int, data: ModelConfigCreateUpdateSchema = Body(...)):
     update_model(model_id, data.dict(exclude_unset=True))
     return Res.ok("修改成功")
 
