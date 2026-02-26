@@ -1,7 +1,19 @@
 'use client';
 
 import {useState, useCallback} from 'react';
-import {Play, Square, Settings, Upload, Camera, FileVideo, Image, Loader2, CheckCircle, XCircle, Target, Hash, Zap} from 'lucide-react';
+import {
+    Play,
+    Square,
+    Settings,
+    Upload,
+    Camera,
+    FileVideo,
+    Image,
+    Loader2,
+    XCircle,
+    Hash,
+    Zap
+} from 'lucide-react';
 import {motion, AnimatePresence} from 'framer-motion';
 import {
     WorkbenchHeader,
@@ -27,8 +39,7 @@ interface DetectionResult {
     }>;
 }
 
-// Status indicator component - 更醒目的设计
-function StatusIndicator({status}: {status: SessionStatus}) {
+function StatusIndicator({status}: { status: SessionStatus }) {
     const statusConfig = {
         idle: {
             bg: 'bg-gray-100',
@@ -72,7 +83,8 @@ function StatusIndicator({status}: {status: SessionStatus}) {
             className={`flex items-center gap-2 px-4 py-2 rounded-lg ${config.bg}`}
         >
             <span className={`relative flex h-3 w-3`}>
-                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${config.dot} ${config.pulse ? '' : 'hidden'}`}/>
+                <span
+                    className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${config.dot} ${config.pulse ? '' : 'hidden'}`}/>
                 <span className={`relative inline-flex rounded-full h-3 w-3 ${config.dot}`}/>
             </span>
             <span className={`text-sm font-semibold ${config.text}`}>{config.label}</span>
@@ -80,15 +92,14 @@ function StatusIndicator({status}: {status: SessionStatus}) {
     );
 }
 
-// Task info badge component - 更醒目的设计
 function TaskInfoBadge({
-    taskName,
-    fileName,
-    isVideoFile,
-    status,
-    onTaskNameChange,
-    disabled
-}: {
+                           taskName,
+                           fileName,
+                           isVideoFile,
+                           status,
+                           onTaskNameChange,
+                           disabled
+                       }: {
     taskName: string;
     fileName: string;
     isVideoFile: boolean;
@@ -105,13 +116,10 @@ function TaskInfoBadge({
             onTaskNameChange(editValue.trim());
         }
     };
-
-    // 判断是否需要填写 task name
     const needsName = !taskName;
 
     return (
         <div className="flex items-center gap-3">
-            {/* Task ID - 黑色标签样式 */}
             <div className={`
                 flex items-center gap-2 px-4 py-2 rounded-lg border-l-4 min-w-[280px]
                 bg-gray-100 border-gray-400 ${needsName ? 'ring-2 ring-black ring-opacity-20' : ''}
@@ -143,7 +151,6 @@ function TaskInfoBadge({
                 )}
             </div>
 
-            {/* File name - 灰色标签样式 */}
             {fileName && (
                 <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg min-w-[180px]">
                     {isVideoFile ? (
@@ -155,7 +162,6 @@ function TaskInfoBadge({
                 </div>
             )}
 
-            {/* Status - 更醒目的显示 */}
             <StatusIndicator status={status}/>
         </div>
     );
@@ -180,7 +186,6 @@ export default function PredictWorkbench() {
         {id: 'camera' as const, label: 'Camera Stream', icon: <Camera size={16}/>},
     ];
 
-    // 处理文件选择
     const handleFileSelect = useCallback((file: File) => {
         setSelectedFiles([file]);
         setSelectedFileName(file.name);
@@ -189,11 +194,9 @@ export default function PredictWorkbench() {
         setTaskName(`${baseName}_${timestamp}`);
         setResults([]);
         setPreviewUrl(URL.createObjectURL(file));
-        // 根据文件类型判断，而不是任务类型
         setIsVideoFile(file.type.startsWith('video/'));
     }, []);
 
-    // 根据文件扩展名自动判断类型
     const getTaskType = (): DetectionTaskType => {
         if (selectedFiles.length === 0) return DetectionTaskType.IMAGE;
         const file = selectedFiles[0];
@@ -202,30 +205,25 @@ export default function PredictWorkbench() {
         return videoExts.includes(ext) ? DetectionTaskType.CAP : DetectionTaskType.IMAGE;
     };
 
-    // 开始检测
     const handleStartDetection = () => {
         setIsProcessing(true);
         setStatus('running');
-
         const formData = new FormData();
         for (const file of selectedFiles) {
             formData.append('files', file);
         }
-
         const queryParams = new URLSearchParams({
             task_name: taskName,
             task_type: getTaskType().toString(),
             model_id: '1',
             conf_threshold: confidence.toString(),
         });
-
         DetectionTaskService.createTask(formData, queryParams)
             .then((response) => {
                 if (response.code === 200) {
                     setResults(response.data as DetectionResult[]);
                     setStatus('completed');
                 } else {
-                    // 可选：处理失败情况
                     setStatus('failed');
                 }
             })
@@ -316,7 +314,6 @@ export default function PredictWorkbench() {
 
             <ModeTabs modes={modeTabs} activeMode={mode} onModeChange={handleModeChange}/>
 
-            {/* Workspace Info Ribbon - 更醒目的设计 */}
             <div className="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 px-6 py-4 shadow-sm">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
@@ -330,7 +327,6 @@ export default function PredictWorkbench() {
                         />
                     </div>
 
-                    {/* Quick stats when completed - 黑色标签样式 */}
                     <AnimatePresence>
                         {status === 'completed' && results.length > 0 && (
                             <motion.div
@@ -417,9 +413,11 @@ export default function PredictWorkbench() {
                         {results.length > 0 && results[0].image_url && (
                             <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
                                 {isVideoFile ? (
-                                    <video src={results[0].image_url} controls className="w-full h-full object-contain" crossOrigin="anonymous"/>
+                                    <video src={results[0].image_url} controls className="w-full h-full object-contain"
+                                           crossOrigin="anonymous"/>
                                 ) : (
-                                    <img src={results[0].image_url} alt="Detection Result" className="w-full h-full object-contain"/>
+                                    <img src={results[0].image_url} alt="Detection Result"
+                                         className="w-full h-full object-contain"/>
                                 )}
                             </div>
                         )}
