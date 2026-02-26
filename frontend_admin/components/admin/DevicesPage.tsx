@@ -52,7 +52,6 @@ export default function DevicesPage() {
         {value: '0', label: 'RTSP'},
         {value: '1', label: 'HTTP'},
         {value: '2', label: 'USB'},
-        {value: '3', label: 'File'},
     ];
 
     /** 设备状态选项 */
@@ -63,10 +62,10 @@ export default function DevicesPage() {
         {value: '3', label: 'Maintenance'},
     ];
 
-    /** 编辑表单字段配置 */
-    const updateFormFields: FormFieldConfig[] = [
-        {key: 'device_name', label: 'Device Name', type: 'text', colSpan: 2, placeholder: 'Enter device name', required: true},
-        {key: 'device_code', label: 'Device Code', type: 'text', colSpan: 2, placeholder: 'Enter device code'},
+    /** 基础表单字段 */
+    const baseFields: FormFieldConfig[] = [
+        {key: 'device_name', label: 'Device Name', type: 'text', colSpan: 1, placeholder: 'Enter device name', required: true},
+        {key: 'device_code', label: 'Device Code', type: 'text', colSpan: 1, placeholder: 'Enter device code'},
         {
             key: 'device_type',
             label: 'Device Type',
@@ -83,184 +82,122 @@ export default function DevicesPage() {
             options: connectionTypeOptions,
             colSpan: 1,
             placeholder: 'Select type',
-        },
-        {
-            key: 'rtsp_url',
-            label: 'RTSP URL',
-            type: 'text',
-            colSpan: 2,
-            placeholder: 'rtsp://...',
-        },
-        {
-            key: 'http_url',
-            label: 'HTTP URL',
-            type: 'text',
-            colSpan: 2,
-            placeholder: 'http://...',
-        },
-        {
-            key: 'device_index',
-            label: 'Device Index',
-            type: 'number',
-            colSpan: 1,
-            placeholder: 'USB camera index',
-            description: 'For USB cameras (0, 1, 2...)',
-        },
-        {
-            key: 'status',
-            label: 'Status',
-            type: 'select',
-            options: statusOptions,
-            colSpan: 1,
-            placeholder: 'Select status',
-        },
-        {key: 'location', label: 'Location', type: 'text', colSpan: 2, placeholder: 'Enter location'},
-        {
-            key: 'resolution',
-            label: 'Resolution',
-            type: 'text',
-            colSpan: 1,
-            placeholder: '1920x1080',
-        },
-        {
-            key: 'fps',
-            label: 'FPS',
-            type: 'number',
-            colSpan: 1,
-            placeholder: '25',
-        },
-        {
-            key: 'ptz_support',
-            label: 'PTZ Support',
-            type: 'select',
-            colSpan: 1,
-            options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
-            ],
-            placeholder: 'Select',
-        },
-        {
-            key: 'is_enabled',
-            label: 'Enabled',
-            type: 'select',
-            colSpan: 1,
-            options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
-            ],
-            placeholder: 'Select',
         },
         {key: 'description', label: 'Description', type: 'textarea', rows: 3, colSpan: 2, placeholder: 'Enter description'},
     ];
 
-    /** 新增表单字段配置 */
-    const addFormFields: FormFieldConfig[] = [
-        {key: 'device_name', label: 'Device Name', type: 'text', colSpan: 2, placeholder: 'Enter device name', required: true},
-        {key: 'device_code', label: 'Device Code', type: 'text', colSpan: 2, placeholder: 'Enter device code'},
-        {
-            key: 'device_type',
-            label: 'Device Type',
-            type: 'select',
-            options: deviceTypeOptions,
-            colSpan: 1,
-            placeholder: 'Select type',
-            required: true,
-        },
-        {
-            key: 'connection_type',
-            label: 'Connection Type',
-            type: 'select',
-            options: connectionTypeOptions,
-            colSpan: 1,
-            placeholder: 'Select type',
-        },
-        {
-            key: 'rtsp_url',
-            label: 'RTSP URL',
-            type: 'text',
-            colSpan: 2,
-            placeholder: 'rtsp://...',
-        },
-        {
-            key: 'http_url',
-            label: 'HTTP URL',
-            type: 'text',
-            colSpan: 2,
-            placeholder: 'http://...',
-        },
-        {
-            key: 'device_index',
-            label: 'Device Index',
-            type: 'number',
-            colSpan: 1,
-            placeholder: 'USB camera index',
-            description: 'For USB cameras (0, 1, 2...)',
-        },
-        {
-            key: 'location',
-            label: 'Location',
-            type: 'text',
-            colSpan: 1,
-            placeholder: 'Enter location',
-        },
-        {
-            key: 'resolution',
-            label: 'Resolution',
-            type: 'text',
-            colSpan: 1,
-            placeholder: '1920x1080',
-        },
-        {
-            key: 'fps',
-            label: 'FPS',
-            type: 'number',
-            colSpan: 1,
-            placeholder: '25',
-        },
-        {
-            key: 'ptz_support',
-            label: 'PTZ Support',
-            type: 'select',
-            colSpan: 1,
-            options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
-            ],
-            placeholder: 'Select',
-        },
-        {
-            key: 'is_enabled',
-            label: 'Enabled',
-            type: 'select',
-            colSpan: 1,
-            options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
-            ],
-            placeholder: 'Select',
-        },
-        {key: 'description', label: 'Description', type: 'textarea', rows: 3, colSpan: 2, placeholder: 'Enter description'},
-    ];
+    /** RTSP URL 字段 */
+    const rtspField: FormFieldConfig = {
+        key: 'rtsp_url',
+        label: 'RTSP URL',
+        type: 'text',
+        colSpan: 2,
+        placeholder: 'rtsp://...',
+    };
+
+    /** HTTP URL 字段 */
+    const httpField: FormFieldConfig = {
+        key: 'http_url',
+        label: 'HTTP URL',
+        type: 'text',
+        colSpan: 2,
+        placeholder: 'http://...',
+    };
+
+    /** USB Device Index 字段（只读，默认0） */
+    const deviceIndexField: FormFieldConfig = {
+        key: 'device_index',
+        label: 'Device Index',
+        type: 'number',
+        colSpan: 2,
+        placeholder: '0',
+        disabled: true,
+        description: 'USB camera index (fixed at 0)',
+    };
+
+    /** 获取动态表单字段 */
+    const getDynamicFields = (connectionType: string | null, isEdit: boolean): FormFieldConfig[] => {
+        const fields: FormFieldConfig[] = [];
+
+        // 根据连接类型添加对应字段
+        if (connectionType === '0') {
+            fields.push(rtspField);
+        } else if (connectionType === '1') {
+            fields.push(httpField);
+        } else if (connectionType === '2') {
+            fields.push(deviceIndexField);
+        }
+
+        // 编辑模式添加状态字段
+        if (isEdit) {
+            fields.push({
+                key: 'status',
+                label: 'Status',
+                type: 'select',
+                options: statusOptions,
+                colSpan: 2,
+                placeholder: 'Select status',
+            });
+        }
+
+        return fields;
+    };
+
+    /** 编辑表单字段配置 - 动态生成 */
+    const getUpdateFormFields = (): FormFieldConfig[] => {
+        return [...baseFields, ...getDynamicFields(updateForm.connection_type, true)];
+    };
+
+    /** 新增表单字段配置 - 动态生成 */
+    const getAddFormFields = (): FormFieldConfig[] => {
+        return [...baseFields, ...getDynamicFields(addForm.connection_type, false)];
+    };
 
     /** 生成空表单 */
     const getEmptyForm = (fields: readonly { key: string }[]) =>
-        Object.fromEntries(fields.map(f => [f.key, null])) as Results;
+        Object.fromEntries(fields.map((f: { key: string }) => [f.key, null])) as Results;
+
+    /** 所有可能的字段 key（用于生成空表单） */
+    const allFieldKeys: FormFieldConfig[] = [
+        ...baseFields,
+        rtspField,
+        httpField,
+        deviceIndexField,
+        {key: 'status', label: 'Status', type: 'select', colSpan: 2, options: statusOptions, placeholder: 'Select status'},
+    ];
 
     /** 新增表单 */
-    const [addForm, setAddForm] = useState<Results>(() => getEmptyForm(addFormFields));
+    const [addForm, setAddForm] = useState<Results>(() => getEmptyForm(allFieldKeys));
 
     /** 编辑表单 */
-    const [updateForm, setUpdateForm] = useState<Results>(() => getEmptyForm(updateFormFields));
+    const [updateForm, setUpdateForm] = useState<Results>(() => getEmptyForm(allFieldKeys));
 
     /** 当前表单 */
     const currentForm = isEditMode ? updateForm : addForm;
-    const currentFields = isEditMode ? updateFormFields : addFormFields;
+    const currentFields = isEditMode ? getUpdateFormFields() : getAddFormFields();
     const setCurrentForm = isEditMode ? setUpdateForm : setAddForm;
 
     useEffect(() => {
         void fetchDevices();
     }, [queryParams.current]);
+
+    /** 监听连接类型变化，清理不相关字段 */
+    useEffect(() => {
+        const form = isEditMode ? updateForm : addForm;
+        const setForm = isEditMode ? setUpdateForm : setAddForm;
+        const connectionType = form.connection_type;
+
+        if (connectionType === '0') {
+            // RTSP: 清空 HTTP 和 device_index
+            setForm(prev => ({...prev, http_url: null, device_index: '0'}));
+        } else if (connectionType === '1') {
+            // HTTP: 清空 RTSP 和 device_index
+            setForm(prev => ({...prev, rtsp_url: null, device_index: '0'}));
+        } else if (connectionType === '2') {
+            // USB: 清空 RTSP 和 HTTP，确保 device_index 为 0
+            setForm(prev => ({...prev, rtsp_url: null, http_url: null, device_index: '0'}));
+        }
+    }, [isEditMode ? updateForm.connection_type : addForm.connection_type, isEditMode]);
 
     /** 获取设备列表 */
     const fetchDevices = async () => {
@@ -297,7 +234,9 @@ export default function DevicesPage() {
     /** 打开新增 */
     const handleAdd = () => {
         setIsEditMode(false);
-        setAddForm(getEmptyForm(addFormFields));
+        const emptyForm = getEmptyForm(allFieldKeys);
+        emptyForm.device_index = '0'; // USB 默认 0
+        setAddForm(emptyForm);
         setModalOpen(true);
     };
 
@@ -305,21 +244,17 @@ export default function DevicesPage() {
     const handleEdit = (device: any) => {
         setIsEditMode(true);
         setOriginalDeviceData(device);
+        const connectionType = device.connection_type?.toString() ?? '0';
         setUpdateForm({
             device_id: device.device_id,
             device_name: device.device_name ?? null,
             device_code: device.device_code ?? null,
             device_type: device.device_type?.toString() ?? '0',
-            connection_type: device.connection_type?.toString() ?? '0',
+            connection_type: connectionType,
             rtsp_url: device.rtsp_url ?? null,
             http_url: device.http_url ?? null,
-            device_index: device.device_index ?? null,
-            location: device.location ?? null,
-            resolution: device.resolution ?? null,
-            fps: device.fps ?? null,
-            ptz_support: device.ptz_support?.toString() ?? '0',
+            device_index: connectionType === '2' ? (device.device_index ?? '0') : '0',
             status: device.status?.toString() ?? '1',
-            is_enabled: device.is_enabled?.toString() ?? '1',
             description: device.description ?? null,
         });
         setModalOpen(true);
@@ -327,9 +262,15 @@ export default function DevicesPage() {
 
     /** 新增保存 */
     const handleSaveAdd = async () => {
+        const currentFields = getAddFormFields();
         const data = Object.fromEntries(
-            addFormFields.map(f => [f.key, addForm[f.key]])
+            currentFields.map((f: FormFieldConfig) => [f.key, addForm[f.key]])
         );
+
+        // USB 类型时设置 device_index 为 0
+        if (addForm.connection_type === '2') {
+            (data as any).device_index = 0;
+        }
 
         setLoading(true);
         const results = await DeviceService.createDevice(data);
@@ -347,16 +288,23 @@ export default function DevicesPage() {
     const handleSaveUpdate = async () => {
         if (!updateForm.device_id) return;
 
+        const currentFields = getUpdateFormFields();
+
         // 只包含修改过的字段（对比原始数据）
-        const changedFields = updateFormFields
-            .filter(f => {
+        const changedFields = currentFields
+            .filter((f: FormFieldConfig) => {
                 const currentValue = updateForm[f.key];
                 const originalValue = originalDeviceData?.[f.key];
                 return currentValue !== originalValue;
             })
-            .map(f => [f.key, updateForm[f.key]]);
+            .map((f: FormFieldConfig) => [f.key, updateForm[f.key]]);
 
         const data = Object.fromEntries(changedFields);
+
+        // USB 类型时确保 device_index 为 0
+        if (updateForm.connection_type === '2') {
+            (data as any).device_index = 0;
+        }
 
         setLoading(true);
         const results = await DeviceService.updateDevice(updateForm.device_id, data);
@@ -511,7 +459,7 @@ export default function DevicesPage() {
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
                 title={isEditMode ? 'Edit Device' : 'Add Device'}
-                size="xl"
+                size="lg"
             >
                 {/* 表单区域 */}
                 <div className="grid grid-cols-2 gap-4">

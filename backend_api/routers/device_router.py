@@ -40,7 +40,6 @@ async def list_device(
 
 @pro_device_router.get('/{device_id}')
 async def get_device(device_id: int):
-    """根据ID获取设备"""
     device = get_device_by_id(device_id)
     if not device:
         raise ServiceException(msg="设备不存在")
