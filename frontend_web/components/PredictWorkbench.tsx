@@ -8,12 +8,11 @@ import {
     ModeTabs,
     InputPanel,
     OutputPanel,
-    StatusBar,
     ControlBar,
     SessionStatus,
 } from '@/components/detection/workbench';
 import {FileInput, CameraInput} from '@/components/detection/input';
-import {DetectionPreview, DetectionList, PerformanceStats} from '@/components/detection/output';
+import {DetectionPreview, DetectionList} from '@/components/detection/output';
 import {DetectionTaskService, DetectionTaskType} from '@/lib/service/detection_task';
 
 type Mode = 'file' | 'camera';
@@ -107,16 +106,6 @@ function TaskInfoBadge({
         }
     };
 
-    // 根据状态获取边框颜色
-    const getStatusBorderColor = () => {
-        switch (status) {
-            case 'running': return 'border-l-blue-500';
-            case 'completed': return 'border-l-emerald-500';
-            case 'failed': return 'border-l-rose-500';
-            default: return 'border-l-gray-300';
-        }
-    };
-
     // 判断是否需要填写 task name
     const needsName = !taskName;
 
@@ -185,13 +174,6 @@ export default function PredictWorkbench() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [taskName, setTaskName] = useState('');
     const [results, setResults] = useState<DetectionResult[]>([]);
-
-    const [stats, setStats] = useState({
-        fps: 0,
-        frameCount: 0,
-        avgProcessingTime: 0,
-        totalDetections: 0,
-    });
 
     const modeTabs = [
         {id: 'file' as const, label: 'File Upload', icon: <Upload size={16}/>},
@@ -268,7 +250,6 @@ export default function PredictWorkbench() {
         setResults([]);
         setPreviewUrl('');
         setStatus('idle');
-        setStats({fps: 0, frameCount: 0, avgProcessingTime: 0, totalDetections: 0});
     };
 
     const handleModeChange = (modeId: string) => {
@@ -456,13 +437,9 @@ export default function PredictWorkbench() {
 
                         <DetectionList detections={convertedDetections} onItemClick={handleDetectionClick}
                                        highlightedId={highlightedId}/>
-                        <PerformanceStats fps={stats.fps} frameCount={stats.frameCount}
-                                          avgProcessingTime={stats.avgProcessingTime}/>
                     </div>
                 </OutputPanel>
             </div>
-
-            <StatusBar status={status} currentFrame={stats.frameCount} totalFrames={results.length} fps={stats.fps}/>
 
             <ControlBar position="bottom">
                 <div className="flex-1"/>
