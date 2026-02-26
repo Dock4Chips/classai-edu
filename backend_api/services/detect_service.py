@@ -1,5 +1,6 @@
 import io
 import json
+import os
 from typing import Dict, List, Union, AsyncGenerator, Tuple, Any
 
 import av
@@ -45,7 +46,7 @@ async def process_cap_detection(file: UploadFile) -> io.BytesIO:
 
     output_buffer = io.BytesIO()
     output_container = av.open(output_buffer, mode="w", format="mp4")
-    output_stream = output_container.add_stream("mpeg4", rate=stream.average_rate)
+    output_stream = output_container.add_stream("libx264", rate=stream.average_rate)
     output_stream.width = stream.width
     output_stream.height = stream.height
     output_stream.pix_fmt = "yuv420p"
@@ -86,22 +87,22 @@ async def frame_to_np(files: Union[UploadFile, List[UploadFile]]) -> List[np.nda
     return images
 
 
-async def detection_img_task_service(data: DetectionTaskCreateSchema, files: List[UploadFile]) -> List[Dict]:
+async def detection_img_task_service(data: DetectionTaskCreateSchema, files: List[UploadFile],presign_save: bool = True) -> List[Dict]:
     np_imgs = await frame_to_np(files)
-    results = process_image_detection(imgs=np_imgs, presign_save=True)
+    results = process_image_detection(imgs=np_imgs, presign_save=presign_save)
     task_id =  valid_entity_before_save(data, results)
     for item in results:
         item["task_id"] = task_id
     return results
 
 
-async def detection_cap_task_service(data: DetectionTaskCreateSchema, file: UploadFile) -> List[Dict]:
+async def detection_cap_task_service(data: DetectionTaskCreateSchema, file: UploadFile,presign_save: bool = True) -> List[Dict]:
     output_buffer = await process_cap_detection(file)
     url = upload_bytes_to_minio(
         data=output_buffer.read(),
         filename=file.filename,
         content_type=file.content_type,
-        presign_save=True
+        presign_save=presign_save
     )
     detections: List[Dict[str, Any]] = [{"image_url": url}]
     task_id = valid_entity_before_save(data, detections)
@@ -149,7 +150,7 @@ def valid_entity_before_save(data: DetectionTaskCreateSchema, detections: List[D
 
             detail_rows.append({
                 "task_id": task_id,
-                "class_id": cid,
+                "class_id": cid+1,
                 "class_name": cname,
                 "class_index": cid,
                 "frame_index": frame_index,
@@ -183,7 +184,7 @@ def valid_entity_before_save(data: DetectionTaskCreateSchema, detections: List[D
     for cid, stat in class_stats.items():
         class_count_rows.append({
             "task_id": task_id,
-            "class_id": cid,
+            "class_id": cid+1,
             "class_name": stat["class_name"],
             "count": stat["count"],
             "avg_confidence": stat["sum_conf"] / stat["count"],
@@ -199,3 +200,48 @@ def valid_entity_before_save(data: DetectionTaskCreateSchema, detections: List[D
         raise ServiceException(msg="保存任务数据失败")
 
     return task_id
+
+
+
+if __name__ == '__main__':
+
+    file_path = r'/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets/cheating-test-v1.mp4'
+    object_name = 'demo'
+
+
+
+    with open(file_path, 'rb') as f:
+        file_bytes = f.read()
+    input_buffer = io.BytesIO(file_bytes)
+    container = av.open(input_buffer)
+    stream = container.streams.video[0]
+    filename = os.path.basename(file_path)
+    output_buffer = io.BytesIO()
+    output_container = av.open(output_buffer, mode="w", format="mp4")
+    output_stream = output_container.add_stream("libx264", rate=stream.average_rate)
+    output_stream.width = stream.width
+    output_stream.height = stream.height
+    output_stream.pix_fmt = "yuv420p"
+    engine = YOLOInferenceEngine(conf=0.4)
+
+    for frame in container.decode(stream):
+        img = frame.to_ndarray(format="bgr24")
+        dets, vis = engine.infer_frame(img, draw=True)
+
+        new_frame = av.VideoFrame.from_ndarray(vis, format="bgr24")
+        for packet in output_stream.encode(new_frame):
+            output_container.mux(packet)
+
+    for packet in output_stream.encode():
+        output_container.mux(packet)
+
+    output_container.close()
+    container.close()
+    output_buffer.seek(0)
+    url = upload_bytes_to_minio(
+        data=output_buffer.read(),
+        filename=filename,
+        content_type='video/mp4',
+        presign_save=True  # 或者 True，根据需要
+    )
+    print(url)

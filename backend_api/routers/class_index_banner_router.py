@@ -71,7 +71,7 @@ async def common_process_det(file):
         model_id=model_info.get('model_id'),
     )
 
-    results = await detection_img_task_service(task_data, [file])
+    results = await detection_img_task_service(task_data, [file],False)
     dets = results[0].get('dets', [])
     height, width = results[0].get('dets')[0].get('orig_shape')
 
