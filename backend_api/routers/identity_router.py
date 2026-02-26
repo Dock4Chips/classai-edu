@@ -36,13 +36,13 @@ MAX_CAPTCHA_PER_MIN = 5
 
 @pub_identity_router.get('/captcha')
 async def get_captcha(request: Request):
-    ip = request.client.host
-    redis_key = f"captcha_rate:{ip}"
-    req_count = redis_client.incr(redis_key)
-    if req_count == 1:
-        redis_client.expire(redis_key, 60)
-    if req_count > MAX_CAPTCHA_PER_MIN:
-        raise ServiceException(msg="请求过于频繁，请稍后再试")
+    # ip = request.client.host
+    # redis_key = f"captcha_rate:{ip}"
+    # req_count = redis_client.incr(redis_key)
+    # if req_count == 1:
+    #     redis_client.expire(redis_key, 60)
+    # if req_count > MAX_CAPTCHA_PER_MIN:
+    #     raise ServiceException(msg="请求过于频繁，请稍后再试")
     code = ''.join(choice(string.ascii_uppercase + string.digits) for _ in range(4))
     data_io = _image.generate(code)
     base64_image = (
