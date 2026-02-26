@@ -9,6 +9,8 @@ interface VideoPlayerProps {
   showControls?: boolean;
   onFrameChange?: (frame: number) => void;
   className?: string;
+  // 判断是否为视频
+  isVideo?: boolean;
 }
 
 export function VideoPlayer({
@@ -17,6 +19,7 @@ export function VideoPlayer({
   showControls = true,
   onFrameChange,
   className = '',
+  isVideo = true,
 }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
@@ -63,20 +66,24 @@ export function VideoPlayer({
 
   return (
     <div className={`relative bg-black rounded-lg overflow-hidden ${className}`}>
-      {/* Video Element */}
+      {/* Image or Video Element */}
       {src ? (
-        <video
-          ref={videoRef}
-          src={src}
-          poster={poster}
-          className="w-full h-full"
-          onTimeUpdate={handleTimeUpdate}
-          onLoadedMetadata={handleLoadedMetadata}
-        />
+        isVideo ? (
+          <video
+            ref={videoRef}
+            src={src}
+            poster={poster}
+            className="w-full h-full"
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleLoadedMetadata}
+          />
+        ) : (
+          <img src={src} alt="Preview" className="w-full h-full object-contain"/>
+        )
       ) : (
         <div className="w-full aspect-video flex items-center justify-center bg-gray-900">
           <div className="text-center">
-            <p className="text-gray-500 text-sm">No video loaded</p>
+            <p className="text-gray-500 text-sm">No file loaded</p>
           </div>
         </div>
       )}

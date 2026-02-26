@@ -111,3 +111,21 @@ def delete_minio_file(image_url: Optional[str]):
 #     object_name,
 #     expires=timedelta(days=7)
 # )
+
+if __name__ == '__main__':
+
+    file_path = r'/Users/dock4chips/Script-P/classai-edu/yolo_edu/datasets/cheating-test-v1.mp4'
+    object_name = 'demo'
+
+
+
+    with open(file_path, 'rb') as f:
+        file_data = f.read()
+    filename = os.path.basename(file_path)
+    url = upload_bytes_to_minio(
+        data=file_data,
+        filename=filename,
+        content_type='video/mp4',
+        presign_save=True  # 或者 True，根据需要
+    )
+    print(url)

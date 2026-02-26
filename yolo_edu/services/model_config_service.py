@@ -200,3 +200,8 @@ class ModelConfigService:
             'model_type': config['model_type'],
             'num_classes': config['num_classes'],
         }
+
+
+if __name__ == '__main__':
+    info =  ModelConfigService.load_active_model_config()
+    print(info)
