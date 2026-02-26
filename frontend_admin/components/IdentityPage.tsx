@@ -3,7 +3,7 @@
 import {motion, AnimatePresence} from 'framer-motion';
 import {ArrowRight, Eye, EyeOff, Lock, RefreshCw, Sparkles, User, Zap, Github, ChevronDown} from 'lucide-react';
 import {useEffect, useState} from 'react';
-import {useRouter} from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import {IdentityService} from '@/lib/service/identity';
 import {apiClient} from '@/lib/api';
 import {LoginType} from "@/enums/login_type";
@@ -11,6 +11,9 @@ import {notification} from "@/utils/notification";
 
 export default function IdentityPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    // 获取 redirect 参数，登录后跳转到原始页面
+    const redirect = searchParams.get('redirect') || '/admin/dashboard';
     const [showPassword, setShowPassword] = useState(false);
     const [showSocialLogin, setShowSocialLogin] = useState(false);
     const [username, setUsername] = useState('');
@@ -40,10 +43,13 @@ export default function IdentityPage() {
         setIsLoading(false);
         if (results.code === 200) {
             apiClient.setToken(results.data.token);
-            router.push('/admin/dashboard');
+            router.push(redirect);
             notification.success(results.msg)
             return
         }
+        // 登录失败，刷新验证码
+        setCaptcha('');
+        void fetchCaptchaImage();
         notification.error(results.msg);
     };
 

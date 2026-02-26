@@ -12,11 +12,14 @@ import {Card} from '@/components/ui/card';
 import {IdentityService} from "@/lib/service/identity";
 import {LoginType} from "@/enums/login_type";
 import {apiClient} from "@/lib/api";
-import {useRouter} from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
 import {notification} from '@/utils/notification';
 
 export default function IdentityPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    // 获取 redirect 参数，登录后跳转到原始页面
+    const redirect = searchParams.get('redirect') || '/dashboard';
     const [isSignUp, setIsSignUp] = useState(false);
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -48,10 +51,12 @@ export default function IdentityPage() {
         setIsLoading(false);
         if (results.code === 200) {
             apiClient.setToken(results.data.token);
-            router.push('/dashboard');
+            router.push(redirect);
             notification.success(results.msg)
             return;
         }
+        setCaptcha('');
+        void fetchCaptchaImage();
         notification.error(results.msg);
     };
 
@@ -66,7 +71,7 @@ export default function IdentityPage() {
         setIsLoading(false);
         if (results.code === 200) {
             apiClient.setToken(results.data.token);
-            router.push('/');
+            router.push(redirect);
             return
         }
         notification.error(results.msg);
