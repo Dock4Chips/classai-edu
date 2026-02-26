@@ -1,6 +1,6 @@
 'use client';
 
-import {useState, useCallback} from 'react';
+import {useState, useCallback, useEffect} from 'react';
 import {
     Play,
     Square,
@@ -26,6 +26,9 @@ import {
 import {FileInput, CameraInput} from '@/components/detection/input';
 import {DetectionPreview, DetectionList} from '@/components/detection/output';
 import {DetectionTaskService, DetectionTaskType} from '@/lib/service/detection_task';
+import {ModelConfigService} from '@/lib/service/model_config';
+import {DeviceService} from '@/lib/service/device';
+import {Results} from "./api";
 
 type Mode = 'file' | 'camera';
 
@@ -181,6 +184,46 @@ export default function PredictWorkbench() {
     const [taskName, setTaskName] = useState('');
     const [results, setResults] = useState<DetectionResult[]>([]);
 
+    const [modelList, setModelList] = useState<Results[]>([]);
+    const [selectedModelId, setSelectedModelId] = useState<number>(1);
+    const [deviceList, setDeviceList] = useState<Results[]>([]);
+    const [selectedDeviceId, setSelectedDeviceId] = useState<number | undefined>(undefined);
+
+    useEffect(() => {
+        void fetchModelConfig()
+    }, []);
+
+    useEffect(() => {
+        if (mode === 'camera') {
+            void fetchDevice()
+        } else {
+            setDeviceList([]);
+            setSelectedDeviceId(undefined);
+        }
+    }, [mode]);
+
+    const fetchDevice = async () => {
+        DeviceService.getDeviceList(1, 100).then((res) => {
+            if (res.code === 200 && res.data?.records) {
+                setDeviceList(res.data.records);
+                if (res.data.records.length > 0) {
+                    setSelectedDeviceId(res.data.records[0].device_id);
+                }
+            }
+        });
+    }
+
+    const fetchModelConfig = async () => {
+        ModelConfigService.getModelList(1, 10).then((res) => {
+            if (res.code === 200 && res.data?.records) {
+                setModelList(res.data.records);
+                if (res.data.records.length > 0) {
+                    setSelectedModelId(res.data.records[0].model_id);
+                }
+            }
+        });
+    }
+
     const modeTabs = [
         {id: 'file' as const, label: 'File Upload', icon: <Upload size={16}/>},
         {id: 'camera' as const, label: 'Camera Stream', icon: <Camera size={16}/>},
@@ -215,7 +258,7 @@ export default function PredictWorkbench() {
         const queryParams = new URLSearchParams({
             task_name: taskName,
             task_type: getTaskType().toString(),
-            model_id: '1',
+            model_id: selectedModelId.toString(),
             conf_threshold: confidence.toString(),
         });
         DetectionTaskService.createTask(formData, queryParams)
@@ -289,6 +332,38 @@ export default function PredictWorkbench() {
                 }}
                 leftContent={
                     <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600">Model:</span>
+                            <select
+                                value={selectedModelId}
+                                onChange={(e) => setSelectedModelId(Number(e.target.value))}
+                                disabled={isProcessing}
+                                className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                {modelList.map((model) => (
+                                    <option key={model.model_id} value={model.model_id}>
+                                        {model.model_name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        {mode === 'camera' && deviceList.length > 0 && (
+                            <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-600">Device:</span>
+                                <select
+                                    value={selectedDeviceId}
+                                    onChange={(e) => setSelectedDeviceId(Number(e.target.value))}
+                                    disabled={isProcessing}
+                                    className="text-sm border border-gray-300 rounded px-2 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                >
+                                    {deviceList.map((device) => (
+                                        <option key={device.device_id} value={device.device_id}>
+                                            {device.device_name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-gray-600">Confidence:</span>
                             <input
