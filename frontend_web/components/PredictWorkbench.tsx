@@ -1,8 +1,8 @@
 'use client';
 
 import {useState, useCallback} from 'react';
-import {Play, Square, Settings, Upload, Camera, FileVideo, Image, Loader2, CheckCircle, XCircle} from 'lucide-react';
-import {motion} from 'framer-motion';
+import {Play, Square, Settings, Upload, Camera, FileVideo, Image, Loader2, CheckCircle, XCircle, Target, Hash, Zap} from 'lucide-react';
+import {motion, AnimatePresence} from 'framer-motion';
 import {
     WorkbenchHeader,
     ModeTabs,
@@ -26,6 +26,150 @@ interface DetectionResult {
         confidence: number;
         bbox_xyxy: number[];
     }>;
+}
+
+// Status indicator component - 更醒目的设计
+function StatusIndicator({status}: {status: SessionStatus}) {
+    const statusConfig = {
+        idle: {
+            bg: 'bg-gray-100',
+            dot: 'bg-gray-500',
+            text: 'text-gray-600',
+            label: 'Ready',
+            pulse: false
+        },
+        running: {
+            bg: 'bg-blue-50',
+            dot: 'bg-blue-500',
+            text: 'text-blue-600',
+            label: 'Processing',
+            pulse: true
+        },
+        completed: {
+            bg: 'bg-emerald-50',
+            dot: 'bg-emerald-500',
+            text: 'text-emerald-600',
+            label: 'Completed',
+            pulse: false
+        },
+        failed: {
+            bg: 'bg-rose-50',
+            dot: 'bg-rose-500',
+            text: 'text-rose-600',
+            label: 'Failed',
+            pulse: false
+        },
+    };
+
+    const config = statusConfig[status];
+
+    return (
+        <motion.div
+            initial={false}
+            animate={{
+                scale: status === 'completed' ? [1, 1.05, 1] : 1,
+            }}
+            transition={{duration: 0.3}}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg ${config.bg}`}
+        >
+            <span className={`relative flex h-3 w-3`}>
+                <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${config.dot} ${config.pulse ? '' : 'hidden'}`}/>
+                <span className={`relative inline-flex rounded-full h-3 w-3 ${config.dot}`}/>
+            </span>
+            <span className={`text-sm font-semibold ${config.text}`}>{config.label}</span>
+        </motion.div>
+    );
+}
+
+// Task info badge component - 更醒目的设计
+function TaskInfoBadge({
+    taskName,
+    fileName,
+    isVideoFile,
+    status,
+    onTaskNameChange,
+    disabled
+}: {
+    taskName: string;
+    fileName: string;
+    isVideoFile: boolean;
+    status: SessionStatus;
+    onTaskNameChange: (name: string) => void;
+    disabled?: boolean;
+}) {
+    const [isEditing, setIsEditing] = useState(false);
+    const [editValue, setEditValue] = useState(taskName);
+
+    const handleBlur = () => {
+        setIsEditing(false);
+        if (editValue.trim() && editValue !== taskName) {
+            onTaskNameChange(editValue.trim());
+        }
+    };
+
+    // 根据状态获取边框颜色
+    const getStatusBorderColor = () => {
+        switch (status) {
+            case 'running': return 'border-l-blue-500';
+            case 'completed': return 'border-l-emerald-500';
+            case 'failed': return 'border-l-rose-500';
+            default: return 'border-l-gray-300';
+        }
+    };
+
+    // 判断是否需要填写 task name
+    const needsName = !taskName;
+
+    return (
+        <div className="flex items-center gap-3">
+            {/* Task ID - 黑色标签样式 */}
+            <div className={`
+                flex items-center gap-2 px-4 py-2 rounded-lg border-l-4 min-w-[280px]
+                bg-gray-100 border-gray-400 ${needsName ? 'ring-2 ring-black ring-opacity-20' : ''}
+            `}>
+                <Hash size={16} className="text-gray-600"/>
+                {isEditing ? (
+                    <input
+                        type="text"
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onBlur={handleBlur}
+                        onKeyDown={(e) => e.key === 'Enter' && handleBlur()}
+                        className="flex-1 min-w-[150px] bg-transparent text-sm font-semibold text-gray-800 outline-none border-b border-gray-400"
+                        autoFocus
+                        disabled={disabled}
+                        placeholder="Enter task name..."
+                    />
+                ) : (
+                    <button
+                        onClick={() => !disabled && setIsEditing(true)}
+                        className={`flex-1 text-left text-sm font-semibold disabled:opacity-50 ${needsName ? 'text-gray-500' : 'text-gray-700'}`}
+                        disabled={disabled}
+                    >
+                        {taskName || 'Click to set task name'}
+                    </button>
+                )}
+                {needsName && (
+                    <span className="text-xs text-gray-500 font-medium">Required</span>
+                )}
+            </div>
+
+            {/* File name - 灰色标签样式 */}
+            {fileName && (
+                <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 rounded-lg min-w-[180px]">
+                    {isVideoFile ? (
+                        <FileVideo size={14} className="text-blue-500"/>
+                    ) : (
+                        <Image size={14} className="text-emerald-500"/>
+                    )}
+                    <span className="text-sm font-medium text-gray-600 max-w-[150px] truncate">{fileName}</span>
+                </div>
+            )}
+
+            {/* Status - 更醒目的显示 */}
+            <StatusIndicator status={status}/>
+        </div>
+    );
 }
 
 export default function PredictWorkbench() {
@@ -191,6 +335,39 @@ export default function PredictWorkbench() {
 
             <ModeTabs modes={modeTabs} activeMode={mode} onModeChange={handleModeChange}/>
 
+            {/* Workspace Info Ribbon - 更醒目的设计 */}
+            <div className="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 px-6 py-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <TaskInfoBadge
+                            taskName={taskName}
+                            fileName={selectedFileName}
+                            isVideoFile={isVideoFile}
+                            status={status}
+                            onTaskNameChange={setTaskName}
+                            disabled={isProcessing}
+                        />
+                    </div>
+
+                    {/* Quick stats when completed - 黑色标签样式 */}
+                    <AnimatePresence>
+                        {status === 'completed' && results.length > 0 && (
+                            <motion.div
+                                initial={{opacity: 0, scale: 0.9}}
+                                animate={{opacity: 1, scale: 1}}
+                                exit={{opacity: 0, scale: 0.9}}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 rounded-md"
+                            >
+                                <Zap size={14} className="text-amber-400"/>
+                                <span className="text-sm font-medium text-white">
+                                    {results[0].dets?.length || 0} detections
+                                </span>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </div>
+
             <div className="flex-1 grid grid-cols-2 gap-0 overflow-hidden">
                 <InputPanel title="Input">
                     <div className="flex flex-col gap-4 overflow-auto">
@@ -217,30 +394,10 @@ export default function PredictWorkbench() {
                                     </div>
                                 )}
 
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Task Name</label>
-                                    <input
-                                        type="text"
-                                        value={taskName}
-                                        onChange={(e) => setTaskName(e.target.value)}
-                                        placeholder="Enter task name"
-                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                        disabled={isProcessing}
-                                    />
-                                </div>
-
-                                {isProcessing && (
-                                    <div className="flex items-center justify-center gap-2 p-4 bg-blue-50 rounded-xl">
-                                        <Loader2 className="animate-spin text-blue-500" size={24}/>
-                                        <span className="text-sm text-blue-700">Processing...</span>
-                                    </div>
-                                )}
-
-                                {status === 'completed' && (
-                                    <div className="flex items-center justify-center gap-2 p-4 bg-green-50 rounded-xl">
-                                        <CheckCircle className="text-green-500" size={24}/>
-                                        <span className="text-sm text-green-700">Completed</span>
-                                    </div>
+                                {status === 'idle' && !selectedFileName && (
+                                    <p className="text-sm text-gray-400 text-center py-2">
+                                        Select a file to start detection
+                                    </p>
                                 )}
                             </div>
                         ) : (
