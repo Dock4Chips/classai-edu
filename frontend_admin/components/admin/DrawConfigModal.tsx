@@ -192,16 +192,16 @@ function ClassEditModal({
         {key: 'class_name_en', label: 'English Name', type: 'text', colSpan: 1, required: true},
         {key: 'class_name_zh', label: 'Chinese Name', type: 'text', colSpan: 1, required: true},
         {key: 'class_code', label: 'Display Code', type: 'text', colSpan: 1},
-        {
-            key: 'is_active',
-            label: 'Active',
-            type: 'select',
-            colSpan: 1,
-            options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
-            ],
-        },
+        // {
+        //     key: 'is_active',
+        //     label: 'Active',
+        //     type: 'select',
+        //     colSpan: 1,
+        //     options: [
+        //         {value: '0', label: 'No'},
+        //         {value: '1', label: 'Yes'},
+        //     ],
+        // },
         {key: 'description', label: 'Description', type: 'textarea', rows: 3, colSpan: 2},
     ];
 

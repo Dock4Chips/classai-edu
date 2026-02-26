@@ -15,6 +15,7 @@ from repository.class_index_banner_repository import (
 from schema.detection_task_schema import DetectionTaskCreateSchema
 from services.detect_service import detection_img_task_service
 from tools.file_tool import delete_minio_file
+from tools.security_tool import SecurityTool
 from yolo_edu.services.model_config_service import ModelConfigService
 
 pub_class_index_banner_router = APIRouter(prefix='/api/class/index/banner')
@@ -46,10 +47,10 @@ async def edit_banner(id: int, file: UploadFile = File(...)):
     old_record = get_banner_by_id(id)
     if not old_record:
         raise ServiceException(msg="记录不存在")
-    delete_minio_file(old_record[0].get("resource_url"))
-    
+    old_resource_url = old_record[0].get("resource_url")
     update_data = await common_process_det(file)
     update_banner(id, update_data)
+    delete_minio_file(old_resource_url)
     return Res.ok("修改成功")
 
 
@@ -58,8 +59,9 @@ async def remove_banner(id: int):
     old_record = get_banner_by_id(id)
     if not old_record:
         raise ServiceException(msg="记录不存在")
-    delete_minio_file(old_record[0].get("resource_url"))
+    old_resource_url = old_record[0].get("resource_url")
     delete_banner(id)
+    delete_minio_file(old_resource_url)
     return Res.ok("删除成功")
 
 
@@ -94,4 +96,6 @@ async def common_process_det(file):
         "max_confidence": max([det.get('confidence', 0) for det in dets], default=0),
         "det_list": json.dumps(dets),
         "raw_result": json.dumps(results),
+        "created_by": SecurityTool.get_user_id(),
+        "updated_by": SecurityTool.get_user_id(),
     }
