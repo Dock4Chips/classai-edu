@@ -180,7 +180,7 @@ function TaskInfoBadge({
 
 export default function PredictWorkbench() {
     const [mode, setMode] = useState<Mode>('file');
-    const [status, setStatus] = useState<SessionStatus>('ready');
+    const [status, setStatus] = useState<SessionStatus>('idle');
     const [confidence, setConfidence] = useState(0.5);
     const [highlightedId, setHighlightedId] = useState<number | undefined>();
 
@@ -246,6 +246,7 @@ export default function PredictWorkbench() {
         setResults([]);
         setPreviewUrl(URL.createObjectURL(file));
         setIsVideoFile(file.type.startsWith('video/'));
+        setStatus('ready'); // 上传文件后状态变为 ready
     }, []);
 
     const getTaskType = (): DetectionTaskType => {
@@ -278,7 +279,7 @@ export default function PredictWorkbench() {
                     setStatus('error');
                 }
             })
-            .catch((err) => {
+            .catch(() => {
                 setStatus('error');
             })
             .finally(() => {
@@ -297,7 +298,7 @@ export default function PredictWorkbench() {
         setTaskName('');
         setResults([]);
         setPreviewUrl('');
-        setStatus('ready');
+        setStatus('idle'); // 清除后回到 idle 状态
     };
 
     const handleModeChange = (modeId: string) => {
