@@ -27,5 +27,5 @@ def batch_create_detection_task(data: List[Dict[str, Any]]):
     return db.batch_insert('detection_task', data)
 
 if __name__ == '__main__':
-    a = db.get_by_id('detection_task', 'task_id', 13)
+    a = db.get_by_id('detection_task', 'task_id', 40)
     print(a)
