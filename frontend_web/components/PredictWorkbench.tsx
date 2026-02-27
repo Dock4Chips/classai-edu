@@ -44,7 +44,9 @@ interface DetectionResult {
         class_id: number;
         class_name: string;
         confidence: number;
-        bbox_xyxy: number[];
+        bbox_xyxy: [number, number, number, number];
+        bbox_xywhn: [number, number, number, number];
+        orig_shape: [number, number];
     }>;
 }
 
@@ -202,11 +204,14 @@ export default function PredictWorkbench() {
     const [deviceList, setDeviceList] = useState<Results[]>([]);
     const [selectedDeviceId, setSelectedDeviceId] = useState<number | undefined>(undefined);
     const [wsFrame, setWsFrame] = useState<string | null>(null);
+    const wsConnectedRef = useRef(false);
     const [wsDetections, setWsDetections] = useState<Array<{
         class_id: number;
         class_name: string;
         confidence: number;
-        bbox_xyxy: number[];
+        bbox_xyxy: [number, number, number, number];
+        bbox_xywhn: [number, number, number, number];
+        orig_shape: [number, number];
     }>>([]);
     const modeTabs = [
         {id: 'file' as const, label: 'File Upload', icon: <Upload size={16}/>},
@@ -235,7 +240,9 @@ export default function PredictWorkbench() {
                 class_id: number;
                 class_name: string;
                 confidence: number;
-                bbox_xyxy: number[];
+                bbox_xyxy: [number, number, number, number];
+                bbox_xywhn: [number, number, number, number];
+                orig_shape: [number, number];
             }>; message?: string
         };
 
@@ -272,7 +279,6 @@ export default function PredictWorkbench() {
         void fetchModelConfig()
     }, []);
 
-    const wsConnectedRef = useRef(false);
 
     useEffect(() => {
         if (mode === 'camera') {
@@ -438,6 +444,9 @@ export default function PredictWorkbench() {
                 width: det.bbox_xyxy[2] - det.bbox_xyxy[0],
                 height: det.bbox_xyxy[3] - det.bbox_xyxy[1],
             },
+            bbox_xyxy: det.bbox_xyxy as [number, number, number, number],
+            bbox_xywhn: det.bbox_xywhn as [number, number, number, number],
+            orig_shape: det.orig_shape as [number, number],
         }))
         : [];
 
@@ -666,7 +675,6 @@ export default function PredictWorkbench() {
                                 )}
                             </div>
                         ) : mode === 'file' && results.length > 0 && results[0].image_url ? (
-                            /* File 模式：REST API 结果 */
                             <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
                                 {isVideoFile ? (
                                     <video src={results[0].image_url} controls className="w-full h-full object-contain"
@@ -698,6 +706,9 @@ export default function PredictWorkbench() {
                                     width: det.bbox_xyxy[2] - det.bbox_xyxy[0],
                                     height: det.bbox_xyxy[3] - det.bbox_xyxy[1],
                                 },
+                                bbox_xyxy: det.bbox_xyxy,
+                                bbox_xywhn: det.bbox_xywhn,
+                                orig_shape: det.orig_shape,
                             })) : convertedDetections}
                             onItemClick={handleDetectionClick}
                             highlightedId={highlightedId}

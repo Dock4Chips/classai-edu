@@ -196,8 +196,8 @@ def valid_entity_before_save(data: DetectionTaskCreateSchema, detections: List[D
     class_count_ids = batch_create_detection_class_count(class_count_rows)
     detail_ids = batch_create_detection_detail(detail_rows)
 
-    if not detail_ids or not class_count_ids:
-        raise ServiceException(msg="保存任务数据失败")
+    # if not detail_ids or not class_count_ids:
+    #     raise ServiceException(msg="保存任务数据失败")
 
     return task_id
 

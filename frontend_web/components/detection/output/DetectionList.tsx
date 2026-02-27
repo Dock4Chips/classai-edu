@@ -8,6 +8,15 @@ interface DetectionItem {
   class: string;
   confidence: number;
   color?: string;
+  bbox?: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  bbox_xyxy?: [number, number, number, number];
+  bbox_xywhn?: [number, number, number, number];
+  orig_shape?: [number, number];
 }
 
 interface DetectionListProps {
@@ -67,7 +76,7 @@ export function DetectionList({
                 onMouseEnter={() => setHoveredId(detection.id)}
                 onMouseLeave={() => setHoveredId(null)}
                 className={`
-                  flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all
+                  group flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer transition-all
                   ${isHighlighted ? 'bg-white shadow-md' : 'hover:bg-gray-100'}
                 `}
                 style={{
@@ -89,6 +98,21 @@ export function DetectionList({
                 <span className="text-sm font-mono text-gray-500">
                   {Math.round(detection.confidence * 100)}%
                 </span>
+
+                {/* BBox Info */}
+                {detection.bbox_xyxy && (
+                  <div className="hidden group-hover:flex items-center gap-1 text-xs text-gray-400 font-mono">
+                    <span>xyxy:</span>
+                    <span>[{detection.bbox_xyxy[0].toFixed(0)}, {detection.bbox_xyxy[1].toFixed(0)}, {detection.bbox_xyxy[2].toFixed(0)}, {detection.bbox_xyxy[3].toFixed(0)}]</span>
+                    {detection.orig_shape && (
+                      <>
+                        <span className="text-gray-300">|</span>
+                        <span>orig:</span>
+                        <span>{detection.orig_shape[1]}x{detection.orig_shape[0]}</span>
+                      </>
+                    )}
+                  </div>
+                )}
 
                 {/* Highlight Dot */}
                 {isHighlighted && (
