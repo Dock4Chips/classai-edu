@@ -15,6 +15,8 @@ export default function Home() {
         const token = Cookies.get('AUTH_TOKEN');
         if (!token) {
             router.push('/identity');
+        } else {
+            router.push('/admin/dashboard');
         }
     };
 

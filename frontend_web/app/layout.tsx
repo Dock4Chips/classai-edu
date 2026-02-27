@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { NotificationContainer } from '@/utils/notification';
+import { ConfirmContainer } from '@/utils/confirm';
 
 export const metadata: Metadata = {
   title: 'ClassAI Edu',
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body>
         {children}
         <NotificationContainer />
+        <ConfirmContainer />
       </body>
     </html>
   );

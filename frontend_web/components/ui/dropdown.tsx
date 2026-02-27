@@ -110,7 +110,7 @@ export function Dropdown({ trigger, items, align = 'left', menuClassName = '' }:
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                 transition={{ duration: 0.15 }}
-                className="fixed z-50 min-w-[160px] max-w-[240px]"
+                className="fixed z-[150] min-w-[160px] max-w-[240px]"
                 style={{
                   top: position.top,
                   left: position.left,
