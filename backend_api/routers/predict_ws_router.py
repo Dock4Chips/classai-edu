@@ -31,6 +31,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
     client = Authorization.val_token(token)
     client_id: int = client["user_id"]
     await websocket.accept()
+    log.info(f"WS connected: {client_id}")
 
     try:
         while True:
@@ -47,7 +48,7 @@ async def websocket_endpoint(websocket: WebSocket, token: str):
                     await _send_json(websocket, 'unknown action')
 
     except WebSocketDisconnect:
-        log.error(f"WS disconnected: {client_id}")
+        log.info(f"WS disconnected: {client_id}")
 
     finally:
         await stop_task(client_id)
@@ -81,11 +82,17 @@ async def start_predict(ws: WebSocket, client_id: int, data: dict):
                     "frame_id": frame_id,
                     "detections": dets
                 })
+                log.debug({
+                    "type": Action.PREDICT,
+                    "frame_id": frame_id,
+                    "detections": dets
+                })
 
                 # 再发送二进制图像帧
                 if vis is not None:
                     jpg_bytes = _encode_image_to_jpeg(vis)
                     await ws.send_bytes(jpg_bytes)
+                    # log.debug(jpg_bytes)
 
         except asyncio.CancelledError:
             pass
