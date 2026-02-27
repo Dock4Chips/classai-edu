@@ -76,12 +76,6 @@ const mainMenuItems: MenuItem[] = [
 // Settings 模块菜单 - 系统配置
 const settingsModuleMenuItems: MenuItem[] = [
     {
-        key: 'config',
-        label: 'Config',
-        icon: <Sliders className="w-5 h-5"/>,
-        path: '/admin/settings/config',
-    },
-    {
         key: 'notices',
         label: 'Notices',
         icon: <Bell className="w-5 h-5"/>,

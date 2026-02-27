@@ -62,7 +62,7 @@ export default function ChangePasswordPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Navigation />
-      <main className="max-w-2xl mx-auto px-6 pt-28 pb-12">
+      <main className="max-w-4xl mx-auto px-6 pt-28 pb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
