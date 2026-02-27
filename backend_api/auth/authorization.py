@@ -27,11 +27,19 @@ class CustomOAuth2PasswordBearer(OAuth2PasswordBearer):
             raise ServiceException(code=401, msg="未登录,请先登陆")
         return token
 
+
 oauth2_scheme = CustomOAuth2PasswordBearer(tokenUrl="token")
+
+# 能访问系统核心接口的角色
+ALLOWED_ROLE_IDS = [1, 2]
+
+# 需要权限控制的接口（路径前缀即可） 在ALLOWED_ROLE_IDS中的角色才能访问的接口
+ROLE_REQUIRED_PATHS = [
+    "/api/admin",
+]
 
 
 class Authorization:
-
 
     @classmethod
     def create_token(cls, user_id: int, role_id: int, user_name: str, expires_delta: int = ACCESS_TOKEN_EXPIRE_MINUTES):
@@ -50,12 +58,20 @@ class Authorization:
         return encoded_jwt
 
     @classmethod
-    def val_token(cls, token: str = Depends(oauth2_scheme)):
+    def val_token(cls, request: Request, token: str = Depends(oauth2_scheme)):
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             jti = payload.get("jti")
             if not redis_client.exists(f"token:jti:{jti}"):
                 raise ServiceException(code=401, msg="Token已被吊销")
+            # path = request.url.path
+            # # 是否公共接口
+            # need_role = any(
+            #     path.startswith(p) for p in ROLE_REQUIRED_PATHS
+            # )
+            # if need_role and payload.get("role_id") not in ALLOWED_ROLE_IDS:
+            #     raise ServiceException(code=403, msg="权限不足")
+
             return {
                 "user_id": payload.get("user_id"),
                 "role_id": payload.get("role_id"),
