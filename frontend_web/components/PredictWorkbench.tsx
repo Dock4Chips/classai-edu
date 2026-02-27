@@ -1,6 +1,6 @@
 'use client';
 
-import {useState, useCallback, useEffect} from 'react';
+import {useState, useCallback, useEffect, useRef} from 'react';
 import {
     Play,
     Square,
@@ -12,7 +12,9 @@ import {
     Loader2,
     XCircle,
     Hash,
-    Zap
+    Zap,
+    Wifi,
+    WifiOff
 } from 'lucide-react';
 import {motion, AnimatePresence} from 'framer-motion';
 import {Dropdown, DropdownButton} from '@/components/ui/dropdown';
@@ -24,12 +26,15 @@ import {
     ControlBar,
     SessionStatus,
 } from '@/components/detection/workbench';
-import {FileInput, CameraInput} from '@/components/detection/input';
-import {DetectionPreview, DetectionList} from '@/components/detection/output';
+import {FileInput} from '@/components/detection/input';
+import {DetectionList} from '@/components/detection/output';
 import {DetectionTaskService, DetectionTaskType} from '@/lib/service/detection_task';
 import {ModelConfigService} from '@/lib/service/model_config';
 import {DeviceService} from '@/lib/service/device';
 import {Results} from "@/lib/api";
+import {useWebSocket} from '@/hooks/useWebSocket';
+import Cookies from 'js-cookie';
+import {notification} from "@/utils/notification";
 
 type Mode = 'file' | 'camera';
 
@@ -181,7 +186,7 @@ function TaskInfoBadge({
 export default function PredictWorkbench() {
     const [mode, setMode] = useState<Mode>('file');
     const [status, setStatus] = useState<SessionStatus>('idle');
-    const [confidence, setConfidence] = useState(0.5);
+    const [confidence, setConfidence] = useState(0.4);
     const [highlightedId, setHighlightedId] = useState<number | undefined>();
 
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -196,17 +201,95 @@ export default function PredictWorkbench() {
     const [selectedModelId, setSelectedModelId] = useState<number>(1);
     const [deviceList, setDeviceList] = useState<Results[]>([]);
     const [selectedDeviceId, setSelectedDeviceId] = useState<number | undefined>(undefined);
+    const [wsFrame, setWsFrame] = useState<string | null>(null);
+    const [wsDetections, setWsDetections] = useState<Array<{
+        class_id: number;
+        class_name: string;
+        confidence: number;
+        bbox_xyxy: number[];
+    }>>([]);
+    const modeTabs = [
+        {id: 'file' as const, label: 'File Upload', icon: <Upload size={16}/>},
+        {id: 'camera' as const, label: 'Camera Stream', icon: <Camera size={16}/>},
+    ];
+
+    const getWsBaseURL = () => {
+        const base =
+            process.env.NEXT_PUBLIC_BASE_URL ||
+            window.location.origin;
+        const url = new URL(base);
+        url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+        return url.toString().replace(/\/$/, '');
+    };
+
+    const getWsUrl = () => {
+        const token = Cookies.get('AUTH_TOKEN');
+        if (!token) return notification.error('Please login first.', 'Error');
+        return `${getWsBaseURL()}/api/stream/ws?token=${token}`;
+    };
+
+    // 处理 WebSocket 消息
+    const handleWsMessage = useCallback((data: unknown) => {
+        const msg = data as {
+            type: string; detections?: Array<{
+                class_id: number;
+                class_name: string;
+                confidence: number;
+                bbox_xyxy: number[];
+            }>; message?: string
+        };
+
+        if (msg.type === 'error' || msg.type === 'unknown action') {
+            notification.error(msg.message || 'Unknown error', 'Error');
+            return;
+        }
+
+        if (msg.detections) {
+            setWsDetections(msg.detections);
+        }
+    }, []);
+
+    // 处理二进制帧
+    const handleWsBinary = useCallback((blob: Blob) => {
+        const url = URL.createObjectURL(blob);
+        setWsFrame(url);
+    }, []);
+
+    const {
+        status: wsStatus,
+        send: wsSend,
+        connect: wsConnect,
+        disconnect: wsDisconnect,
+    } = useWebSocket({
+        url: getWsUrl(),
+        onMessage: handleWsMessage,
+        onBinary: handleWsBinary,
+        reconnect: false,
+        autoConnect: false,
+    });
 
     useEffect(() => {
         void fetchModelConfig()
     }, []);
 
+    const wsConnectedRef = useRef(false);
+
     useEffect(() => {
         if (mode === 'camera') {
             void fetchDevice()
+            // Camera 模式下连接 WebSocket（防止重复连接）
+            if (!wsConnectedRef.current) {
+                wsConnectedRef.current = true;
+                wsConnect().catch(console.error);
+            }
         } else {
             setDeviceList([]);
             setSelectedDeviceId(undefined);
+            // File 模式下断开 WebSocket
+            if (wsConnectedRef.current) {
+                wsConnectedRef.current = false;
+                wsDisconnect();
+            }
         }
     }, [mode]);
 
@@ -232,10 +315,6 @@ export default function PredictWorkbench() {
         });
     }
 
-    const modeTabs = [
-        {id: 'file' as const, label: 'File Upload', icon: <Upload size={16}/>},
-        {id: 'camera' as const, label: 'Camera Stream', icon: <Camera size={16}/>},
-    ];
 
     const handleFileSelect = useCallback((file: File) => {
         setSelectedFiles([file]);
@@ -246,7 +325,7 @@ export default function PredictWorkbench() {
         setResults([]);
         setPreviewUrl(URL.createObjectURL(file));
         setIsVideoFile(file.type.startsWith('video/'));
-        setStatus('ready'); // 上传文件后状态变为 ready
+        setStatus('ready');
     }, []);
 
     const getTaskType = (): DetectionTaskType => {
@@ -258,36 +337,74 @@ export default function PredictWorkbench() {
     };
 
     const handleStartDetection = () => {
-        setIsProcessing(true);
-        setStatus('running');
-        const formData = new FormData();
-        for (const file of selectedFiles) {
-            formData.append('files', file);
-        }
-        const queryParams = new URLSearchParams({
-            task_name: taskName,
-            task_type: getTaskType().toString(),
-            model_id: selectedModelId.toString(),
-            conf_threshold: confidence.toString(),
-        });
-        DetectionTaskService.createTask(formData, queryParams)
-            .then((response) => {
-                if (response.code === 200) {
-                    setResults(response.data as DetectionResult[]);
-                    setStatus('completed');
-                } else {
-                    setStatus('error');
-                }
-            })
-            .catch(() => {
+        if (mode === 'camera') {
+            const device = deviceList.find(d => d.device_id === selectedDeviceId);
+            if (!device) {
                 setStatus('error');
-            })
-            .finally(() => {
-                setIsProcessing(false);
+                notification.error('Please select a device.', 'Error');
+                return;
+            }
+
+            setIsProcessing(true);
+            setStatus('running');
+
+            // 根据 connection_type 确定 source
+            let source: string | number;
+            switch (device.connection_type) {
+                case 0: // RTSP
+                    source = device.rtsp_url
+                    break;
+                case 1: // HTTP
+                    source = device.http_url?.toString()
+                    break;
+                default: // 摄像头
+                    source = Number(device.device_code)
+            }
+
+            // 通过 WebSocket 发送检测指令
+            wsSend({
+                action: 'predict',
+                source: source,
+                conf: confidence,
             });
+        } else {
+            // File 模式：使用 REST API
+            setIsProcessing(true);
+            setStatus('running');
+            const formData = new FormData();
+            for (const file of selectedFiles) {
+                formData.append('files', file);
+            }
+            const queryParams = new URLSearchParams({
+                task_name: taskName,
+                task_type: getTaskType().toString(),
+                model_id: selectedModelId.toString(),
+                conf_threshold: confidence.toString(),
+            });
+            DetectionTaskService.createTask(formData, queryParams)
+                .then((response) => {
+                    if (response.code === 200) {
+                        setResults(response.data as DetectionResult[]);
+                        setStatus('completed');
+                    } else {
+                        notification.error(response.msg);
+                        setStatus('error');
+                    }
+                })
+                .catch(() => {
+                    setStatus('error');
+                })
+                .finally(() => {
+                    setIsProcessing(false);
+                });
+        }
     };
 
     const handleStopDetection = () => {
+        if (mode === 'camera') {
+            // 摄像头模式：发送停止指令
+            wsSend({action: 'stop'});
+        }
         setStatus('ready');
         setIsProcessing(false);
     };
@@ -298,16 +415,12 @@ export default function PredictWorkbench() {
         setTaskName('');
         setResults([]);
         setPreviewUrl('');
-        setStatus('idle'); // 清除后回到 idle 状态
+        setStatus('idle');
     };
 
     const handleModeChange = (modeId: string) => {
         setMode(modeId as Mode);
         handleClearSelection();
-    };
-
-    const handleDetectionHover = (id: number | null) => {
-        setHighlightedId(id === null ? undefined : id);
     };
 
     const handleDetectionClick = (id: number) => {
@@ -467,7 +580,50 @@ export default function PredictWorkbench() {
                                 )}
                             </div>
                         ) : (
-                            <CameraInput/>
+                            // Camera 模式：使用设备列表
+                            <div className="space-y-4">
+                                <div className="p-4 bg-gray-100 rounded-lg border border-gray-200">
+                                    <p className="text-sm text-gray-500 text-center">
+                                        "Please use the device list for detection in Camera mode"
+                                    </p>
+                                </div>
+                                <div className="pointer-events-none opacity-50">
+                                    <FileInput
+                                        onFileSelect={(file: File) => {
+                                            setSelectedFileName(file.name);
+                                            setPreviewUrl(URL.createObjectURL(file));
+                                            setIsVideoFile(true);
+                                            setStatus('ready');
+                                        }}
+                                        accept="video/*"
+                                        multiple={false}
+                                    />
+                                </div>
+                                {/* WebSocket 连接状态 */}
+                                <div className="flex items-center gap-2 text-sm">
+                                    {wsStatus === 'connected' ? (
+                                        <>
+                                            <Wifi size={14} className="text-green-500"/>
+                                            <span className="text-green-600">已连接</span>
+                                        </>
+                                    ) : wsStatus === 'connecting' ? (
+                                        <>
+                                            <Loader2 size={14} className="text-amber-500 animate-spin"/>
+                                            <span className="text-amber-600">连接中...</span>
+                                        </>
+                                    ) : wsStatus === 'error' ? (
+                                        <>
+                                            <WifiOff size={14} className="text-red-500"/>
+                                            <span className="text-red-600">连接失败</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <WifiOff size={14} className="text-gray-400"/>
+                                            <span className="text-gray-500">未连接</span>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
                         )}
 
                         {previewUrl ? (
@@ -499,7 +655,18 @@ export default function PredictWorkbench() {
 
                 <OutputPanel title="Output">
                     <div className="h-full flex flex-col gap-4">
-                        {results.length > 0 && results[0].image_url && (
+                        {/* Camera 模式：WebSocket 实时检测帧 */}
+                        {mode === 'camera' && wsFrame ? (
+                            <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
+                                <img src={wsFrame} alt="Detection Result" className="w-full h-full object-contain"/>
+                                {status === 'running' && wsDetections.length > 0 && (
+                                    <div className="absolute top-2 right-2 px-2 py-1 bg-black/50 rounded">
+                                        <span className="text-sm text-white">{wsDetections.length} Object</span>
+                                    </div>
+                                )}
+                            </div>
+                        ) : mode === 'file' && results.length > 0 && results[0].image_url ? (
+                            /* File 模式：REST API 结果 */
                             <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
                                 {isVideoFile ? (
                                     <video src={results[0].image_url} controls className="w-full h-full object-contain"
@@ -509,21 +676,32 @@ export default function PredictWorkbench() {
                                          className="w-full h-full object-contain"/>
                                 )}
                             </div>
+                        ) : (
+                            /* 默认显示 */
+                            <div className="aspect-video flex items-center justify-center bg-gray-900 rounded-lg">
+                                <div className="text-center">
+                                    <Image className="mx-auto text-gray-600 mb-2" size={32}/>
+                                    <p className="text-gray-500 text-sm">Wait for the detection output</p>
+                                </div>
+                            </div>
                         )}
 
-                        {results.length === 0 && (
-                            <DetectionPreview
-                                detections={convertedDetections}
-                                showBoxes
-                                showLabels
-                                showConfidence
-                                highlightedId={highlightedId}
-                                onDetectionHover={handleDetectionHover}
-                            />
-                        )}
-
-                        <DetectionList detections={convertedDetections} onItemClick={handleDetectionClick}
-                                       highlightedId={highlightedId}/>
+                        {/* 检测列表 */}
+                        <DetectionList
+                            detections={mode === 'camera' ? wsDetections.map((det, idx) => ({
+                                id: idx,
+                                class: det.class_name,
+                                confidence: det.confidence,
+                                bbox: {
+                                    x: det.bbox_xyxy[0],
+                                    y: det.bbox_xyxy[1],
+                                    width: det.bbox_xyxy[2] - det.bbox_xyxy[0],
+                                    height: det.bbox_xyxy[3] - det.bbox_xyxy[1],
+                                },
+                            })) : convertedDetections}
+                            onItemClick={handleDetectionClick}
+                            highlightedId={highlightedId}
+                        />
                     </div>
                 </OutputPanel>
             </div>
@@ -534,16 +712,16 @@ export default function PredictWorkbench() {
                     whileHover={{scale: 1.02}}
                     whileTap={{scale: 0.98}}
                     onClick={status === 'running' ? handleStopDetection : handleStartDetection}
-                    disabled={mode === 'camera' || isProcessing || !selectedFiles.length}
+                    disabled={mode === 'file' && !selectedFiles.length}
                     className={`
             px-8 py-3 rounded-xl font-medium transition-colors flex items-center gap-2
             ${status === 'running' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'bg-blue-600 text-white hover:bg-blue-700'}
-            ${(mode === 'camera' || isProcessing || !selectedFiles.length) ? 'opacity-50 cursor-not-allowed' : ''}
+            ${(mode === 'file' && !selectedFiles.length) ? 'opacity-50 cursor-not-allowed' : ''}
           `}
                 >
                     {isProcessing ? <Loader2 size={18} className="animate-spin"/> : status === 'running' ?
                         <Square size={18}/> : <Play size={18}/>}
-                    {isProcessing ? 'Processing...' : status === 'running' ? 'Stop Detection' : 'Start Detection'}
+                    {status === 'running' ? 'Stop Detection' : isProcessing ? 'Processing...' : 'Start Detection'}
                 </motion.button>
             </ControlBar>
         </div>
