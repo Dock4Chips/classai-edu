@@ -58,7 +58,7 @@ class Authorization:
         return encoded_jwt
 
     @classmethod
-    def val_token(cls, request: Request, token: str = Depends(oauth2_scheme)):
+    def val_token(cls, token: str = Depends(oauth2_scheme)):
         try:
             payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             jti = payload.get("jti")

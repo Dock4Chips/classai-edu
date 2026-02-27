@@ -23,8 +23,10 @@ import {confirm} from '@/utils/confirm';
 import {Results} from '@/lib/api';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {DrawConfigModal} from './DrawConfigModal';
+import {usePermissions} from '@/lib/contexts/PermissionsContext';
 
 export default function ModelsPage() {
+    const {hasPermission} = usePermissions();
     const [models, setModels] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -384,36 +386,47 @@ export default function ModelsPage() {
         {
             key: 'actions',
             title: 'Actions',
-            render: (_, record) => (
-                <Dropdown
-                    trigger={
-                        <DropdownButton size="sm" variant="ghost" showChevron={false}>
-                            <MoreVertical className="w-4 h-4"/>
-                        </DropdownButton>
-                    }
-                    items={[
-                        {
-                            key: 'edit',
-                            label: 'Edit',
-                            icon: <Pencil className="w-4 h-4"/>,
-                            onClick: () => handleEdit(record),
-                        },
-                        {
-                            key: 'drawConfig',
-                            label: 'Draw Config',
-                            icon: <Palette className="w-4 h-4"/>,
-                            onClick: () => handleDrawConfig(record),
-                        },
-                        {
-                            key: 'delete',
-                            label: 'Delete',
-                            icon: <Trash2 className="w-4 h-4"/>,
-                            danger: true,
-                            onClick: () => handleDelete(record.model_id),
-                        },
-                    ]}
-                />
-            ),
+            render: (_, record) => {
+                const items = [];
+                if (hasPermission('models:edit')) {
+                    items.push({
+                        key: 'edit',
+                        label: 'Edit',
+                        icon: <Pencil className="w-4 h-4"/>,
+                        onClick: () => handleEdit(record),
+                    });
+                }
+                items.push({
+                    key: 'drawConfig',
+                    label: 'Draw Config',
+                    icon: <Palette className="w-4 h-4"/>,
+                    onClick: () => handleDrawConfig(record),
+                });
+                if (hasPermission('models:delete')) {
+                    items.push({
+                        key: 'delete',
+                        label: 'Delete',
+                        icon: <Trash2 className="w-4 h-4"/>,
+                        danger: true,
+                        onClick: () => handleDelete(record.model_id),
+                    });
+                }
+
+                if (items.length === 0) {
+                    return <span className="text-gray-400">-</span>;
+                }
+
+                return (
+                    <Dropdown
+                        trigger={
+                            <DropdownButton size="sm" variant="ghost" showChevron={false}>
+                                <MoreVertical className="w-4 h-4"/>
+                            </DropdownButton>
+                        }
+                        items={items}
+                    />
+                );
+            },
         },
     ];
 
@@ -428,12 +441,14 @@ export default function ModelsPage() {
                         Manage YOLO detection models
                     </p>
                 </div>
-                <button
-                    onClick={handleAdd}
-                    className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
-                >
-                    <Plus size={16}/> Add Model
-                </button>
+                {hasPermission('models:add') && (
+                    <button
+                        onClick={handleAdd}
+                        className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
+                    >
+                        <Plus size={16}/> Add Model
+                    </button>
+                )}
             </motion.div>
 
             {/* table */}

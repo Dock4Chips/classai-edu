@@ -11,6 +11,7 @@ import {ModelClassService} from '@/lib/service/model_class';
 import {ModelDrawConfigService} from '@/lib/service/model_draw_config';
 import {notification} from '@/utils/notification';
 import {confirm} from '@/utils/confirm';
+import {usePermissions} from '@/lib/contexts/PermissionsContext';
 
 interface DrawConfigModalProps {
     isOpen: boolean;
@@ -23,6 +24,7 @@ interface DrawConfigModalProps {
 
 // ============== 类别管理子组件 ==============
 function ClassManagement({model, loadData}: {model: {model_id: number}; loadData: () => void}) {
+    const {hasPermission} = usePermissions();
     const [classes, setClasses] = useState<any[]>([]);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editingClass, setEditingClass] = useState<any>(null);
@@ -86,39 +88,56 @@ function ClassManagement({model, loadData}: {model: {model_id: number}; loadData
         {
             key: 'actions',
             title: 'Actions',
-            render: (_, record) => (
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => handleEdit(record)}
-                        className="p-1.5 hover:bg-gray-100 rounded-lg"
-                        title="Edit"
-                    >
-                        <Pencil className="w-4 h-4 text-gray-600"/>
-                    </button>
-                    <button
-                        onClick={() => handleDelete(record.class_id)}
-                        className="p-1.5 hover:bg-red-50 rounded-lg"
-                        title="Delete"
-                    >
-                        <Trash2 className="w-4 h-4 text-red-600"/>
-                    </button>
-                </div>
-            ),
+            render: (_, record) => {
+                const items = [];
+                if (hasPermission('models:class:edit')) {
+                    items.push(
+                        <button
+                            key="edit"
+                            onClick={() => handleEdit(record)}
+                            className="p-1.5 hover:bg-gray-100 rounded-lg"
+                            title="Edit"
+                        >
+                            <Pencil className="w-4 h-4 text-gray-600"/>
+                        </button>
+                    );
+                }
+                if (hasPermission('models:class:delete')) {
+                    items.push(
+                        <button
+                            key="delete"
+                            onClick={() => handleDelete(record.class_id)}
+                            className="p-1.5 hover:bg-red-50 rounded-lg"
+                            title="Delete"
+                        >
+                            <Trash2 className="w-4 h-4 text-red-600"/>
+                        </button>
+                    );
+                }
+
+                if (items.length === 0) {
+                    return <span className="text-gray-400">-</span>;
+                }
+
+                return <div className="flex gap-2">{items}</div>;
+            },
         },
     ];
 
     return (
         <div className="space-y-4">
             <div className="flex justify-end">
-                <button
-                    onClick={() => {
-                        setEditingClass(null);
-                        setEditModalOpen(true);
-                    }}
-                    className="px-4 py-2 bg-black text-white rounded-xl flex items-center gap-2 text-sm"
-                >
-                    <Plus className="w-4 h-4"/> Add Class
-                </button>
+                {hasPermission('models:class:add') && (
+                    <button
+                        onClick={() => {
+                            setEditingClass(null);
+                            setEditModalOpen(true);
+                        }}
+                        className="px-4 py-2 bg-black text-white rounded-xl flex items-center gap-2 text-sm"
+                    >
+                        <Plus className="w-4 h-4"/> Add Class
+                    </button>
+                )}
             </div>
 
             <Table columns={columns} data={classes} loading={false}/>
@@ -239,6 +258,7 @@ function DrawConfigList({classes, drawConfigs, loadData}: {
     drawConfigs: any[];
     loadData: () => void;
 }) {
+    const {hasPermission} = usePermissions();
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editingConfig, setEditingConfig] = useState<any>(null);
 
@@ -313,7 +333,7 @@ function DrawConfigList({classes, drawConfigs, loadData}: {
             title: 'Actions',
             render: (_, record) => {
                 const hasConfig = !!record.drawConfig;
-                return hasConfig ? (
+                return hasConfig && hasPermission('models:class:edit') ? (
                     <button
                         onClick={() => handleEdit(record)}
                         className="p-1.5 hover:bg-gray-100 rounded-lg"
@@ -321,6 +341,8 @@ function DrawConfigList({classes, drawConfigs, loadData}: {
                     >
                         <Pencil className="w-4 h-4 text-gray-600"/>
                     </button>
+                ) : hasConfig ? (
+                    <span className="text-gray-400 text-sm">No permission</span>
                 ) : (
                     <span className="text-gray-400 text-sm">No config</span>
                 );

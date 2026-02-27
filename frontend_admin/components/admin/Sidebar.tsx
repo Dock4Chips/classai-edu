@@ -19,10 +19,12 @@ import {
     Camera,
     Sliders,
     Bell,
+    ListTree,
 } from 'lucide-react';
 import {IdentityService} from "@/lib/service/identity";
 import {notification} from "@/utils/notification";
 import {apiClient} from "@/lib/api";
+import {usePermissions} from "@/lib/contexts/PermissionsContext";
 
 interface MenuItem {
     key: string;
@@ -54,6 +56,12 @@ const mainMenuItems: MenuItem[] = [
         path: '/admin/roles',
     },
     {
+        key: 'menus',
+        label: 'Menus',
+        icon: <ListTree className="w-5 h-5"/>,
+        path: '/admin/menus',
+    },
+    {
         key: 'devices',
         label: 'Devices',
         icon: <Camera className="w-5 h-5"/>,
@@ -75,6 +83,12 @@ const mainMenuItems: MenuItem[] = [
 
 // Settings 模块菜单 - 系统配置
 const settingsModuleMenuItems: MenuItem[] = [
+    {
+        key: 'settings',
+        label: 'Settings Overview',
+        icon: <Settings className="w-5 h-5"/>,
+        path: '/admin/settings',
+    },
     {
         key: 'notices',
         label: 'Notices',
@@ -98,12 +112,19 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
     const router = useRouter();
     const pathname = usePathname();
     const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
+    const {allowedMenuKeys, loading: menuLoading} = usePermissions();
+
+    // 过滤菜单项（只显示用户有权限的菜单）
+    const filterMenuItems = (items: MenuItem[]): MenuItem[] => {
+        return items.filter(item => allowedMenuKeys.has(item.key));
+    };
 
     // 判断当前在哪个模块
     const isInSettingsModule = pathname.startsWith('/admin/settings');
 
-    // 根据模块选择菜单
-    const currentMenuItems = isInSettingsModule ? settingsModuleMenuItems : mainMenuItems;
+    // 根据模块选择菜单并过滤
+    const baseMenuItems = isInSettingsModule ? settingsModuleMenuItems : mainMenuItems;
+    const currentMenuItems = menuLoading ? [] : filterMenuItems(baseMenuItems);
     const currentTitle = isInSettingsModule ? 'Settings' : 'Administration';
 
     const toggleMenu = (key: string) => {
@@ -224,150 +245,160 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
 
             {/* Menu Items */}
             <nav className="flex-1 overflow-y-auto py-5 px-3 space-y-1.5">
-                {currentMenuItems.map((item, index) => {
-                    const hasChildren = item.children && item.children.length > 0;
-                    const isActive = isMenuActive(item);
-                    const isExpanded = expandedMenu === item.key;
+                {menuLoading ? (
+                    <div className="flex items-center justify-center h-full">
+                        <div className="text-gray-400 text-sm">Loading menus...</div>
+                    </div>
+                ) : currentMenuItems.length === 0 ? (
+                    <div className="flex items-center justify-center h-full">
+                        <div className="text-gray-400 text-sm">No accessible menus</div>
+                    </div>
+                ) : (
+                    currentMenuItems.map((item, index) => {
+                        const hasChildren = item.children && item.children.length > 0;
+                        const isActive = isMenuActive(item);
+                        const isExpanded = expandedMenu === item.key;
 
-                    return (
-                        <div key={item.key}>
-                                {/* Parent Menu Item */}
-                                <motion.button
-                                    whileHover={{x: 4}}
-                                    whileTap={{scale: 0.98}}
-                                    onClick={() => {
-                                        if (hasChildren) {
-                                            toggleMenu(item.key);
-                                        } else if (item.path) {
-                                            router.push(item.path);
-                                        }
-                                    }}
-                                    className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group overflow-hidden"
-                                    initial={{opacity: 0, x: -20}}
-                                    animate={{opacity: 1, x: 0}}
-                                    transition={{delay: index * 0.05}}
-                                >
-                                {/* Background */}
-                                {isActive && !hasChildren && (
-                                    <motion.div
-                                        layoutId="activeTab"
-                                        className="absolute inset-0 bg-black rounded-xl"
-                                        transition={{type: 'spring', stiffness: 500, damping: 30}}
-                                    />
-                                )}
-                                {/* 当有子菜单激活时，显示静态背景（无动画） */}
-                                {isActive && hasChildren && (
-                                    <div
-                                        className="absolute inset-0 bg-black rounded-xl"
-                                    />
-                                )}
+                        return (
+                            <div key={item.key}>
+                                    {/* Parent Menu Item */}
+                                    <motion.button
+                                        whileHover={{x: 4}}
+                                        whileTap={{scale: 0.98}}
+                                        onClick={() => {
+                                            if (hasChildren) {
+                                                toggleMenu(item.key);
+                                            } else if (item.path) {
+                                                router.push(item.path);
+                                            }
+                                        }}
+                                        className="relative w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group overflow-hidden"
+                                        initial={{opacity: 0, x: -20}}
+                                        animate={{opacity: 1, x: 0}}
+                                        transition={{delay: index * 0.05}}
+                                    >
+                                    {/* Background */}
+                                    {isActive && !hasChildren && (
+                                        <motion.div
+                                            layoutId="activeTab"
+                                            className="absolute inset-0 bg-black rounded-xl"
+                                            transition={{type: 'spring', stiffness: 500, damping: 30}}
+                                        />
+                                    )}
+                                    {/* 当有子菜单激活时，显示静态背景（无动画） */}
+                                    {isActive && hasChildren && (
+                                        <div
+                                            className="absolute inset-0 bg-black rounded-xl"
+                                        />
+                                    )}
 
-                                {/* Hover effect */}
-                                {!isActive && (
-                                    <div
-                                        className="absolute inset-0 bg-transparent group-hover:bg-gray-100 rounded-xl transition-all duration-300"/>
-                                )}
+                                    {/* Hover effect */}
+                                    {!isActive && (
+                                        <div
+                                            className="absolute inset-0 bg-transparent group-hover:bg-gray-100 rounded-xl transition-all duration-300"/>
+                                    )}
 
-                                {/* Icon */}
-                                <span
-                                    className={`relative z-10 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-black'} transition-colors`}>
-                  {item.icon}
-                </span>
+                                    {/* Icon */}
+                                    <span
+                                        className={`relative z-10 flex-shrink-0 ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-black'} transition-colors`}>
+                      {item.icon}
+                    </span>
 
-                                {/* Label */}
-                                <AnimatePresence mode="wait">
-                                    {!collapsed && (
+                                    {/* Label */}
+                                    <AnimatePresence mode="wait">
+                                        {!collapsed && (
+                                            <motion.span
+                                                initial={{opacity: 0, x: -10}}
+                                                animate={{opacity: 1, x: 0}}
+                                                exit={{opacity: 0, x: -10}}
+                                                transition={{duration: 0.2}}
+                                                className={`relative z-10 text-sm font-medium whitespace-nowrap ${isActive ? 'text-white' : 'text-gray-700 group-hover:text-black'} transition-colors`}
+                                            >
+                                                {item.label}
+                                            </motion.span>
+                                        )}
+                                    </AnimatePresence>
+
+                                    {/* Chevron for submenu */}
+                                    {!collapsed && hasChildren && (
                                         <motion.span
-                                            initial={{opacity: 0, x: -10}}
-                                            animate={{opacity: 1, x: 0}}
-                                            exit={{opacity: 0, x: -10}}
-                                            transition={{duration: 0.2}}
-                                            className={`relative z-10 text-sm font-medium whitespace-nowrap ${isActive ? 'text-white' : 'text-gray-700 group-hover:text-black'} transition-colors`}
+                                            initial={false}
+                                            animate={{ rotate: isExpanded ? 180 : 0 }}
+                                            className={`relative z-10 ml-auto transition-colors ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-black'}`}
                                         >
-                                            {item.label}
+                                            <ChevronDown className="w-4 h-4"/>
                                         </motion.span>
                                     )}
-                                </AnimatePresence>
 
-                                {/* Chevron for submenu */}
-                                {!collapsed && hasChildren && (
-                                    <motion.span
-                                        initial={false}
-                                        animate={{ rotate: isExpanded ? 180 : 0 }}
-                                        className={`relative z-10 ml-auto transition-colors ${isActive ? 'text-white' : 'text-gray-500 group-hover:text-black'}`}
-                                    >
-                                        <ChevronDown className="w-4 h-4"/>
-                                    </motion.span>
-                                )}
-
-                                {/* Badge */}
-                                {item.badge && !collapsed && (
-                                    <motion.span
-                                        initial={{scale: 0}}
-                                        animate={{scale: 1}}
-                                        className="relative z-10 ml-auto px-2 py-0.5 bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs font-medium rounded-full shadow-lg shadow-red-500/30"
-                                    >
-                                        {item.badge}
-                                    </motion.span>
-                                )}
-                            </motion.button>
-
-                            {/* Submenu Items */}
-                            {hasChildren && !collapsed && (
-                                <AnimatePresence mode="wait">
-                                    {isExpanded && (
-                                        <motion.div
-                                            initial={{opacity: 0, height: 0}}
-                                            animate={{opacity: 1, height: 'auto'}}
-                                            exit={{opacity: 0, height: 0}}
-                                            transition={{duration: 0.2}}
-                                            className="ml-6 mt-1 space-y-1 overflow-hidden"
+                                    {/* Badge */}
+                                    {item.badge && !collapsed && (
+                                        <motion.span
+                                            initial={{scale: 0}}
+                                            animate={{scale: 1}}
+                                            className="relative z-10 ml-auto px-2 py-0.5 bg-gradient-to-r from-red-500 to-pink-600 text-white text-xs font-medium rounded-full shadow-lg shadow-red-500/30"
                                         >
-                                            {item.children!.map((child) => {
-                                                const isChildActive = pathname === child.path;
-                                                return (
-                                                    <motion.button
-                                                        key={child.key}
-                                                        whileHover={{x: 4}}
-                                                        whileTap={{scale: 0.98}}
-                                                        onClick={() => child.path && router.push(child.path)}
-                                                        className="relative w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group overflow-hidden"
-                                                    >
-                                                        {/* Background */}
-                                                        {isChildActive && (
-                                                            <div
-                                                                className="absolute inset-0 bg-gray-100 rounded-xl"
-                                                            />
-                                                        )}
-
-                                                        {/* Hover effect */}
-                                                        {!isChildActive && (
-                                                            <div
-                                                                className="absolute inset-0 bg-transparent group-hover:bg-gray-50 rounded-xl transition-all duration-300"/>
-                                                        )}
-
-                                                        {/* Icon */}
-                                                        <span
-                                                            className={`relative z-10 flex-shrink-0 ${isChildActive ? 'text-black' : 'text-gray-500 group-hover:text-black'} transition-colors`}>
-                                                            {child.icon}
-                                                        </span>
-
-                                                        {/* Label */}
-                                                        <span
-                                                            className={`relative z-10 text-sm font-medium whitespace-nowrap ${isChildActive ? 'text-black' : 'text-gray-700 group-hover:text-black'} transition-colors`}
-                                                        >
-                                                            {child.label}
-                                                        </span>
-                                                    </motion.button>
-                                                );
-                                            })}
-                                        </motion.div>
+                                            {item.badge}
+                                        </motion.span>
                                     )}
-                                </AnimatePresence>
-                            )}
-                        </div>
-                    );
-                })}
+                                </motion.button>
+
+                                {/* Submenu Items */}
+                                {hasChildren && !collapsed && (
+                                    <AnimatePresence mode="wait">
+                                        {isExpanded && (
+                                            <motion.div
+                                                initial={{opacity: 0, height: 0}}
+                                                animate={{opacity: 1, height: 'auto'}}
+                                                exit={{opacity: 0, height: 0}}
+                                                transition={{duration: 0.2}}
+                                                className="ml-6 mt-1 space-y-1 overflow-hidden"
+                                            >
+                                                {item.children!.map((child) => {
+                                                    const isChildActive = pathname === child.path;
+                                                    return (
+                                                        <motion.button
+                                                            key={child.key}
+                                                            whileHover={{x: 4}}
+                                                            whileTap={{scale: 0.98}}
+                                                            onClick={() => child.path && router.push(child.path)}
+                                                            className="relative w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group overflow-hidden"
+                                                        >
+                                                            {/* Background */}
+                                                            {isChildActive && (
+                                                                <div
+                                                                    className="absolute inset-0 bg-gray-100 rounded-xl"
+                                                                />
+                                                            )}
+
+                                                            {/* Hover effect */}
+                                                            {!isChildActive && (
+                                                                <div
+                                                                    className="absolute inset-0 bg-transparent group-hover:bg-gray-50 rounded-xl transition-all duration-300"/>
+                                                            )}
+
+                                                            {/* Icon */}
+                                                            <span
+                                                                className={`relative z-10 flex-shrink-0 ${isChildActive ? 'text-black' : 'text-gray-500 group-hover:text-black'} transition-colors`}>
+                                                                {child.icon}
+                                                            </span>
+
+                                                            {/* Label */}
+                                                            <span
+                                                                className={`relative z-10 text-sm font-medium whitespace-nowrap ${isChildActive ? 'text-black' : 'text-gray-700 group-hover:text-black'} transition-colors`}
+                                                            >
+                                                                {child.label}
+                                                            </span>
+                                                        </motion.button>
+                                                    );
+                                                })}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                )}
+                            </div>
+                        );
+                    })
+                )}
             </nav>
 
             {/* Bottom decoration */}

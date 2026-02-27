@@ -3,6 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { NotificationContainer } from "@/utils/notification";
 import { ConfirmContainer } from "@/utils/confirm";
+import { PermissionsProvider } from "@/lib/contexts/PermissionsContext";
+import React from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,9 +31,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
-        <NotificationContainer />
-        <ConfirmContainer />
+        <PermissionsProvider>
+          {children}
+          <NotificationContainer />
+          <ConfirmContainer />
+        </PermissionsProvider>
       </body>
     </html>
   );

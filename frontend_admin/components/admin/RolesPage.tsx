@@ -12,8 +12,10 @@ import {Modal} from '@/components/ui/modal';
 import {notification} from '@/utils/notification';
 import {confirm} from '@/utils/confirm';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
+import {usePermissions} from '@/lib/contexts/PermissionsContext';
 
 export default function RolesPage() {
+    const {hasPermission} = usePermissions();
     const [roles, setRoles] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -252,36 +254,51 @@ export default function RolesPage() {
         {
             key: 'actions',
             title: 'Actions',
-            render: (_, record) => (
-                <Dropdown
-                    trigger={
-                        <DropdownButton size="sm" variant="ghost" showChevron={false}>
-                            <MoreVertical className="w-4 h-4"/>
-                        </DropdownButton>
-                    }
-                    items={[
-                        {
-                            key: 'edit',
-                            label: 'Edit',
-                            icon: <Pencil className="w-4 h-4"/>,
-                            onClick: () => handleEdit(record),
-                        },
-                        {
-                            key: 'permissions',
-                            label: 'Permissions',
-                            icon: <Key className="w-4 h-4"/>,
-                            onClick: () => handlePermissions(record),
-                        },
-                        {
-                            key: 'delete',
-                            label: 'Delete',
-                            icon: <Trash2 className="w-4 h-4"/>,
-                            danger: true,
-                            onClick: () => handleDelete(record.role_id),
-                        },
-                    ]}
-                />
-            ),
+            render: (_, record) => {
+                // 根据权限过滤操作项
+                const items = [];
+                if (hasPermission('roles:edit')) {
+                    items.push({
+                        key: 'edit',
+                        label: 'Edit',
+                        icon: <Pencil className="w-4 h-4"/>,
+                        onClick: () => handleEdit(record),
+                    });
+                }
+                if (hasPermission('roles:assign')) {
+                    items.push({
+                        key: 'permissions',
+                        label: 'Permissions',
+                        icon: <Key className="w-4 h-4"/>,
+                        onClick: () => handlePermissions(record),
+                    });
+                }
+                if (hasPermission('roles:delete')) {
+                    items.push({
+                        key: 'delete',
+                        label: 'Delete',
+                        icon: <Trash2 className="w-4 h-4"/>,
+                        danger: true,
+                        onClick: () => handleDelete(record.role_id),
+                    });
+                }
+
+                // 如果没有任何权限，不显示下拉菜单
+                if (items.length === 0) {
+                    return <span className="text-gray-400">-</span>;
+                }
+
+                return (
+                    <Dropdown
+                        trigger={
+                            <DropdownButton size="sm" variant="ghost" showChevron={false}>
+                                <MoreVertical className="w-4 h-4"/>
+                            </DropdownButton>
+                        }
+                        items={items}
+                    />
+                );
+            },
         },
     ];
 
@@ -296,12 +313,14 @@ export default function RolesPage() {
                         Manage system roles
                     </p>
                 </div>
-                <button
-                    onClick={handleAdd}
-                    className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
-                >
-                    <Plus size={16}/> Add Role
-                </button>
+                {hasPermission('roles:add') && (
+                    <button
+                        onClick={handleAdd}
+                        className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
+                    >
+                        <Plus size={16}/> Add Role
+                    </button>
+                )}
             </motion.div>
 
             {/* table */}
