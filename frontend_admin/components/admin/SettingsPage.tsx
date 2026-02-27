@@ -3,8 +3,12 @@
 import { motion } from 'framer-motion';
 import { Settings, Save, Sparkles, Shield, Bell, Globe, Lock, Mail, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useState } from 'react';
+import { usePermissions } from '@/lib/contexts/PermissionsContext';
 
 export default function SettingsPage() {
+  const { hasPermission } = usePermissions();
+  const canEdit = hasPermission('settings:edit');
+
   const [settings, setSettings] = useState({
     systemName: 'ClassAI Edu',
     systemUrl: 'https://classai.edu',
@@ -67,8 +71,10 @@ export default function SettingsPage() {
               <input
                 type="text"
                 value={settings.systemName}
-                onChange={(e) => updateSetting('systemName', e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-black focus:bg-white focus:ring-2 focus:ring-black/5 transition-all outline-none text-sm"
+                onChange={(e) => canEdit && updateSetting('systemName', e.target.value)}
+                disabled={!canEdit}
+                readOnly={!canEdit}
+                className={`w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-black focus:bg-white focus:ring-2 focus:ring-black/5 transition-all outline-none text-sm ${!canEdit ? 'cursor-not-allowed opacity-60' : ''}`}
               />
             </div>
             <div>
@@ -76,8 +82,10 @@ export default function SettingsPage() {
               <input
                 type="url"
                 value={settings.systemUrl}
-                onChange={(e) => updateSetting('systemUrl', e.target.value)}
-                className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-black focus:bg-white focus:ring-2 focus:ring-black/5 transition-all outline-none text-sm"
+                onChange={(e) => canEdit && updateSetting('systemUrl', e.target.value)}
+                disabled={!canEdit}
+                readOnly={!canEdit}
+                className={`w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-black focus:bg-white focus:ring-2 focus:ring-black/5 transition-all outline-none text-sm ${!canEdit ? 'cursor-not-allowed opacity-60' : ''}`}
               />
             </div>
           </div>
@@ -300,22 +308,24 @@ export default function SettingsPage() {
         </motion.div>
       </div>
 
-      {/* Save Button */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="flex justify-end pt-4"
-      >
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="px-6 py-3 bg-black text-white rounded-xl shadow-lg hover:shadow-xl flex items-center gap-2 font-semibold transition-all"
+      {/* Save Button - Only admin can save */}
+      {canEdit && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="flex justify-end pt-4"
         >
-          <Save className="w-4 h-4" />
-          <span>Save Changes</span>
-        </motion.button>
-      </motion.div>
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-6 py-3 bg-black text-white rounded-xl shadow-lg hover:shadow-xl flex items-center gap-2 font-semibold transition-all"
+          >
+            <Save className="w-4 h-4" />
+            <span>Save Changes</span>
+          </motion.button>
+        </motion.div>
+      )}
     </div>
   );
 }

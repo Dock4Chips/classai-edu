@@ -20,13 +20,16 @@ import {confirm} from '@/utils/confirm';
 import {Results} from '@/lib/api';
 import {buildParams} from '@/utils/buildParams';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
+import {usePermissions} from '@/lib/contexts/PermissionsContext';
 
 export default function UsersPage() {
+    const {hasPermission} = usePermissions();
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
-    const [originalUserData, setOriginalUserData] = useState<any>(null); // 保存原始数据用于对比
+    const [originalUserData, setOriginalUserData] = useState<any>(null);
+    const [allowedMenuKeys, setAllowedMenuKeys] = useState<Set<string>>(new Set());
 
     /** 查询参数（搜索 + 分页） */
     const [queryParams, setQueryParams] = useState<Results>({
@@ -272,30 +275,43 @@ export default function UsersPage() {
         {
             key: 'actions',
             title: 'Actions',
-            render: (_, record) => (
-                <Dropdown
-                    trigger={
-                        <DropdownButton size="sm" variant="ghost" showChevron={false}>
-                            <MoreVertical className="w-4 h-4"/>
-                        </DropdownButton>
-                    }
-                    items={[
-                        {
-                            key: 'edit',
-                            label: 'Edit',
-                            icon: <Pencil className="w-4 h-4"/>,
-                            onClick: () => handleEdit(record),
-                        },
-                        {
-                            key: 'delete',
-                            label: 'Delete',
-                            icon: <Trash2 className="w-4 h-4"/>,
-                            danger: true,
-                            onClick: () => handleDelete(record.user_id),
-                        },
-                    ]}
-                />
-            ),
+            render: (_, record) => {
+                // 根据权限过滤操作项
+                const items = [];
+                if (hasPermission('users:edit')) {
+                    items.push({
+                        key: 'edit',
+                        label: 'Edit',
+                        icon: <Pencil className="w-4 h-4"/>,
+                        onClick: () => handleEdit(record),
+                    });
+                }
+                if (hasPermission('users:delete')) {
+                    items.push({
+                        key: 'delete',
+                        label: 'Delete',
+                        icon: <Trash2 className="w-4 h-4"/>,
+                        danger: true,
+                        onClick: () => handleDelete(record.user_id),
+                    });
+                }
+
+                // 如果没有任何权限，不显示下拉菜单
+                if (items.length === 0) {
+                    return <span className="text-gray-400">-</span>;
+                }
+
+                return (
+                    <Dropdown
+                        trigger={
+                            <DropdownButton size="sm" variant="ghost" showChevron={false}>
+                                <MoreVertical className="w-4 h-4"/>
+                            </DropdownButton>
+                        }
+                        items={items}
+                    />
+                );
+            },
         },
     ];
 
@@ -310,12 +326,14 @@ export default function UsersPage() {
                         Manage system users
                     </p>
                 </div>
-                <button
-                    onClick={handleAdd}
-                    className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
-                >
-                    <Plus size={16}/> Add User
-                </button>
+                {hasPermission('users:add') && (
+                    <button
+                        onClick={handleAdd}
+                        className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
+                    >
+                        <Plus size={16}/> Add User
+                    </button>
+                )}
             </motion.div>
 
             {/* search —— 原样保留 */}

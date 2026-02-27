@@ -8,8 +8,10 @@ import { Table, Column } from '@/components/ui/table';
 import { Modal } from '@/components/ui/modal';
 import { notification } from '@/utils/notification';
 import { confirm } from '@/utils/confirm';
+import { usePermissions } from '@/lib/contexts/PermissionsContext';
 
 export default function BannersPage() {
+  const {hasPermission} = usePermissions();
   const [banners, setBanners] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
@@ -168,24 +170,31 @@ export default function BannersPage() {
       title: 'Actions',
       render: (_, record) => (
         <div className="flex items-center gap-2">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleEdit(record)}
-            className="p-2.5 rounded-xl hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors"
-            title="Replace image"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleDelete(record.id)}
-            className="p-2.5 rounded-xl hover:bg-rose-50 text-gray-400 hover:text-rose-600 transition-colors"
-            title="Delete"
-          >
-            <Trash2 className="w-4 h-4" />
-          </motion.button>
+          {hasPermission('banners:edit') && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleEdit(record)}
+              className="p-2.5 rounded-xl hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors"
+              title="Replace image"
+            >
+              <RefreshCw className="w-4 h-4" />
+            </motion.button>
+          )}
+          {hasPermission('banners:delete') && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleDelete(record.id)}
+              className="p-2.5 rounded-xl hover:bg-rose-50 text-gray-400 hover:text-rose-600 transition-colors"
+              title="Delete"
+            >
+              <Trash2 className="w-4 h-4" />
+            </motion.button>
+          )}
+          {!hasPermission('banners:edit') && !hasPermission('banners:delete') && (
+            <span className="text-gray-400">-</span>
+          )}
         </div>
       ),
     },
@@ -202,12 +211,14 @@ export default function BannersPage() {
             Manage homepage carousel banners
           </p>
         </div>
-        <button
-          onClick={handleAdd}
-          className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2 hover:bg-gray-800 transition-all"
-        >
-          <Plus size={16} /> Add Banner
-        </button>
+        {hasPermission('banners:add') && (
+          <button
+            onClick={handleAdd}
+            className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2 hover:bg-gray-800 transition-all"
+          >
+            <Plus size={16} /> Add Banner
+          </button>
+        )}
       </motion.div>
 
       {/* Table */}

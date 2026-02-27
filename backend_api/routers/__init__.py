@@ -14,6 +14,7 @@ from .model_config_router import pro_model_config_router
 from .model_class_router import pro_model_class_router
 from .model_draw_config_router import pro_model_draw_config_router
 from .device_router import pro_device_router
+from .sys_menu_router import pro_sys_menu_router
 from .report_page_data_router import pro_report_page_data_router
 
 api_router = APIRouter()
@@ -34,6 +35,7 @@ api_router.include_router(pro_model_config_router)
 api_router.include_router(pro_model_class_router)
 api_router.include_router(pro_model_draw_config_router)
 api_router.include_router(pro_device_router)
+api_router.include_router(pro_sys_menu_router)
 api_router.include_router(pro_report_page_data_router)
 
 api_router.include_router(predict_ws_router)

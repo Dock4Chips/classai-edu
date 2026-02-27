@@ -24,8 +24,10 @@ import {notification} from '@/utils/notification';
 import {confirm} from '@/utils/confirm';
 import {Results} from '@/lib/api';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
+import {usePermissions} from '@/lib/contexts/PermissionsContext';
 
 export default function DevicesPage() {
+    const {hasPermission} = usePermissions();
     const [devices, setDevices] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
@@ -392,30 +394,41 @@ export default function DevicesPage() {
         {
             key: 'actions',
             title: 'Actions',
-            render: (_, record) => (
-                <Dropdown
-                    trigger={
-                        <DropdownButton size="sm" variant="ghost" showChevron={false}>
-                            <MoreVertical className="w-4 h-4"/>
-                        </DropdownButton>
-                    }
-                    items={[
-                        {
-                            key: 'edit',
-                            label: 'Edit',
-                            icon: <Pencil className="w-4 h-4"/>,
-                            onClick: () => handleEdit(record),
-                        },
-                        {
-                            key: 'delete',
-                            label: 'Delete',
-                            icon: <Trash2 className="w-4 h-4"/>,
-                            danger: true,
-                            onClick: () => handleDelete(record.device_id),
-                        },
-                    ]}
-                />
-            ),
+            render: (_, record) => {
+                const items = [];
+                if (hasPermission('devices:edit')) {
+                    items.push({
+                        key: 'edit',
+                        label: 'Edit',
+                        icon: <Pencil className="w-4 h-4"/>,
+                        onClick: () => handleEdit(record),
+                    });
+                }
+                if (hasPermission('devices:delete')) {
+                    items.push({
+                        key: 'delete',
+                        label: 'Delete',
+                        icon: <Trash2 className="w-4 h-4"/>,
+                        danger: true,
+                        onClick: () => handleDelete(record.device_id),
+                    });
+                }
+
+                if (items.length === 0) {
+                    return <span className="text-gray-400">-</span>;
+                }
+
+                return (
+                    <Dropdown
+                        trigger={
+                            <DropdownButton size="sm" variant="ghost" showChevron={false}>
+                                <MoreVertical className="w-4 h-4"/>
+                            </DropdownButton>
+                        }
+                        items={items}
+                    />
+                );
+            },
         },
     ];
 
@@ -432,12 +445,14 @@ export default function DevicesPage() {
                         Manage detection devices
                     </p>
                 </div>
-                <button
-                    onClick={handleAdd}
-                    className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
-                >
-                    <Plus size={16}/> Add Device
-                </button>
+                {hasPermission('devices:add') && (
+                    <button
+                        onClick={handleAdd}
+                        className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
+                    >
+                        <Plus size={16}/> Add Device
+                    </button>
+                )}
             </motion.div>
 
             {/* table */}

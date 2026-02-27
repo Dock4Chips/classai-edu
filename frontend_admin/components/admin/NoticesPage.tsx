@@ -11,9 +11,11 @@ import { notification } from '@/utils/notification';
 import { confirm } from '@/utils/confirm';
 import { FormFieldConfig } from '@/components/ui/form/types';
 import { Results } from '@/lib/api';
+import { usePermissions } from '@/lib/contexts/PermissionsContext';
 
 export default function NoticesPage() {
-  const [notices, setNotices] = useState<any[]>([]);
+    const {hasPermission} = usePermissions();
+    const [notices, setNotices] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
   const [viewModalOpen, setViewModalOpen] = useState(false);
@@ -274,24 +276,31 @@ export default function NoticesPage() {
           >
             <Eye className="w-4 h-4" />
           </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleEdit(record)}
-            className="p-2.5 rounded-xl hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors"
-            title="Edit"
-          >
-            <Edit className="w-4 h-4" />
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => handleDelete(record.notice_id)}
-            className="p-2.5 rounded-xl hover:bg-rose-50 text-gray-400 hover:text-rose-600 transition-colors"
-            title="Delete"
-          >
-            <Trash2 className="w-4 h-4" />
-          </motion.button>
+          {hasPermission('notices:edit') && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleEdit(record)}
+              className="p-2.5 rounded-xl hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors"
+              title="Edit"
+            >
+              <Edit className="w-4 h-4" />
+            </motion.button>
+          )}
+          {hasPermission('notices:delete') && (
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => handleDelete(record.notice_id)}
+              className="p-2.5 rounded-xl hover:bg-rose-50 text-gray-400 hover:text-rose-600 transition-colors"
+              title="Delete"
+            >
+              <Trash2 className="w-4 h-4" />
+            </motion.button>
+          )}
+          {!hasPermission('notices:edit') && !hasPermission('notices:delete') && (
+            <span className="text-gray-400">-</span>
+          )}
         </div>
       ),
     },
@@ -308,12 +317,14 @@ export default function NoticesPage() {
             Manage system notices and announcements
           </p>
         </div>
-        <button
-          onClick={handleAdd}
-          className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2 hover:bg-gray-800 transition-all"
-        >
-          <Plus size={16} /> Add Notice
-        </button>
+        {hasPermission('notices:add') && (
+          <button
+            onClick={handleAdd}
+            className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2 hover:bg-gray-800 transition-all"
+          >
+            <Plus size={16} /> Add Notice
+          </button>
+        )}
       </motion.div>
 
       {/* Table */}
