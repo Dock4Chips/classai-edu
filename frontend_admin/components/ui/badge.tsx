@@ -56,7 +56,7 @@ export function Badge({
       <motion.span
         {...motionProps}
         className={`${badgeVariants({ variant, size })} ${className}`}
-        {...props}
+        {...props as any}
       >
         {icon && <span className="w-3.5 h-3.5">{icon}</span>}
         {children}

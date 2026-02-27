@@ -28,6 +28,7 @@ import {
 } from '@/components/detection/workbench';
 import {FileInput} from '@/components/detection/input';
 import {DetectionList} from '@/components/detection/output';
+import {SettingsModal} from '@/components/SettingsModal';
 import {DetectionTaskService, DetectionTaskType} from '@/lib/service/detection_task';
 import {ModelConfigService} from '@/lib/service/model_config';
 import {DeviceService} from '@/lib/service/device';
@@ -213,6 +214,9 @@ export default function PredictWorkbench() {
         bbox_xywhn: [number, number, number, number];
         orig_shape: [number, number];
     }>>([]);
+
+    // 设置 Modal 状态
+    const [settingsOpen, setSettingsOpen] = useState(false);
     const modeTabs = [
         {id: 'file' as const, label: 'File Upload', icon: <Upload size={16}/>},
         {id: 'camera' as const, label: 'Camera Stream', icon: <Camera size={16}/>},
@@ -517,7 +521,11 @@ export default function PredictWorkbench() {
                     </div>
                 }
                 rightContent={
-                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" disabled={isProcessing}>
+                    <button
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                        disabled={isProcessing}
+                        onClick={() => setSettingsOpen(true)}
+                    >
                         <Settings size={18} className="text-gray-600"/>
                     </button>
                 }
@@ -735,6 +743,18 @@ export default function PredictWorkbench() {
                     {status === 'running' ? 'Stop Detection' : isProcessing ? 'Processing...' : 'Start Detection'}
                 </motion.button>
             </ControlBar>
+
+            {/* 设置 Modal */}
+            <SettingsModal
+                isOpen={settingsOpen}
+                onClose={() => setSettingsOpen(false)}
+                onRefresh={() => {
+                    void fetchModelConfig();
+                    if (mode === 'camera') {
+                        void fetchDevice();
+                    }
+                }}
+            />
         </div>
     );
 }
