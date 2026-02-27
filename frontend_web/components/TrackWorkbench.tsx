@@ -1,252 +1,489 @@
 'use client';
 
-import { useState } from 'react';
-import { Play, Square, Settings, Upload } from 'lucide-react';
-import { motion } from 'framer-motion';
+import {useState, useCallback, useEffect, useRef} from 'react';
 import {
-  WorkbenchHeader,
-  InputPanel,
-  OutputPanel,
-  StatusBar,
-  ControlBar,
-  SessionStatus,
+    Play,
+    Square,
+    Settings,
+    Camera,
+    Loader2,
+    Hash,
+    Zap,
+    Wifi,
+    WifiOff,
+} from 'lucide-react';
+import {motion, AnimatePresence} from 'framer-motion';
+import {Dropdown, DropdownButton} from '@/components/ui/dropdown';
+import {
+    WorkbenchHeader,
+    InputPanel,
+    OutputPanel,
+    ControlBar,
+    SessionStatus,
 } from '@/components/detection/workbench';
-import { VideoPlayer } from '@/components/detection/input';
-import { TrackingPreview, TimelineView, TrackList } from '@/components/detection/output';
+import {DetectionList} from '@/components/detection/output';
+import {ModelConfigService} from '@/lib/service/model_config';
+import {DeviceService} from '@/lib/service/device';
+import {Results} from "@/lib/api";
+import {useWebSocket} from '@/hooks/useWebSocket';
+import Cookies from 'js-cookie';
+import {notification} from "@/utils/notification";
+
+function StatusIndicator({status}: { status: SessionStatus }) {
+    const statusConfig = {
+        idle: {
+            bg: 'bg-gray-100',
+            dot: 'bg-gray-500',
+            text: 'text-gray-600',
+            label: 'Idle',
+            pulse: false
+        },
+        ready: {
+            bg: 'bg-blue-50',
+            dot: 'bg-blue-500',
+            text: 'text-blue-600',
+            label: 'Ready',
+            pulse: true
+        },
+        running: {
+            bg: 'bg-blue-50',
+            dot: 'bg-blue-500',
+            text: 'text-amber-600',
+            label: 'Processing',
+            pulse: true
+        },
+        completed: {
+            bg: 'bg-emerald-50',
+            dot: 'bg-emerald-500',
+            text: 'text-emerald-600',
+            label: 'Completed',
+            pulse: false
+        },
+        error: {
+            bg: 'bg-rose-50',
+            dot: 'bg-rose-500',
+            text: 'text-rose-600',
+            label: 'Failed',
+            pulse: false
+        },
+    };
+
+    const config = statusConfig[status];
+
+    return (
+        <motion.div
+            initial={false}
+            animate={{
+                scale: status === 'completed' ? [1, 1.05, 1] : 1,
+            }}
+            transition={{duration: 0.3}}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg ${config.bg}`}
+        >
+            <span className={`relative flex h-3 w-3`}>
+                <span
+                    className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${config.dot} ${config.pulse ? '' : 'hidden'}`}/>
+                <span className={`relative inline-flex rounded-full h-3 w-3 ${config.dot}`}/>
+            </span>
+            <span className={`text-sm font-semibold ${config.text}`}>{config.label}</span>
+        </motion.div>
+    );
+}
+
+function TaskInfoBadge({
+                           taskName,
+                           status,
+                       }: {
+    taskName: string;
+    status: SessionStatus;
+}) {
+    return (
+        <div className="flex items-center gap-3">
+            <div className={`
+                flex items-center gap-2 px-4 py-2 rounded-lg border-l-4 min-w-[280px]
+                bg-gray-100 border-gray-400
+            `}>
+                <Hash size={16} className="text-gray-600"/>
+                <span className="flex-1 text-sm font-semibold text-gray-700">
+                    {taskName || 'Object Tracking Task'}
+                </span>
+            </div>
+
+            <StatusIndicator status={status}/>
+        </div>
+    );
+}
 
 export default function TrackWorkbench() {
-  const [status, setStatus] = useState<SessionStatus>('idle');
-  const [tracker, setTracker] = useState('DeepSORT');
-  const [confidence, setConfidence] = useState(0.5);
-  const [maxObjects, setMaxObjects] = useState(100);
-  const [currentFrame, setCurrentFrame] = useState(1200);
-  const [totalFrames] = useState(5000);
-  const [highlightedId, setHighlightedId] = useState<number | undefined>();
+    const [status, setStatus] = useState<SessionStatus>('idle');
+    const [confidence, setConfidence] = useState(0.4);
+    const [highlightedId, setHighlightedId] = useState<number | undefined>();
+    const [isProcessing, setIsProcessing] = useState(false);
 
-  // Mock data for UI demonstration
-  const mockTracks = [
-    {
-      id: 3,
-      label: 'person',
-      color: '#ef4444',
-      startFrame: 100,
-      endFrame: 4000,
-      duration: 3900,
-      bbox: { x: 10, y: 15, width: 25, height: 40 },
-    },
-    {
-      id: 7,
-      label: 'person',
-      color: '#3b82f6',
-      startFrame: 500,
-      endFrame: 3500,
-      duration: 3000,
-      bbox: { x: 50, y: 20, width: 20, height: 35 },
-    },
-    {
-      id: 12,
-      label: 'person',
-      color: '#22c55e',
-      startFrame: 800,
-      endFrame: 4800,
-      duration: 4000,
-      bbox: { x: 70, y: 30, width: 18, height: 38 },
-    },
-  ];
+    const [modelList, setModelList] = useState<Results[]>([]);
+    const [selectedModelId, setSelectedModelId] = useState<number>(1);
+    const [deviceList, setDeviceList] = useState<Results[]>([]);
+    const [selectedDeviceId, setSelectedDeviceId] = useState<number | undefined>(undefined);
 
-  const mockTrajectories: Record<number, Array<{ x: number; y: number; frame: number }>> = {
-    3: [
-      { x: 10, y: 15, frame: 100 },
-      { x: 12, y: 18, frame: 500 },
-      { x: 15, y: 20, frame: 1000 },
-      { x: 18, y: 22, frame: 1500 },
-      { x: 20, y: 25, frame: 2000 },
-    ],
-    7: [
-      { x: 50, y: 20, frame: 500 },
-      { x: 52, y: 22, frame: 1000 },
-      { x: 55, y: 25, frame: 1500 },
-    ],
-    12: [
-      { x: 70, y: 30, frame: 800 },
-      { x: 72, y: 32, frame: 1200 },
-      { x: 75, y: 35, frame: 1600 },
-    ],
-  };
+    // WebSocket 实时检测结果
+    const [wsFrame, setWsFrame] = useState<string | null>(null);
+    const [wsDetections, setWsDetections] = useState<Array<{
+        track_id: number;
+        class_id: number;
+        class_name: string;
+        confidence: number;
+        bbox: [number, number, number, number];
+        orig_shape: [number, number];
+    }>>([]);
 
-  const handleStartTracking = () => {
-    setStatus('running');
-  };
+    const wsConnectedRef = useRef(false);
 
-  const handleStopTracking = () => {
-    setStatus('idle');
-  };
+    const getWsBaseURL = () => {
+        const base =
+            process.env.NEXT_PUBLIC_BASE_URL ||
+            window.location.origin;
+        const url = new URL(base);
+        url.protocol = url.protocol === 'https:' ? 'wss:' : 'ws:';
+        return url.toString().replace(/\/$/, '');
+    };
 
-  const handleFrameSeek = (frame: number) => {
-    setCurrentFrame(frame);
-  };
+    const getWsUrl = () => {
+        const token = Cookies.get('AUTH_TOKEN');
+        if (!token) return notification.error('Please login first.', 'Error');
+        return `${getWsBaseURL()}/api/stream/ws?token=${token}`;
+    };
 
-  const handleTrackHover = (id: number | null) => {
-    setHighlightedId(id === null ? undefined : id);
-  };
+    // 处理 WebSocket 消息
+    const handleWsMessage = useCallback((data: unknown) => {
+        const msg = data as {
+            type: string; frame_id?: number; detections?: Array<{
+                track_id: number;
+                class_id: number;
+                class_name: string;
+                confidence: number;
+                bbox: [number, number, number, number];
+                orig_shape: [number, number];
+            }>; message?: string
+        };
 
-  const handleTrackClick = (id: number) => {
-    setHighlightedId(id);
-  };
-
-  return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Workbench Header */}
-      <WorkbenchHeader
-        title="Object Tracking"
-        backButton="/detection"
-        sessionInfo={{
-          id: 'TRK-2024-0130-002',
-          input: 'classroom.mp4',
-          resolution: '1920x1080',
-        }}
-        leftContent={
-          <div className="flex items-center gap-4">
-            {/* Tracker Selector */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Tracker:</span>
-              <select
-                value={tracker}
-                onChange={(e) => setTracker(e.target.value)}
-                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option>DeepSORT</option>
-                <option>ByteTrack</option>
-                <option>OC-SORT</option>
-              </select>
-            </div>
-
-            {/* Confidence Slider */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Confidence:</span>
-              <input
-                type="range"
-                min="0"
-                max="1"
-                step="0.05"
-                value={confidence}
-                onChange={(e) => setConfidence(parseFloat(e.target.value))}
-                className="w-24"
-              />
-              <span className="text-sm font-medium text-gray-700 w-10">{confidence.toFixed(2)}</span>
-            </div>
-
-            {/* Max Objects */}
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">Max Objects:</span>
-              <input
-                type="number"
-                min="1"
-                max="500"
-                value={maxObjects}
-                onChange={(e) => setMaxObjects(parseInt(e.target.value) || 100)}
-                className="w-20 px-2 py-1 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
+        if (msg.type === 'error' || msg.type === 'unknown action') {
+            notification.error(msg.message || 'Unknown error', 'Error');
+            return;
         }
-        rightContent={
-          <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-            <Settings size={18} className="text-gray-600" />
-          </button>
+
+        if (msg.detections) {
+            setWsDetections(msg.detections);
         }
-      />
+    }, []);
 
-      {/* Main Workspace */}
-      <div className="flex-1 grid grid-cols-2 gap-0 overflow-hidden">
-        {/* Left: Input Panel */}
-        <InputPanel title="Input">
-          <div className="flex flex-col gap-4 overflow-auto">
-            {/* Video Upload Placeholder */}
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-gray-400 transition-colors cursor-pointer">
-              <Upload className="mx-auto text-gray-400 mb-2" size={32} />
-              <p className="text-sm text-gray-600 font-medium">Upload Video</p>
-              <p className="text-xs text-gray-500 mt-1">MP4, AVI, MOV</p>
-            </div>
+    // 处理二进制帧
+    const handleWsBinary = useCallback((blob: Blob) => {
+        const url = URL.createObjectURL(blob);
+        setWsFrame(url);
+    }, []);
 
-            {/* Video Player */}
-            <VideoPlayer />
-          </div>
-        </InputPanel>
+    const {
+        status: wsStatus,
+        send: wsSend,
+        connect: wsConnect,
+        disconnect: wsDisconnect,
+    } = useWebSocket({
+        url: getWsUrl(),
+        onMessage: handleWsMessage,
+        onBinary: handleWsBinary,
+        reconnect: false,
+        autoConnect: false,
+    });
 
-        {/* Right: Output Panel */}
-        <OutputPanel title="Output">
-          <div className="h-full flex flex-col gap-4">
-            {/* Tracking Preview */}
-            <TrackingPreview
-              tracks={mockTracks.filter(
-                t => t.startFrame <= currentFrame && t.endFrame >= currentFrame
-              )}
-              trajectories={mockTrajectories}
-              currentFrame={currentFrame}
-              showIDs
-              showTrajectories
-              highlightedId={highlightedId}
-              onTrackHover={handleTrackHover}
-            />
+    useEffect(() => {
+        void fetchModelConfig();
+        void fetchDevice();
+    }, []);
 
-            {/* Timeline View */}
-            <TimelineView
-              tracks={mockTracks}
-              currentFrame={currentFrame}
-              totalFrames={totalFrames}
-              onFrameSeek={handleFrameSeek}
-              onTrackClick={handleTrackClick}
-              highlightedId={highlightedId}
-            />
+    // 连接 WebSocket
+    useEffect(() => {
+        if (!wsConnectedRef.current) {
+            wsConnectedRef.current = true;
+            wsConnect().catch(console.error);
+        }
 
-            {/* Track List */}
-            <TrackList
-              tracks={mockTracks}
-              onTrackClick={handleTrackClick}
-              highlightedId={highlightedId}
-            />
-          </div>
-        </OutputPanel>
-      </div>
-
-      {/* Status Bar */}
-      <StatusBar
-        status={status}
-        currentFrame={currentFrame}
-        totalFrames={totalFrames}
-        fps={28.5}
-      />
-
-      {/* Control Bar */}
-      <ControlBar position="bottom">
-        <div className="flex-1" />
-
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={status === 'running' ? handleStopTracking : handleStartTracking}
-          className={`
-            px-8 py-3 rounded-xl font-medium transition-colors flex items-center gap-2
-            ${status === 'running'
-              ? 'bg-rose-500 text-white hover:bg-rose-600'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
+        return () => {
+            if (wsConnectedRef.current) {
+                wsConnectedRef.current = false;
+                wsDisconnect();
             }
+        };
+    }, []);
+
+    const fetchDevice = async () => {
+        DeviceService.getDeviceList(1, 100).then((res) => {
+            if (res.code === 200 && res.data?.records) {
+                setDeviceList(res.data.records);
+                if (res.data.records.length > 0) {
+                    setSelectedDeviceId(res.data.records[0].device_id);
+                }
+            }
+        });
+    }
+
+    const fetchModelConfig = async () => {
+        ModelConfigService.getModelList(1, 10).then((res) => {
+            if (res.code === 200 && res.data?.records) {
+                setModelList(res.data.records);
+                if (res.data.records.length > 0) {
+                    setSelectedModelId(res.data.records[0].model_id);
+                }
+            }
+        });
+    }
+
+    const handleStartTracking = () => {
+        const device = deviceList.find(d => d.device_id === selectedDeviceId);
+        if (!device) {
+            setStatus('error');
+            notification.error('Please select a device.', 'Error');
+            return;
+        }
+
+        setIsProcessing(true);
+        setStatus('running');
+
+        // 根据 connection_type 确定 source
+        let source: string | number;
+        switch (device.connection_type) {
+            case 0: // RTSP
+                source = device.rtsp_url
+                break;
+            case 1: // HTTP
+                source = device.http_url?.toString()
+                break;
+            default: // 摄像头
+                source = Number(device.device_code)
+        }
+
+        // 通过 WebSocket 发送跟踪指令
+        wsSend({
+            action: 'track',
+            source: source,
+            conf: confidence,
+        });
+    };
+
+    const handleStopTracking = () => {
+        wsSend({action: 'stop'});
+        setStatus('ready');
+        setIsProcessing(false);
+    };
+
+    const handleDetectionClick = (id: number) => {
+        setHighlightedId(id);
+    };
+
+    // 转换为 DetectionList 格式（使用 track_id 作为 id）
+    const convertedDetections = wsDetections.map((det) => ({
+        id: det.track_id,
+        class: det.class_name,
+        confidence: det.confidence,
+        bbox: {
+            x: det.bbox[0],
+            y: det.bbox[1],
+            width: det.bbox[2] - det.bbox[0],
+            height: det.bbox[3] - det.bbox[1],
+        },
+        bbox_xyxy: det.bbox,
+        orig_shape: det.orig_shape,
+    }));
+
+    return (
+        <div className="min-h-screen bg-gray-50 flex flex-col">
+            <WorkbenchHeader
+                title="Object Tracking"
+                backButton="/detection"
+                sessionInfo={{
+                    id: 'Tracking Task',
+                    input: 'Camera Stream',
+                    resolution: '1920x1080',
+                }}
+                leftContent={
+                    <div className="flex items-center gap-4">
+                        <div
+                            className={`flex items-center gap-2 ${isProcessing ? 'pointer-events-none opacity-50' : ''}`}>
+                            <span className="text-sm text-gray-600">Model:</span>
+                            <Dropdown
+                                trigger={
+                                    <DropdownButton variant="default" className="justify-between min-w-[120px]">
+                                        <span className="text-sm">
+                                            {modelList.find(m => m.model_id === selectedModelId)?.model_name || 'Select Model'}
+                                        </span>
+                                    </DropdownButton>
+                                }
+                                items={modelList.map((model) => ({
+                                    key: model.model_id.toString(),
+                                    label: model.model_name,
+                                    onClick: () => setSelectedModelId(model.model_id)
+                                }))}
+                            />
+                        </div>
+                        {deviceList.length > 0 && (
+                            <div
+                                className={`flex items-center gap-2 ${isProcessing ? 'pointer-events-none opacity-50' : ''}`}>
+                                <span className="text-sm text-gray-600">Device:</span>
+                                <Dropdown
+                                    trigger={
+                                        <DropdownButton variant="default" className="justify-between min-w-[120px]">
+                                            <span className="text-sm">
+                                                {deviceList.find(d => d.device_id === selectedDeviceId)?.device_name || 'Select Device'}
+                                            </span>
+                                        </DropdownButton>
+                                    }
+                                    items={deviceList.map((device) => ({
+                                        key: device.device_id.toString(),
+                                        label: device.device_name,
+                                        onClick: () => setSelectedDeviceId(device.device_id)
+                                    }))}
+                                />
+                            </div>
+                        )}
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600">Confidence:</span>
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.05"
+                                value={confidence}
+                                onChange={(e) => setConfidence(parseFloat(e.target.value))}
+                                className="w-24"
+                                disabled={isProcessing}
+                            />
+                            <span className="text-sm font-medium text-gray-700 w-10">{confidence.toFixed(2)}</span>
+                        </div>
+                    </div>
+                }
+                rightContent={
+                    <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors" disabled={isProcessing}>
+                        <Settings size={18} className="text-gray-600"/>
+                    </button>
+                }
+            />
+
+            <div className="bg-gradient-to-r from-gray-50 to-white border-b border-gray-200 px-6 py-4 shadow-sm">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <TaskInfoBadge
+                            taskName="Tracking Task"
+                            status={status}
+                        />
+                    </div>
+
+                    <AnimatePresence>
+                        {status === 'running' && wsDetections.length > 0 && (
+                            <motion.div
+                                initial={{opacity: 0, scale: 0.9}}
+                                animate={{opacity: 1, scale: 1}}
+                                exit={{opacity: 0, scale: 0.9}}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-gray-800 rounded-md"
+                            >
+                                <Zap size={14} className="text-amber-400"/>
+                                <span className="text-sm font-medium text-white">
+                                    {wsDetections.length} tracks
+                                </span>
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+                </div>
+            </div>
+
+            <div className="flex-1 grid grid-cols-2 gap-0 overflow-hidden">
+                <InputPanel title="Input">
+                    <div className="flex flex-col gap-4 overflow-auto">
+                        <div className="p-4 bg-gray-100 rounded-lg border border-gray-200">
+                            <p className="text-sm text-gray-500 text-center">
+                                "Tracking uses camera stream from device list"
+                            </p>
+                        </div>
+
+                        {/* WebSocket 连接状态 */}
+                        <div className="flex items-center gap-2 text-sm">
+                            {wsStatus === 'connected' ? (
+                                <>
+                                    <Wifi size={14} className="text-green-500"/>
+                                    <span className="text-green-600">已连接</span>
+                                </>
+                            ) : wsStatus === 'connecting' ? (
+                                <>
+                                    <Loader2 size={14} className="text-amber-500 animate-spin"/>
+                                    <span className="text-amber-600">连接中...</span>
+                                </>
+                            ) : wsStatus === 'error' ? (
+                                <>
+                                    <WifiOff size={14} className="text-red-500"/>
+                                    <span className="text-red-600">连接失败</span>
+                                </>
+                            ) : (
+                                <>
+                                    <WifiOff size={14} className="text-gray-400"/>
+                                    <span className="text-gray-500">未连接</span>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Input 占位符 */}
+                        <div className="aspect-video flex items-center justify-center bg-gray-900 rounded-lg">
+                            <div className="text-center">
+                                <Camera className="mx-auto text-gray-600 mb-2" size={32}/>
+                                <p className="text-gray-500 text-sm">Camera Stream Input</p>
+                            </div>
+                        </div>
+                    </div>
+                </InputPanel>
+
+                <OutputPanel title="Output">
+                    <div className="h-full flex flex-col gap-4">
+                        {/* WebSocket 实时跟踪帧 */}
+                        {wsFrame ? (
+                            <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
+                                <img src={wsFrame} alt="Tracking Result" className="w-full h-full object-contain"/>
+                                {status === 'running' && wsDetections.length > 0 && (
+                                    <div className="absolute top-2 right-2 px-2 py-1 bg-black/50 rounded">
+                                        <span className="text-sm text-white">{wsDetections.length} Tracks</span>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className="aspect-video flex items-center justify-center bg-gray-900 rounded-lg">
+                                <div className="text-center">
+                                    <Camera className="mx-auto text-gray-600 mb-2" size={32}/>
+                                    <p className="text-gray-500 text-sm">Wait for tracking output</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 检测列表 */}
+                        <DetectionList
+                            detections={convertedDetections}
+                            onItemClick={handleDetectionClick}
+                            highlightedId={highlightedId}
+                        />
+                    </div>
+                </OutputPanel>
+            </div>
+
+            <ControlBar position="bottom">
+                <div className="flex-1"/>
+                <motion.button
+                    whileHover={{scale: 1.02}}
+                    whileTap={{scale: 0.98}}
+                    onClick={status === 'running' ? handleStopTracking : handleStartTracking}
+                    className={`
+            px-8 py-3 rounded-xl font-medium transition-colors flex items-center gap-2
+            ${status === 'running' ? 'bg-rose-500 text-white hover:bg-rose-600' : 'bg-blue-600 text-white hover:bg-blue-700'}
           `}
-        >
-          {status === 'running' ? (
-            <>
-              <Square size={18} />
-              Stop Tracking
-            </>
-          ) : (
-            <>
-              <Play size={18} />
-              Start Tracking
-            </>
-          )}
-        </motion.button>
-      </ControlBar>
-    </div>
-  );
+                >
+                    {isProcessing ? <Loader2 size={18} className="animate-spin"/> : status === 'running' ?
+                        <Square size={18}/> : <Play size={18}/>}
+                    {status === 'running' ? 'Stop Tracking' : isProcessing ? 'Processing...' : 'Start Tracking'}
+                </motion.button>
+            </ControlBar>
+        </div>
+    );
 }

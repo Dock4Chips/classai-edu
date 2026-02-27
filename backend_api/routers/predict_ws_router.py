@@ -1,4 +1,4 @@
-from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, WebSocket, WebSocketDisconnect, UploadFile, File, Depends
 import asyncio
 import cv2
 import json
@@ -8,10 +8,16 @@ from auth.authorization import Authorization
 from enums.detection_type import Action
 from master_tools.logger_tool import log
 from models.exceptions import ServiceException
+from models.result import Res
+from tools.file_tool import upload_file_to_minio
 from yolo_edu.engines.yolo_inference_engine import YOLOInferenceEngine
 from yolo_edu.engines.yolo_tracking_system import YOLOTrackingSystem
 
 predict_ws_router = APIRouter(prefix="/api/stream")
+pro_predict_router = APIRouter(
+    prefix="/api/stream",
+    dependencies=[Depends(Authorization.val_token)]
+)
 
 active_tasks: dict[int, asyncio.Task] = {}
 active_engines: dict[int, Union[YOLOInferenceEngine, YOLOTrackingSystem]] = {}
@@ -24,6 +30,16 @@ def _encode_image_to_jpeg(image, quality: int = 80) -> bytes:
     if not result:
         raise ServiceException(msg="图像编码失败")
     return encoded.tobytes()
+
+
+@pro_predict_router.post('/upload_file')
+async def upload_file(file: UploadFile = File(...)):
+    if not file:
+        raise ServiceException(msg="请上传文件")
+    if not file.content_type.startswith('video/'):
+        raise ServiceException(msg="请上传视频文件")
+    image_url = await upload_file_to_minio(file,True)
+    return Res.ok(image_url)
 
 
 @predict_ws_router.websocket("/ws")
