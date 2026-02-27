@@ -22,6 +22,7 @@ import {
     SessionStatus,
 } from '@/components/detection/workbench';
 import {DetectionList} from '@/components/detection/output';
+import {FileInput} from '@/components/detection/input';
 import {ModelConfigService} from '@/lib/service/model_config';
 import {DeviceService} from '@/lib/service/device';
 import {Results} from "@/lib/api";
@@ -402,27 +403,36 @@ export default function TrackWorkbench() {
                             </p>
                         </div>
 
+                        {/* 禁用的上传组件（保持界面一致性） */}
+                        <div className="pointer-events-none opacity-50">
+                            <FileInput
+                                onFileSelect={() => {}}
+                                accept="video/*"
+                                multiple={false}
+                            />
+                        </div>
+
                         {/* WebSocket 连接状态 */}
                         <div className="flex items-center gap-2 text-sm">
                             {wsStatus === 'connected' ? (
                                 <>
                                     <Wifi size={14} className="text-green-500"/>
-                                    <span className="text-green-600">已连接</span>
+                                    <span className="text-green-600">Connected</span>
                                 </>
                             ) : wsStatus === 'connecting' ? (
                                 <>
                                     <Loader2 size={14} className="text-amber-500 animate-spin"/>
-                                    <span className="text-amber-600">连接中...</span>
+                                    <span className="text-amber-600">Connecting...</span>
                                 </>
                             ) : wsStatus === 'error' ? (
                                 <>
                                     <WifiOff size={14} className="text-red-500"/>
-                                    <span className="text-red-600">连接失败</span>
+                                    <span className="text-red-600">Connection Failed</span>
                                 </>
                             ) : (
                                 <>
                                     <WifiOff size={14} className="text-gray-400"/>
-                                    <span className="text-gray-500">未连接</span>
+                                    <span className="text-gray-500">Disconnected</span>
                                 </>
                             )}
                         </div>

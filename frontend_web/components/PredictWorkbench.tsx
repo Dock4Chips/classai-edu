@@ -613,22 +613,22 @@ export default function PredictWorkbench() {
                                     {wsStatus === 'connected' ? (
                                         <>
                                             <Wifi size={14} className="text-green-500"/>
-                                            <span className="text-green-600">已连接</span>
+                                            <span className="text-green-600">Connected</span>
                                         </>
                                     ) : wsStatus === 'connecting' ? (
                                         <>
                                             <Loader2 size={14} className="text-amber-500 animate-spin"/>
-                                            <span className="text-amber-600">连接中...</span>
+                                            <span className="text-amber-600">Connecting...</span>
                                         </>
                                     ) : wsStatus === 'error' ? (
                                         <>
                                             <WifiOff size={14} className="text-red-500"/>
-                                            <span className="text-red-600">连接失败</span>
+                                            <span className="text-red-600">Connection Failed</span>
                                         </>
                                     ) : (
                                         <>
                                             <WifiOff size={14} className="text-gray-400"/>
-                                            <span className="text-gray-500">未连接</span>
+                                            <span className="text-gray-500">Disconnected</span>
                                         </>
                                     )}
                                 </div>
