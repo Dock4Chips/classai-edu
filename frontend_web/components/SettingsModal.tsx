@@ -1,7 +1,7 @@
 'use client';
 
 import {useState, useEffect} from 'react';
-import {Package, Router, Plus, Pencil, Trash2, MoreVertical, Wifi, WifiOff, AlertCircle, Wrench, Check, X, BrainCircuit, Star} from 'lucide-react';
+import {Package, Router, Plus, Pencil, Trash2, MoreVertical, Wifi, WifiOff, AlertCircle, Wrench, Check, X, BrainCircuit, Star, Camera, Video, Usb} from 'lucide-react';
 import {Modal} from '@/components/ui/modal';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {Table, Column} from '@/components/ui/table';
@@ -322,13 +322,18 @@ export function SettingsModal({isOpen, onClose, onRefresh}: SettingsModalProps) 
 
     const getDeviceTypeBadge = (type: number) => {
         const configs = [
-            {label: 'Camera', variant: 'default' as const},
-            {label: 'Drone', variant: 'purple' as const},
-            {label: 'IP Camera', variant: 'info' as const},
-            {label: 'USB Camera', variant: 'gradient' as const},
+            {label: 'Camera', variant: 'default' as const, icon: <Camera className="w-3 h-3"/>, bg: 'bg-slate-100', text: 'text-slate-700'},
+            {label: 'Drone', variant: 'purple' as const, icon: <Router className="w-3 h-3"/>, bg: 'bg-purple-100', text: 'text-purple-700'},
+            {label: 'IP Camera', variant: 'info' as const, icon: <Video className="w-3 h-3"/>, bg: 'bg-blue-100', text: 'text-blue-700'},
+            {label: 'USB Camera', variant: 'gradient' as const, icon: <Usb className="w-3 h-3"/>, bg: 'bg-green-100', text: 'text-green-700'},
         ];
         const c = configs[type] || configs[0];
-        return <Badge variant={c.variant}>{c.label}</Badge>;
+        return (
+            <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg ${c.bg} ${c.text} text-xs font-medium`}>
+                {c.icon}
+                {c.label}
+            </span>
+        );
     };
 
     const getStatusBadge = (status: number) => {
