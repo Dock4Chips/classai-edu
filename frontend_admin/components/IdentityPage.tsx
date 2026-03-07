@@ -8,10 +8,12 @@ import {IdentityService} from '@/lib/service/identity';
 import {apiClient} from '@/lib/api';
 import {LoginType} from "@/enums/login_type";
 import {notification} from "@/utils/notification";
+import {usePermissions} from "@/lib/contexts/PermissionsContext";
 
 export default function IdentityPage() {
     const router = useRouter();
     const searchParams = useSearchParams();
+    const { refreshPermissions } = usePermissions();
     // 获取 redirect 参数，登录后跳转到原始页面
     const redirect = searchParams.get('redirect') || '/admin/dashboard';
     const [showPassword, setShowPassword] = useState(false);
@@ -47,9 +49,10 @@ export default function IdentityPage() {
         IdentityService.login(LoginType.PASSWORD, username, password, captcha, uuidImg).then((res) => {
             if (res.code === 200) {
                 apiClient.setToken(res.data.token);
-                router.push(redirect);
                 notification.success(res.msg);
-                return;
+                return refreshPermissions().then(() => {
+                    router.push(redirect);
+                });
             }
             setCaptcha('');
             fetchCaptchaImage();
