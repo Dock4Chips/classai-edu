@@ -32,67 +32,80 @@ export default function IdentityPage() {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        void fetchCaptchaImage();
+        fetchCaptchaImage();
     }, []);
 
-    const fetchCaptchaImage = async () => {
-        const results = await IdentityService.captchaImage();
-        if (results.code === 200) {
-            setCaptchaImage(results.data.image);
-            setUuidImg(results.data.uuid_img);
-            return;
-        }
-        notification.error(results.msg);
+    const fetchCaptchaImage = () => {
+        IdentityService.captchaImage().then((results) => {
+            if (results.code === 200) {
+                setCaptchaImage(results.data.image);
+                setUuidImg(results.data.uuid_img);
+                return;
+            }
+            notification.error(results.msg);
+        }).catch((error) => {
+            console.error('Failed to fetch captcha:', error);
+        });
     };
 
-    const handleLogin = async () => {
+    const handleLogin = () => {
         setIsLoading(true);
-        const results = await IdentityService.login(LoginType.PASSWORD, username, password, captcha, uuidImg);
-        setIsLoading(false);
-        if (results.code === 200) {
-            apiClient.setToken(results.data.token);
-            router.push(redirect);
-            notification.success(results.msg)
-            return;
-        }
-        setCaptcha('');
-        void fetchCaptchaImage();
-        notification.error(results.msg);
+        IdentityService.login(LoginType.PASSWORD, username, password, captcha, uuidImg).then((results) => {
+            if (results.code === 200) {
+                apiClient.setToken(results.data.token);
+                router.push(redirect);
+                notification.success(results.msg);
+                return;
+            }
+            setCaptcha('');
+            fetchCaptchaImage();
+            notification.error(results.msg);
+        }).catch((error) => {
+            console.error('Login failed:', error);
+            notification.error('Login failed');
+        }).finally(() => {
+            setIsLoading(false);
+        });
     };
 
-    const handleRegister = async () => {
+    const handleRegister = () => {
         setIsLoading(true);
         if (password !== confirmPassword) {
             setIsLoading(false);
             notification.error('两次输入的密码不一致');
             return;
         }
-        const results = await IdentityService.register(username, password);
-        setIsLoading(false);
-        if (results.code === 200) {
-            apiClient.setToken(results.data.token);
-            router.push(redirect);
-            return
-        }
-        notification.error(results.msg);
+        IdentityService.register(username, password).then((results) => {
+            if (results.code === 200) {
+                apiClient.setToken(results.data.token);
+                router.push(redirect);
+                return;
+            }
+            notification.error(results.msg);
+        }).catch((error) => {
+            console.error('Register failed:', error);
+            notification.error('Registration failed');
+        }).finally(() => {
+            setIsLoading(false);
+        });
     };
 
-    const handleLoginGoogle = async () => {
-        try {
-            const authUrl = await IdentityService.getGoogleAuthUrl()
+    const handleLoginGoogle = () => {
+        IdentityService.getGoogleAuthUrl().then((authUrl) => {
             window.location.href = authUrl;
-        } catch (error) {
+        }).catch((error) => {
+            console.error('Failed to get Google auth URL:', error);
             notification.error('获取授权链接失败');
-        }
+        });
     };
 
-    const handleLoginGithub = async () => {
-        try {
-            const authUrl = await IdentityService.getGithubAuthUrl();
+    const handleLoginGithub = () => {
+        IdentityService.getGithubAuthUrl().then((authUrl) => {
             window.location.href = authUrl;
-        } catch (error) {
+        }).catch((error) => {
+            console.error('Failed to get GitHub auth URL:', error);
             notification.error('获取授权链接失败');
-        }
+        });
     };
 
 

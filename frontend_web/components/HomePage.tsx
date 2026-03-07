@@ -99,38 +99,39 @@ export default function HomePage() {
   const [accuracy, setAccuracy] = useState(79.6);
 
   useEffect(() => {
-    void fetchData();
-    void loadMetrics();
+    fetchData();
+    loadMetrics();
   }, []);
 
-  const fetchData = async () => {
-    const results = await ClassIndexBanner.getBanners();
-    if (results.code === 200 && results.data) {
-      const data = results.data.map((item: Results) => ({
-        id: item.id,
-        image_url: item.resource_url,
-        num_boxes: item.num_boxes,
-        cls_counts: JSON.parse(item.cls_counts || '{}'),
-        status: 'completed' as const,
-      }));
-      if (data.length > 0) {
-        setDetectionResults(data);
+  const fetchData = () => {
+    ClassIndexBanner.getBanners().then((results) => {
+      if (results.code === 200 && results.data) {
+        const data = results.data.map((item: Results) => ({
+          id: item.id,
+          image_url: item.resource_url,
+          num_boxes: item.num_boxes,
+          cls_counts: JSON.parse(item.cls_counts || '{}'),
+          status: 'completed' as const,
+        }));
+        if (data.length > 0) {
+          setDetectionResults(data);
+        }
       }
-    }
+    }).catch((error) => {
+      console.error('Failed to fetch banners:', error);
+    });
   };
 
-  const loadMetrics = async () => {
-    try {
-      const [resultsRes, matrixRes] = await Promise.all([
-        fetch('/metrics/results.json'),
-        fetch('/metrics/confusion_matrix.json')
-      ]);
-
-      const [resultsData, matrixData] = await Promise.all([
+  const loadMetrics = () => {
+    Promise.all([
+      fetch('/metrics/results.json'),
+      fetch('/metrics/confusion_matrix.json')
+    ]).then(([resultsRes, matrixRes]) => {
+      return Promise.all([
         resultsRes.json(),
         matrixRes.json()
       ]);
-
+    }).then(([resultsData, matrixData]) => {
       if (resultsData) {
         const finalPrecision = resultsData['metrics/precision(B)'][resultsData['metrics/precision(B)'].length - 1];
         const finalRecall = resultsData['metrics/recall(B)'][resultsData['metrics/recall(B)'].length - 1];
@@ -156,9 +157,9 @@ export default function HomePage() {
         }));
         setBehaviorTypes(newBehaviorTypes);
       }
-    } catch (error) {
+    }).catch((error) => {
       console.error('Failed to load metrics:', error);
-    }
+    });
   };
 
   const checkAuthAndRedirect = (path: string) => {

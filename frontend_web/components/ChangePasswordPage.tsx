@@ -26,7 +26,7 @@ export default function ChangePasswordPage() {
     if (error) setError('');
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!formData.old_password || !formData.new_password || !formData.confirm_password) {
       notification.error('Please fill in all fields');
       return;
@@ -38,25 +38,27 @@ export default function ChangePasswordPage() {
     }
 
     setLoading(true);
-    const result = await UserService.updatePassword(
+    UserService.updatePassword(
       formData.old_password,
       formData.new_password
-    );
-
-    if (result.code === 200) {
-      notification.success(result.data);
-      setFormData({
-        old_password: '',
-        new_password: '',
-        confirm_password: '',
-      });
-      setError('');
+    ).then((result) => {
+      if (result.code === 200) {
+        notification.success(result.data);
+        setFormData({
+          old_password: '',
+          new_password: '',
+          confirm_password: '',
+        });
+        setError('');
+        return;
+      }
+      notification.error(result.msg);
+    }).catch((error) => {
+      console.error('Failed to update password:', error);
+      notification.error('Failed to update password');
+    }).finally(() => {
       setLoading(false);
-      return;
-    }
-
-    notification.error(result.msg);
-    setLoading(false);
+    });
   };
 
   return (

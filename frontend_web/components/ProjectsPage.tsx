@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import {DetectionTaskService} from "@/lib/service/detection_task";
 import {Results} from "@/lib/api";
+import {notification} from "@/utils/notification";
 
 // Task Type Enum
 enum TaskType {
@@ -60,76 +61,74 @@ export default function ProjectsPage() {
         total: 0,
         pages: 0,
     });
+    const statusMap: Record<number, 'pending' | 'running' | 'failed' | 'completed'> = {
+        [TaskStatus.PENDING]: 'pending',
+        [TaskStatus.RUNNING]: 'running',
+        [TaskStatus.FAILED]: 'failed',
+        [TaskStatus.COMPLETED]: 'completed',
+    };
 
+    const typeMap: Record<number, 'image' | 'cap' | 'stream' | 'batch'> = {
+        [TaskType.IMAGE]: 'image',
+        [TaskType.CAP]: 'cap',
+        [TaskType.STREAM]: 'stream',
+        [TaskType.BATCH]: 'batch',
+    };
     useEffect(() => {
-        void fetchProject()
+        fetchProject();
     }, [pagination.page]);
 
-    const fetchProject = async () => {
-        const results = await DetectionTaskService.get_task_data(pagination.page, pagination.page_size);
-        if (results.code === 200 && results.data?.records) {
-            const statusMap: Record<number, 'pending' | 'running' | 'failed' | 'completed'> = {
-                [TaskStatus.PENDING]: 'pending',
-                [TaskStatus.RUNNING]: 'running',
-                [TaskStatus.FAILED]: 'failed',
-                [TaskStatus.COMPLETED]: 'completed',
-            };
-
-            const typeMap: Record<number, 'image' | 'cap' | 'stream' | 'batch'> = {
-                [TaskType.IMAGE]: 'image',
-                [TaskType.CAP]: 'cap',
-                [TaskType.STREAM]: 'stream',
-                [TaskType.BATCH]: 'batch',
-            };
-
-            const mappedProjects: Project[] = results.data.records.map((record: Results) => {
-                // Parse thumbnail from output_path
-                let thumbnail: string | undefined;
-                try {
-                    const paths = JSON.parse(record.output_path);
-                    if (Array.isArray(paths) && paths.length > 0) {
-                        thumbnail = paths[0];
-                    } else if (typeof paths === 'string') {
-                        thumbnail = paths;
+    const fetchProject = () => {
+        setLoading(true);
+        DetectionTaskService.get_task_data(pagination.page, pagination.page_size).then((results) => {
+            if (results.code === 200 && results.data?.records) {
+                const mappedProjects: Project[] = results.data.records.map((record: Results) => {
+                    let thumbnail: string | undefined;
+                    try {
+                        const paths = JSON.parse(record.output_path);
+                        if (Array.isArray(paths) && paths.length > 0) {
+                            thumbnail = paths[0];
+                        } else if (typeof paths === 'string') {
+                            thumbnail = paths;
+                        }
+                    } catch (e) {
+                        if (record.output_path && !record.output_path.startsWith('[')) {
+                            thumbnail = record.output_path;
+                        }
                     }
-                } catch (e) {
-                    // If output_path is a direct URL string
-                    if (record.output_path && !record.output_path.startsWith('[')) {
-                        thumbnail = record.output_path;
-                    }
-                }
 
-                // Calculate objects and classes from details
-                const objects = record.details?.length || 0;
-                const classes = record.details ? [...new Set(record.details.map((d: any) => d.class_name))].length : 0;
+                    const objects = record.details?.length || 0;
+                    const classes = record.details ? [...new Set(record.details.map((d: any) => d.class_name))].length : 0;
+                    return {
+                        id: record.task_id,
+                        name: record.task_name,
+                        type: typeMap[record.task_type] || 'image',
+                        date: record.create_time.split('T')[0],
+                        objects,
+                        classes,
+                        conf: record.conf_threshold,
+                        status: statusMap[record.task_status] || 'pending',
+                        thumbnail,
+                    };
+                });
+                setProjects(mappedProjects);
 
-                return {
-                    id: record.task_id,
-                    name: record.task_name,
-                    type: typeMap[record.task_type] || 'image',
-                    date: record.create_time.split('T')[0],
-                    objects,
-                    classes,
-                    conf: record.conf_threshold,
-                    status: statusMap[record.task_status] || 'pending',
-                    thumbnail,
-                };
-            });
-            setProjects(mappedProjects);
-
-            // Update pagination
-            setPagination({
-                page: results.data.current || 1,
-                page_size: pagination.page_size,
-                total: results.data.total || 0,
-                pages: results.data.pages || 1,
-            });
-        }
-        setLoading(false);
+                setPagination({
+                    page: results.data.current || 1,
+                    page_size: pagination.page_size,
+                    total: results.data.total || 0,
+                    pages: results.data.pages || 1,
+                });
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     const handlePageChange = (page: number) => {
-        setPagination({ ...pagination, page: page });
+        setPagination({...pagination, page: page});
     };
 
     const filteredProjects = projects.filter(project => {
@@ -347,15 +346,18 @@ export default function ProjectsPage() {
                                         <div className="flex items-center gap-8">
                                             <div className="text-center">
                                                 <div className="text-xs text-gray-500">Objects</div>
-                                                <div className="text-sm font-medium text-gray-900">{project.objects}</div>
+                                                <div
+                                                    className="text-sm font-medium text-gray-900">{project.objects}</div>
                                             </div>
                                             <div className="text-center">
                                                 <div className="text-xs text-gray-500">Classes</div>
-                                                <div className="text-sm font-medium text-gray-900">{project.classes}</div>
+                                                <div
+                                                    className="text-sm font-medium text-gray-900">{project.classes}</div>
                                             </div>
                                             <div className="text-center">
                                                 <div className="text-xs text-gray-500">Conf</div>
-                                                <div className="text-sm font-medium text-gray-900">{project.conf.toFixed(2)}</div>
+                                                <div
+                                                    className="text-sm font-medium text-gray-900">{project.conf.toFixed(2)}</div>
                                             </div>
                                         </div>
 
@@ -363,10 +365,30 @@ export default function ProjectsPage() {
                                         <div>
                                             {(() => {
                                                 const statusConfig = {
-                                                    pending: {icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50', label: 'Pending'},
-                                                    running: {icon: Clock, color: 'text-blue-500', bg: 'bg-blue-50', label: 'Running'},
-                                                    completed: {icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-50', label: 'Completed'},
-                                                    failed: {icon: XCircle, color: 'text-rose-500', bg: 'bg-rose-50', label: 'Failed'}
+                                                    pending: {
+                                                        icon: Clock,
+                                                        color: 'text-amber-500',
+                                                        bg: 'bg-amber-50',
+                                                        label: 'Pending'
+                                                    },
+                                                    running: {
+                                                        icon: Clock,
+                                                        color: 'text-blue-500',
+                                                        bg: 'bg-blue-50',
+                                                        label: 'Running'
+                                                    },
+                                                    completed: {
+                                                        icon: CheckCircle2,
+                                                        color: 'text-emerald-500',
+                                                        bg: 'bg-emerald-50',
+                                                        label: 'Completed'
+                                                    },
+                                                    failed: {
+                                                        icon: XCircle,
+                                                        color: 'text-rose-500',
+                                                        bg: 'bg-rose-50',
+                                                        label: 'Failed'
+                                                    }
                                                 };
                                                 const status = statusConfig[project.status];
                                                 const StatusIcon = status.icon;
@@ -418,7 +440,8 @@ export default function ProjectsPage() {
                                     className="p-2 bg-white rounded-xl border border-gray-200 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                              d="M15 19l-7-7 7-7"/>
                                     </svg>
                                 </button>
 
@@ -442,7 +465,8 @@ export default function ProjectsPage() {
                                     className="p-2 bg-white rounded-xl border border-gray-200 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                                 >
                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7"/>
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                              d="M9 5l7 7-7 7"/>
                                     </svg>
                                 </button>
 
