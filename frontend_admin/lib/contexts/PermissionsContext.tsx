@@ -8,6 +8,7 @@ interface PermissionsContextType {
     hasPermission: (key: string) => boolean;
     hasAnyPermission: (keys: string[]) => boolean;
     loading: boolean;
+    refreshPermissions: () => Promise<void>;
 }
 
 const PermissionsContext = createContext<PermissionsContextType | undefined>(undefined);
@@ -21,7 +22,7 @@ export function PermissionsProvider({children}: { children: ReactNode }) {
     }, []);
 
     const fetchPermissions = () => {
-        MenuService.getUserMenus().then((result) => {
+        return MenuService.getUserMenus().then((result) => {
                 if (result.code === 200 && result.data) {
                     const extractKeys = (menus: any[]): string[] => {
                         const keys: string[] = [];
@@ -55,8 +56,13 @@ export function PermissionsProvider({children}: { children: ReactNode }) {
         return keys.some(key => allowedMenuKeys.has(key));
     };
 
+    const refreshPermissions = async () => {
+        setLoading(true);
+        await fetchPermissions();
+    };
+
     return (
-        <PermissionsContext.Provider value={{allowedMenuKeys, hasPermission, hasAnyPermission, loading}}>
+        <PermissionsContext.Provider value={{allowedMenuKeys, hasPermission, hasAnyPermission, loading, refreshPermissions}}>
             {children}
         </PermissionsContext.Provider>
     );
