@@ -9,9 +9,9 @@ from datetime import datetime
 from master_tools.logger_tool import log
 
 
-# MySQL数据库配置
+# MySQL 数据库配置
 class DBConfig:
-    """MySQL数据库配置类"""
+    """MySQL 数据库配置类"""
 
     def __init__(self,
                  host: str = None,
@@ -19,32 +19,32 @@ class DBConfig:
                  user: str = None,
                  password: str = None,
                  database: str = None,
-                 charset: str = "utf8mb4",
+                 charset: str = 'utf8mb4',
                  pool_size: int = 5,
                  pool_recycle: int = 3600):
         """
-        初始化MySQL数据库配置
-        :param host: 数据库主机地址，默认使用环境变量或localhost
-        :param port: 数据库端口，默认使用环境变量或3306
-        :param user: 数据库用户名，默认使用环境变量或root
+        初始化 MySQL 数据库配置
+        :param host: 数据库主机地址，默认使用环境变量或 localhost
+        :param port: 数据库端口，默认使用环境变量或 3306
+        :param user: 数据库用户名，默认使用环境变量或 root
         :param password: 数据库密码，默认使用环境变量
         :param database: 数据库名称，默认使用环境变量
-        :param charset: 字符集，默认utf8mb4
-        :param pool_size: 连接池大小，默认5
-        :param pool_recycle: 连接回收时间(秒)，默认3600秒
+        :param charset: 字符集，默认 utf8mb4
+        :param pool_size: 连接池大小，默认 5
+        :param pool_recycle: 连接回收时间 (秒)，默认 3600 秒
         """
-        self.host = host or os.environ.get("MYSQL_HOST", "localhost")
-        self.port = port or int(os.environ.get("MYSQL_PORT", "3306"))
-        self.user = user or os.environ.get("MYSQL_USER", "root")
-        self.password = password or os.environ.get("MYSQL_PASSWORD", "")
-        self.database = database or os.environ.get("MYSQL_DATABASE", "")
+        self.host = host or os.environ.get('MYSQL_HOST', 'localhost')
+        self.port = port or int(os.environ.get('MYSQL_PORT', '3306'))
+        self.user = user or os.environ.get('MYSQL_USER', 'root')
+        self.password = password or os.environ.get('MYSQL_PASSWORD', '')
+        self.database = database or os.environ.get('MYSQL_DATABASE', '')
         self.charset = charset
 
         if not self.database:
-            raise ValueError("必须提供数据库名称")
+            raise ValueError('必须提供数据库名称')
 
-        # 构建MySQL连接URL
-        self.db_url = f"mysql+pymysql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}?charset={self.charset}"
+        # 构建 MySQL 连接 URL
+        self.db_url = f'mysql+pymysql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}?charset={self.charset}'
 
         # 创建引擎
         self.engine = create_engine(
@@ -54,14 +54,14 @@ class DBConfig:
             pool_recycle=pool_recycle,
             pool_pre_ping=True,  # 自动检测断开的连接并尝试重新连接
             connect_args={
-                "connect_timeout": 60,  # 连接超时时间
-                "read_timeout": 45,  # 读取超时时间（可选）
-                "write_timeout": 45  # 写入超时时间（可选）
+                'connect_timeout': 60,  # 连接超时时间
+                'read_timeout': 45,  # 读取超时时间（可选）
+                'write_timeout': 45  # 写入超时时间（可选）
             }
         )
 
     def create_tables(self):
-        """创建所有SQLModel定义的表"""
+        """创建所有 SQLModel 定义的表"""
         SQLModel.metadata.create_all(self.engine)
 
     def get_session(self):
@@ -71,14 +71,14 @@ class DBConfig:
 
 class DBTools:
     """
-    MySQL数据库工具类
-    提供基本的SQL操作功能，无需定义SQLModel实体类
+    MySQL 数据库工具类
+    提供基本的 SQL 操作功能，无需定义 SQLModel 实体类
     """
 
     def __init__(self, db_config: DBConfig):
         """
         初始化数据库工具类
-        :param db_config: MySQL数据库配置
+        :param db_config: MySQL 数据库配置
         """
         self.db_config = db_config
 
@@ -96,62 +96,52 @@ class DBTools:
             page = 1
         filters = filters or {}
         offset = (page - 1) * page_size
-        select_sql = ", ".join(select_fields) if select_fields else "*"
+        select_sql = ', '.join(select_fields) if select_fields else '*'
         where_parts = []
         params: Dict[str, Any] = {}
         for k, v in filters.items():
             if v is None:
                 continue
-            if isinstance(v, str) and "%" in v:
-                where_parts.append(f"{k} LIKE :{k}")
+            if isinstance(v, str) and '%' in v:
+                where_parts.append(f'{k} LIKE :{k}')
             else:
-                where_parts.append(f"{k} = :{k}")
+                where_parts.append(f'{k} = :{k}')
             params[k] = v
-        where_sql = ""
+        where_sql = ''
         if where_parts:
-            where_sql = "WHERE " + " AND ".join(where_parts)
+            where_sql = 'where ' + ' and '.join(where_parts)
 
-        order_sql = ""
+        order_sql = ''
         if order_by:
             order_items = [
-                f"{col} {direction.upper()}"
+                f'{col} {direction.upper()}'
                 for col, direction in order_by
             ]
-            order_sql = "ORDER BY " + ", ".join(order_items)
-        count_sql = f"""
-            SELECT COUNT(1) AS total
-            FROM {table}
-            {where_sql}
-        """
+            order_sql = 'order by ' + ', '.join(order_items)
+        count_sql = f'select count(1) as total from {table} {where_sql}'
         total_result = self.query(count_sql, params)
-        total = total_result[0]["total"] if total_result else 0
+        total = total_result[0]['total'] if total_result else 0
         params.update({
-            "limit": page_size,
-            "offset": offset
+            'limit': page_size,
+            'offset': offset
         })
-        data_sql = f"""
-            SELECT {select_sql}
-            FROM {table}
-            {where_sql}
-            {order_sql}
-            LIMIT :limit OFFSET :offset
-        """
+        data_sql = f'select {select_sql} from {table} {where_sql} {order_sql} limit :limit offset :offset'
         records = self.query(data_sql, params)
         pages = math.ceil(total / page_size) if page_size else 0
 
         return {
-            "records": records,
-            "total": total,
-            "size": page_size,
-            "current": page,
-            "pages": pages,
-            "hasNext": page < pages,
-            "hasPrevious": page > 1,
+            'records': records,
+            'total': total,
+            'size': page_size,
+            'current': page,
+            'pages': pages,
+            'hasNext': page < pages,
+            'hasPrevious': page > 1,
         }
 
     def query(self, sql: str, params: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]:
         """
-        执行查询SQL
+        执行查询 SQL
         :param sql: SELECT SQL语句
         :param params: 查询参数
         :return: 查询结果列表（字典格式）
@@ -166,23 +156,23 @@ class DBTools:
                     for row in result_proxy:
                         row_dict = dict(row._mapping)
                         results.append(row_dict)
-                    log.debug(f"成功执行操作SQL: {sql}")
+                    log.debug(f'成功执行操作SQL: {sql}')
                     return results
 
             except Exception as e:
-                log.error(f"执行查询SQL失败: {sql}, 错误: {str(e)}")
+                log.error(f'执行查询 SQL 失败：{sql}, 错误：{str(e)}')
                 raise
 
     def get_by_id(self, table: str, id_column: str, id_value: Any) -> Optional[Dict[str, Any]]:
         """
-        通过ID获取记录
+        通过 ID 获取记录
         :param table: 表名
-        :param id_column: ID列名
-        :param id_value: ID值
-        :return: 记录字典或None
+        :param id_column: ID 列名
+        :param id_value: ID 值
+        :return: 记录字典或 None
         """
-        sql = f"SELECT * FROM {table} WHERE {id_column} = :id LIMIT 1"
-        results = self.query(sql, {"id": id_value})
+        sql = f'select * from {table} where {id_column} = :id limit 1'
+        results = self.query(sql, {'id': id_value})
         return results[0] if results else None
 
     def get_all(self, table: str) -> List[Dict[str, Any]]:
@@ -191,7 +181,7 @@ class DBTools:
         :param table: 表名
         :return: 记录字典列表
         """
-        sql = f"SELECT * FROM {table}"
+        sql = f'select * from {table}'
         return self.query(sql)
 
     def filter(self, table: str, conditions: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -206,10 +196,10 @@ class DBTools:
 
         where_clauses = []
         for key in conditions.keys():
-            where_clauses.append(f"{key} = :{key}")
+            where_clauses.append(f'{key} = :{key}')
 
-        where_clause = " AND ".join(where_clauses)
-        sql = f"SELECT * FROM {table} WHERE {where_clause}"
+        where_clause = ' AND '.join(where_clauses)
+        sql = f'select * from {table} where {where_clause}'
 
         return self.query(sql, conditions)
 
@@ -218,7 +208,7 @@ class DBTools:
         插入记录（自动忽略 None 字段）
         :param table: 表名
         :param data: 字段和值的字典
-        :return: 插入的记录ID（如果有自增主键）或影响的行数
+        :return: 插入的记录 ID（如果有自增主键）或影响的行数
         """
         # 自动删除为 None 的字段
         data = {k: v for k, v in data.items() if v is not None}
@@ -226,10 +216,10 @@ class DBTools:
         if not data:
             return 0  # 没有字段可插入
 
-        columns = ", ".join(data.keys())
-        placeholders = ", ".join(f":{key}" for key in data.keys())
+        columns = ', '.join(data.keys())
+        placeholders = ', '.join(f':{key}' for key in data.keys())
 
-        sql = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
+        sql = f'insert into {table} ({columns}) values ({placeholders})'
 
         with self.db_config.get_session() as session:
             try:
@@ -237,13 +227,13 @@ class DBTools:
                     result = conn.execute(text(sql), data)
                     session.commit()
 
-                    # 尝试获取最后插入的ID
+                    # 尝试获取最后插入的 ID
                     last_id = result.lastrowid
                     return last_id if last_id else result.rowcount
 
             except Exception as e:
                 session.rollback()
-                log.error(f"插入记录失败: {sql}, 错误: {str(e)}")
+                log.error(f'插入记录失败：{sql}, 错误：{str(e)}')
                 raise
 
     def update(self, table: str, id_column: str, id_value: Any, data: Dict[str, Any]) -> int:
@@ -253,22 +243,22 @@ class DBTools:
         if not data:
             return 0  # 没有字段需要更新
 
-        set_clause = ", ".join(f"{key} = :{key}" for key in data.keys())
-        sql = f"UPDATE {table} SET {set_clause} WHERE {id_column} = :id_value"
+        set_clause = ', '.join(f'{key} = :{key}' for key in data.keys())
+        sql = f'update {table} set {set_clause} where {id_column} = :id_value'
 
-        params = {**data, "id_value": id_value}
+        params = {**data, 'id_value': id_value}
         return self.execute(sql, params)
 
     def delete(self, table: str, id_column: str, id_value: Any) -> int:
         """
         删除记录
         :param table: 表名
-        :param id_column: ID列名
-        :param id_value: ID值
+        :param id_column: ID 列名
+        :param id_value: ID 值
         :return: 影响的行数
         """
-        sql = f"DELETE FROM {table} WHERE {id_column} = :id"
-        return self.execute(sql, {"id": id_value})
+        sql = f'delete from {table} where {id_column} = :id'
+        return self.execute(sql, {'id': id_value})
 
     def batch_insert(self, table: str, data_list: List[Dict[str, Any]]) -> List[int]:
         """
@@ -282,9 +272,9 @@ class DBTools:
 
         # 获取所有字段名（使用第一条记录的键）
         columns = list(data_list[0].keys())
-        columns_str = ", ".join(columns)
+        columns_str = ', '.join(columns)
 
-        # 构建VALUES部分
+        # 构建 VALUES 部分
         values_parts = []
         all_params = {}
 
@@ -292,14 +282,14 @@ class DBTools:
             # 为每条记录创建带索引的参数名
             placeholders = []
             for col in columns:
-                param_name = f"{col}_{i}"
-                placeholders.append(f":{param_name}")
+                param_name = f'{col}_{i}'
+                placeholders.append(f':{param_name}')
                 all_params[param_name] = data.get(col)
 
             values_parts.append(f"({', '.join(placeholders)})")
 
-        values_str = ", ".join(values_parts)
-        sql = f"INSERT INTO {table} ({columns_str}) VALUES {values_str}"
+        values_str = ', '.join(values_parts)
+        sql = f'insert into {table} ({columns_str}) values {values_str}'
 
         with self.db_config.get_session() as session:
             try:
@@ -314,23 +304,23 @@ class DBTools:
 
             except Exception as e:
                 session.rollback()
-                log.error(f"批量插入失败: {sql}, 错误: {str(e)}")
+                log.error(f'批量插入失败：{sql}, 错误：{str(e)}')
                 raise
 
     def execute_sql(self, sql: str, params: Optional[Dict[str, Any]] = None) -> Union[List[Dict[str, Any]], int]:
         """
-        执行原生SQL（支持查询和写操作）
+        执行原生 SQL（支持查询和写操作）
         :param sql: MySQL SQL语句
         :param params: 查询参数
         :return: 查询结果列表（字典格式）或受影响的行数
         """
-        # 判断SQL类型（大写处理，去除前导空格）
+        # 判断 SQL 类型（大写处理，去除前导空格）
         sql_type = sql.lstrip().upper().split()[0]
 
-        # 对于SELECT查询，调用query方法
-        if sql_type == "SELECT":
+        # 对于 SELECT 查询，调用 query 方法
+        if sql_type == 'SELECT':
             return self.query(sql, params)
-        # 对于写操作，调用execute方法
+        # 对于写操作，调用 execute 方法
         else:
             return self.execute(sql, params)
 
@@ -349,78 +339,79 @@ class DBTools:
                     session.commit()
 
                     affected_rows = result_proxy.rowcount
-                    log.debug(f"成功执行写操作SQL: {sql}, 影响行数: {affected_rows}")
+                    log.debug(f'成功执行写操作SQL: {sql}, 影响行数：{affected_rows}')
                     return affected_rows
 
             except Exception as e:
                 session.rollback()
-                log.error(f"执行写操作SQL失败: {sql}, 错误: {str(e)}")
+                log.error(f'执行写操作SQL 失败：{sql}, 错误：{str(e)}')
                 raise
 
 
 if __name__ == '__main__':
-    # 初始化MySQL数据库
+    # 初始化 MySQL 数据库
     db_config = DBConfig(
-        host="192.168.140.128",
+        host='192.168.140.128',
         port=3306,
-        user="root",
-        password="123456",
-        database="db_demo"
+        user='root',
+        password='123456',
+        database='db_demo'
     )
 
     # 获取数据库工具类
     db = DBTools(db_config)
 
-    # 示例：使用DBTools（无需定义实体类）
+    # 示例：使用 DBTools（无需定义实体类）
 
     # 查询用户
-    users = db.query("SELECT * FROM user WHERE age > :min_age LIMIT 10", {"min_age": 18})
+    users = db.query('select * from user where age > :min_age limit 10', {'min_age': 18})
     for user in users:
-        print(f"用户ID: {user['id']}, 用户名: {user['username']}")
+        print(f'用户 ID: {user["id"]}, 用户名：{user["username"]}')
 
-    # 通过ID查询用户
-    user = db.get_by_id("user", "id", 1)
+    # 通过 ID 查询用户
+    user = db.get_by_id('user', 'id', 1)
     if user:
-        print(f"查询到用户: {user['username']}, 邮箱: {user['email']}")
+        print(f'查询到用户：{user["username"]}, 邮箱：{user["email"]}')
 
     # 按条件筛选用户
-    users_by_age = db.filter("user", {"age": 25})
-    print(f"25岁的用户有 {len(users_by_age)} 个")
+    users_by_age = db.filter('user', {'age': 25})
+    print(f'25 岁的用户有 {len(users_by_age)} 个')
 
     # 插入用户
-    new_user_id = db.insert("user", {
-        "username": "王五",
-        "age": 28,
-        "password": "hashed_password",
-        "phone": "13900139000",
-        "email": "wangwu@example.com",
-        "avatar": "/avatars/default.png",
-        "created_at": datetime.now(),
-        "updated_at": datetime.now()
+    new_user_id = db.insert('user', {
+        'username': '王五',
+        'age': 28,
+        'password': 'hashed_password',
+        'phone': '13900139000',
+        'email': 'wangwu@example.com',
+        'avatar': '/avatars/default.png',
+        'created_at': datetime.now(),
+        'updated_at': datetime.now()
     })
-    print(f"新插入用户ID: {new_user_id}")
+    print(f'新插入用户 ID: {new_user_id}')
 
     # 更新用户
-    affected = db.update("user", "id", 1, {
-        "username": "张三（已更新）",
-        "updated_at": datetime.now()
+    affected = db.update('user', 'id', 1, {
+        'username': '张三（已更新）',
+        'updated_at': datetime.now()
     })
-    print(f"更新影响行数: {affected}")
+    print(f'更新影响行数：{affected}')
 
     # 删除用户
-    # db.delete("user", "id", 3)
+    # db.delete('user', 'id', 3)
 
     # 批量插入
     # batch_data = [
-    #     {"username": "批量1", "age": 20, "password": "pwd1", "phone": "13800001", "email": "batch1@example.com", "avatar": "/default.png", "created_at": datetime.now(), "updated_at": datetime.now()},
-    #     {"username": "批量2", "age": 21, "password": "pwd2", "phone": "13800002", "email": "batch2@example.com", "avatar": "/default.png", "created_at": datetime.now(), "updated_at": datetime.now()}
+    #     {'username': '批量 1', 'age': 20, 'password': 'pwd1', 'phone': '13800001', 'email': 'batch1@example.com', 'avatar': '/default.png', 'created_at': datetime.now(), 'updated_at': datetime.now()},
+    #     {'username': '批量 2', 'age': 21, 'password': 'pwd2', 'phone': '13800002', 'email': 'batch2@example.com', 'avatar': '/default.png', 'created_at': datetime.now(), 'updated_at': datetime.now()}
     # ]
-    # db.batch_insert("user", batch_data)
+    # db.batch_insert('user', batch_data)
 
-    # 使用原生SQL查询
+    # 使用原生 SQL 查询
     results = db.execute_sql(
-        "SELECT * FROM user WHERE username LIKE :name AND deleted_at IS NULL",
-        {"name": "%张%"}
+        'select * from user where username like :name and deleted_at is null',
+        {'name': '%张%'}
     )
     for user in results:
-        print(f"用户ID: {user['id']}, 用户名: {user['username']}, 邮箱: {user['email']}")
+        print(f'用户 ID: {user["id"]}, 用户名：{user["username"]}, 邮箱：{user["email"]}')
+

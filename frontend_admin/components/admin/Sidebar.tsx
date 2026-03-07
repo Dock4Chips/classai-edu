@@ -145,16 +145,18 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
         router.push('/admin/dashboard');
     };
 
-    const handleLogout = async () => {
-        const results = await IdentityService.logout()
-        if (results.code === 200) {
-            apiClient.clearToken()
-            router.push('/identity');
-            notification.success(results.data);
-            return;
-        }
-        notification.error(results.data)
-
+    const handleLogout = () => {
+        IdentityService.logout().then((results) => {
+            if (results.code === 200) {
+                apiClient.clearToken();
+                router.push('/identity');
+                notification.success(results.data);
+                return;
+            }
+            notification.error(results.data);
+        }).catch((error) => {
+            notification.error(error?.message);
+        });
     };
 
     return (

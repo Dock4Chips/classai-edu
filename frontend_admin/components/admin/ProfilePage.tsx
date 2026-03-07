@@ -18,17 +18,21 @@ export default function ProfilePage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    void fetchUserInfo();
+    fetchUserInfo();
   }, []);
 
-  const fetchUserInfo = async () => {
+  const fetchUserInfo = () => {
     setLoading(true);
-    const result = await IdentityService.getCurrentUser();
-    if (result?.code === 200 && result?.data) {
-      setUserInfo(result.data);
-      setOriginalUserInfo(result.data);
-    }
-    setLoading(false);
+    IdentityService.getCurrentUser().then((result) => {
+      if (result?.code === 200 && result?.data) {
+        setUserInfo(result.data);
+        setOriginalUserInfo(result.data);
+      }
+    }).catch((error) => {
+      notification.error(error?.message);
+    }).finally(() => {
+      setLoading(false);
+    });
   };
 
   const formFields: FormFieldConfig[] = [
@@ -84,7 +88,7 @@ export default function ProfilePage() {
     },
   ];
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!userInfo?.user_id) return;
 
     // Only send changed fields
@@ -104,40 +108,40 @@ export default function ProfilePage() {
     }
 
     setSaving(true);
-    const results = await UserService.updateUser(userInfo.user_id, data);
-    if (results.code === 200) {
-      notification.success('Profile updated successfully');
-      setOriginalUserInfo({ ...userInfo });
+    UserService.updateUser(userInfo.user_id, data).then((results) => {
+      if (results.code === 200) {
+        notification.success('Profile updated successfully');
+        setOriginalUserInfo({ ...userInfo });
+      }
+    }).catch((error) => {
+      notification.error(error?.message);
+    }).finally(() => {
       setSaving(false);
-      return;
-    }
-    notification.error(results.msg);
-    setSaving(false);
+    });
   };
 
   const handleAvatarClick = () => {
     fileInputRef.current?.click();
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     setUploadingAvatar(true);
-    const result = await UserService.uploadAvatar(file);
-
-    if (result.code === 200) {
-      notification.success(result.data);
+    UserService.uploadAvatar(file).then((result) => {
+      if (result.code === 200) {
+        notification.success(result.data);
+      }
+    }).catch((error) => {
+      notification.error(error?.message);
+    }).finally(() => {
       setUploadingAvatar(false);
-      return;
-    }
 
-    notification.error(result.msg);
-    setUploadingAvatar(false);
-
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    });
   };
 
   return (

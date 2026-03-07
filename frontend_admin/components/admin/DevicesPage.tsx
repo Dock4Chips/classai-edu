@@ -182,7 +182,7 @@ export default function DevicesPage() {
     const setCurrentForm = isEditMode ? setUpdateForm : setAddForm;
 
     useEffect(() => {
-        void fetchDevices();
+        fetchDevices();
     }, [queryParams.current]);
 
     /** 监听连接类型变化，清理不相关字段 */
@@ -204,35 +204,44 @@ export default function DevicesPage() {
     }, [isEditMode ? updateForm.connection_type : addForm.connection_type, isEditMode]);
 
     /** 获取设备列表 */
-    const fetchDevices = async () => {
+    const fetchDevices = () => {
         setLoading(true);
         const params = {
             page: queryParams.current,
             page_size: queryParams.pageSize,
         };
-        const results = await DeviceService.getDeviceList(params);
-        if (results.code === 200) {
-            setDevices(results.data.records || []);
-            setQueryParams(prev => ({
-                ...prev,
-                total: results.data.total,
-            }));
-        }
-        setLoading(false);
+        DeviceService.getDeviceList(params).then((results) => {
+            if (results.code === 200) {
+                setDevices(results.data.records || []);
+                setQueryParams(prev => ({
+                    ...prev,
+                    total: results.data.total,
+                }));
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     /** 删除 */
-    const handleDelete = async (deviceId: number) => {
-        const confirmed = await confirm.danger('Are you sure you want to delete this device?');
-        if (!confirmed) return;
+    const handleDelete = (deviceId: number) => {
+        confirm.danger('Are you sure you want to delete this device?').then((confirmed) => {
+            if (!confirmed) return;
 
-        setLoading(true);
-        const results = await DeviceService.deleteDevice(deviceId);
-        if (results.code === 200) {
-            notification.success('Deleted successfully');
-            void fetchDevices();
-        }
-        setLoading(false);
+            setLoading(true);
+            return DeviceService.deleteDevice(deviceId);
+        }).then((results) => {
+            if (results?.code === 200) {
+                notification.success('Deleted successfully');
+                return fetchDevices();
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     /** 打开新增 */
@@ -265,7 +274,7 @@ export default function DevicesPage() {
     };
 
     /** 新增保存 */
-    const handleSaveAdd = async () => {
+    const handleSaveAdd = () => {
         const currentFields = getAddFormFields();
         const data = Object.fromEntries(
             currentFields.map((f: FormFieldConfig) => [f.key, addForm[f.key]])
@@ -277,19 +286,21 @@ export default function DevicesPage() {
         }
 
         setLoading(true);
-        const results = await DeviceService.createDevice(data);
-        if (results.code === 200) {
-            notification.success('Created successfully');
-            setModalOpen(false);
-            void fetchDevices();
-            return;
-        }
-        notification.error(results.msg);
-        setLoading(false);
+        DeviceService.createDevice(data).then((results) => {
+            if (results.code === 200) {
+                notification.success('Created successfully');
+                setModalOpen(false);
+                return fetchDevices();
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     /** 编辑保存 - 只发送修改过的字段 */
-    const handleSaveUpdate = async () => {
+    const handleSaveUpdate = () => {
         if (!updateForm.device_id) return;
 
         const currentFields = getUpdateFormFields();
@@ -311,15 +322,17 @@ export default function DevicesPage() {
         }
 
         setLoading(true);
-        const results = await DeviceService.updateDevice(updateForm.device_id, data);
-        if (results.code === 200) {
-            notification.success('Updated successfully');
-            setModalOpen(false);
-            void fetchDevices();
-            return;
-        }
-        notification.error(results.msg);
-        setLoading(false);
+        DeviceService.updateDevice(updateForm.device_id, data).then((results) => {
+            if (results.code === 200) {
+                notification.success('Updated successfully');
+                setModalOpen(false);
+                return fetchDevices();
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     /** 获取设备类型标签 */

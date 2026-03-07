@@ -24,47 +24,53 @@ export default function MonitorPage() {
 
   useEffect(() => {
     if (activeTab === 'logs') {
-      void fetchLoginLogs();
+      fetchLoginLogs();
     } else {
-      void fetchOnlineUsers();
+      fetchOnlineUsers();
     }
   }, [queryParams.current, activeTab]);
 
   /** 获取登录日志 */
-  const fetchLoginLogs = async () => {
+  const fetchLoginLogs = () => {
     setLoading(true);
-    const result = await MonitorService.getLoginLogList({
+    MonitorService.getLoginLogList({
       page: queryParams.current,
       page_size: queryParams.pageSize,
+    }).then((result) => {
+      if (result?.data) {
+        setLoginLogs(result.data.records || []);
+        setQueryParams(prev => ({
+          ...prev,
+          total: result.data.total || 0,
+        }));
+      }
+    }).catch((error) => {
+      notification.error(error?.message);
+    }).finally(() => {
+      setLoading(false);
     });
-
-    if (result?.data) {
-      setLoginLogs(result.data.records || []);
-      setQueryParams(prev => ({
-        ...prev,
-        total: result.data.total || 0,
-      }));
-    }
-    setLoading(false);
   };
 
   /** 获取在线用户 */
-  const fetchOnlineUsers = async () => {
+  const fetchOnlineUsers = () => {
     setLoading(true);
-    const result = await MonitorService.getOnlineUserList({
+    MonitorService.getOnlineUserList({
       page: queryParams.current,
       page_size: queryParams.pageSize,
       status:'on_line'
+    }).then((result) => {
+      if (result?.data) {
+        setOnlineUsers(result.data.records || []);
+        setQueryParams(prev => ({
+          ...prev,
+          total: result.data.total || 0,
+        }));
+      }
+    }).catch((error) => {
+      notification.error(error?.message);
+    }).finally(() => {
+      setLoading(false);
     });
-
-    if (result?.data) {
-      setOnlineUsers(result.data.records || []);
-      setQueryParams(prev => ({
-        ...prev,
-        total: result.data.total || 0,
-      }));
-    }
-    setLoading(false);
   };
 
   const logColumns: Column<any>[] = [
