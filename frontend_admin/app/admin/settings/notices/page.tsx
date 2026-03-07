@@ -1,4 +1,4 @@
-import NoticesPage from '@/components/admin/NoticesPage';
+import NoticesPage from '@/components/NoticesPage';
 
 export default function Notices() {
   return <NoticesPage />;

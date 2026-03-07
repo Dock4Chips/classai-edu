@@ -1,4 +1,4 @@
-import DevicesPage from '@/components/admin/DevicesPage';
+import DevicesPage from '@/components/DevicesPage';
 
 export default function Page() {
     return <DevicesPage />;

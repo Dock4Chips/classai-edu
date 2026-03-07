@@ -1,4 +1,4 @@
-import ModelsPage from '@/components/admin/ModelsPage';
+import ModelsPage from '@/components/ModelsPage';
 
 export default function Page() {
     return <ModelsPage />;
