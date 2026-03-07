@@ -1,4 +1,4 @@
-import BannersPage from '@/components/admin/BannersPage';
+import BannersPage from '@/components/BannersPage';
 
 export default function Banners() {
   return <BannersPage />;
