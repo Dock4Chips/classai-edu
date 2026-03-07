@@ -19,7 +19,7 @@ interface SettingsModalProps {
     onRefresh?: () => void;
 }
 
-export function SettingsModal({isOpen, onClose, onRefresh}: SettingsModalProps) {
+export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsModalProps) {
     const [tab, setTab] = useState<'model' | 'device'>('model');
 
     // Model 数据
@@ -201,44 +201,58 @@ export function SettingsModal({isOpen, onClose, onRefresh}: SettingsModalProps) 
         }
     }, [isDeviceEditMode ? updateDeviceForm.connection_type : addDeviceForm.connection_type, isDeviceEditMode]);
 
-    const fetchModels = async () => {
+    const fetchModels = () => {
         setModelsLoading(true);
-        const results = await ModelConfigService.getModelList(
+        ModelConfigService.getModelList(
             Number(modelQueryParams.current),
             Number(modelQueryParams.pageSize)
-        );
-        if (results.code === 200) {
-            setModels(results.data.records || []);
-            setModelQueryParams(prev => ({...prev, total: results.data.total}));
-        }
-        setModelsLoading(false);
+        ).then((results) => {
+            if (results.code === 200) {
+                setModels(results.data.records || []);
+                setModelQueryParams(prev => ({...prev, total: results.data.total}));
+            }
+        }).catch((error) => {
+            console.error('Failed to fetch models:', error);
+        }).finally(() => {
+            setModelsLoading(false);
+        });
     };
 
-    const fetchDevices = async () => {
+    const fetchDevices = () => {
         setDevicesLoading(true);
-        const results = await DeviceService.getDeviceList(
+        DeviceService.getDeviceList(
             Number(deviceQueryParams.current),
             Number(deviceQueryParams.pageSize)
-        );
-        if (results.code === 200) {
-            setDevices(results.data.records || []);
-            setDeviceQueryParams(prev => ({...prev, total: results.data.total}));
-        }
-        setDevicesLoading(false);
+        ).then((results) => {
+            if (results.code === 200) {
+                setDevices(results.data.records || []);
+                setDeviceQueryParams(prev => ({...prev, total: results.data.total}));
+            }
+        }).catch((error) => {
+            console.error('Failed to fetch devices:', error);
+        }).finally(() => {
+            setDevicesLoading(false);
+        });
     };
 
-    const handleDeleteDevice = async (deviceId: number) => {
-        const confirmed = await confirm.danger('Are you sure you want to delete this device?');
-        if (!confirmed) return;
+    const handleDeleteDevice = (deviceId: number) => {
+        confirm.danger('Are you sure you want to delete this device?').then((confirmed) => {
+            if (!confirmed) return;
 
-        setDevicesLoading(true);
-        const results = await DeviceService.deleteDevice(deviceId);
-        if (results.code === 200) {
-            notification.success('Deleted successfully');
-            void fetchDevices();
-            onRefresh?.(); // 刷新父组件数据
-        }
-        setDevicesLoading(false);
+            setDevicesLoading(true);
+            return DeviceService.deleteDevice(deviceId);
+        }).then((results) => {
+            if (results?.code === 200) {
+                notification.success('Deleted successfully');
+                fetchDevices();
+                onRefresh?.();
+            }
+        }).catch((error) => {
+            console.error('Failed to delete device:', error);
+            notification.error('Failed to delete device');
+        }).finally(() => {
+            setDevicesLoading(false);
+        });
     };
 
     const handleAddDevice = () => {
@@ -268,7 +282,7 @@ export function SettingsModal({isOpen, onClose, onRefresh}: SettingsModalProps) 
         setDeviceModalOpen(true);
     };
 
-    const handleSaveAddDevice = async () => {
+    const handleSaveAddDevice = () => {
         const data = Object.fromEntries(
             getAddDeviceFields().map(f => [f.key, addDeviceForm[f.key]])
         );
@@ -278,19 +292,24 @@ export function SettingsModal({isOpen, onClose, onRefresh}: SettingsModalProps) 
         }
 
         setDevicesLoading(true);
-        const results = await DeviceService.createDevice(data);
-        if (results.code === 200) {
-            notification.success('Created successfully');
-            setDeviceModalOpen(false);
-            void fetchDevices();
-            onRefresh?.(); // 刷新父组件数据
-            return;
-        }
-        notification.error(results.msg);
-        setDevicesLoading(false);
+        DeviceService.createDevice(data).then((results) => {
+            if (results.code === 200) {
+                notification.success('Created successfully');
+                setDeviceModalOpen(false);
+                fetchDevices();
+                onRefresh?.();
+                return;
+            }
+            notification.error(results.msg);
+        }).catch((error) => {
+            console.error('Failed to create device:', error);
+            notification.error('Failed to create device');
+        }).finally(() => {
+            setDevicesLoading(false);
+        });
     };
 
-    const handleSaveUpdateDevice = async () => {
+    const handleSaveUpdateDevice = () => {
         if (!updateDeviceForm.device_id) return;
 
         const changedFields = getUpdateDeviceFields()
@@ -308,16 +327,21 @@ export function SettingsModal({isOpen, onClose, onRefresh}: SettingsModalProps) 
         }
 
         setDevicesLoading(true);
-        const results = await DeviceService.updateDevice(updateDeviceForm.device_id, data);
-        if (results.code === 200) {
-            notification.success('Updated successfully');
-            setDeviceModalOpen(false);
-            void fetchDevices();
-            onRefresh?.(); // 刷新父组件数据
-            return;
-        }
-        notification.error(results.msg);
-        setDevicesLoading(false);
+        DeviceService.updateDevice(updateDeviceForm.device_id, data).then((results) => {
+            if (results.code === 200) {
+                notification.success('Updated successfully');
+                setDeviceModalOpen(false);
+                fetchDevices();
+                onRefresh?.();
+                return;
+            }
+            notification.error(results.msg);
+        }).catch((error) => {
+            console.error('Failed to update device:', error);
+            notification.error('Failed to update device');
+        }).finally(() => {
+            setDevicesLoading(false);
+        });
     };
 
     const getDeviceTypeBadge = (type: number) => {

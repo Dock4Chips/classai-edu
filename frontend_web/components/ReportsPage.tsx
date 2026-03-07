@@ -182,25 +182,30 @@ export default function ReportsPage() {
     }
   };
 
-  const handlePreview = async (report: typeof reportsData[0]) => {
-    try {
-      const fileMap = {
-        'box-curves': '/metrics/box_curves.json',
-        'confusion-matrix': '/metrics/confusion_matrix.json',
-        'results': '/metrics/results.json'
-      };
+  const handlePreview = (report: typeof reportsData[0]) => {
+    const fileMap = {
+      'box-curves': '/metrics/box_curves.json',
+      'confusion-matrix': '/metrics/confusion_matrix.json',
+      'results': '/metrics/results.json'
+    };
 
-      const response = await fetch(fileMap[report.downloadKey as keyof typeof fileMap]);
-      const data = await response.json();
-
-      setPreviewModal({
-        isOpen: true,
-        title: report.title,
-        data
+    fetch(fileMap[report.downloadKey as keyof typeof fileMap])
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error('Failed to load JSON');
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setPreviewModal({
+          isOpen: true,
+          title: report.title,
+          data
+        });
+      })
+      .catch((error) => {
+        console.error('Failed to load JSON:', error);
       });
-    } catch (error) {
-      console.error('Failed to load JSON:', error);
-    }
   };
 
   return (

@@ -44,70 +44,86 @@ export default function Navigation() {
     const [loadingNotices, setLoadingNotices] = useState(false);
 
     useEffect(() => {
-        void fetchUserInfo();
-        void fetchNotices();
+        fetchUserInfo();
+        fetchNotices();
     }, []);
 
-    const fetchUserInfo = async () => {
-        const result = await IdentityService.getCurrentUser();
-        if (result.code === 200 && result.data) {
-            setUserInfo(result.data);
-        }
+    const fetchUserInfo = () => {
+        IdentityService.getCurrentUser().then((result) => {
+            if (result.code === 200 && result.data) {
+                setUserInfo(result.data);
+            }
+        }).catch((error) => {
+            console.error('Failed to fetch user info:', error);
+        });
     };
 
-    const fetchNotices = async () => {
-        const result = await NoticeService.getNoticeListWithReadStatus({ page: 1, page_size: 10 });
-        if (result?.data) {
-            const noticeList = result.data.records || result.data || [];
-            setNotices(noticeList);
-            setUnreadCount(noticeList.filter((n: any) => !n.is_read).length);
-        }
+    const fetchNotices = () => {
+        NoticeService.getNoticeListWithReadStatus({ page: 1, page_size: 10 }).then((result) => {
+            if (result?.data) {
+                const noticeList = result.data.records || result.data || [];
+                setNotices(noticeList);
+                setUnreadCount(noticeList.filter((n: any) => !n.is_read).length);
+            }
+        }).catch((error) => {
+            console.error('Failed to fetch notices:', error);
+        });
     };
 
-    const fetchAllNotices = async (page: number) => {
+    const fetchAllNotices = (page: number) => {
         setLoadingNotices(true);
-        const result = await NoticeService.getNoticeList({
+        NoticeService.getNoticeList({
             page,
             page_size: pageSize,
+        }).then((result) => {
+            if (result?.data) {
+                const noticeList = result.data.records || result.data || [];
+                setAllNotices(noticeList);
+                setTotal(result.data.total || noticeList.length);
+            }
+        }).catch((error) => {
+            console.error('Failed to fetch all notices:', error);
+        }).finally(() => {
+            setLoadingNotices(false);
         });
-        if (result?.data) {
-            const noticeList = result.data.records || result.data || [];
-            setAllNotices(noticeList);
-            setTotal(result.data.total || noticeList.length);
-        }
-        setLoadingNotices(false);
     };
 
     const handleOpenNoticeList = () => {
         setNoticeListModalOpen(true);
         setNotificationOpen(false);
         setCurrentPage(1);
-        void fetchAllNotices(1);
+        fetchAllNotices(1);
     };
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
-        void fetchAllNotices(page);
+        fetchAllNotices(page);
     };
 
-    const handleViewNotice = async (notice: any) => {
+    const handleViewNotice = (notice: any) => {
         setViewingNotice(notice);
         setNoticeModalOpen(true);
         setNotificationOpen(false);
 
         // 标记为已读
         if (!notice.is_read) {
-            await NoticeService.markAsRead(notice.notice_id);
-            await fetchNotices();
+            NoticeService.markAsRead(notice.notice_id).then(() => {
+                return fetchNotices();
+            }).catch((error) => {
+                console.error('Failed to mark as read:', error);
+            });
         }
     };
 
-    const handleLogout = async () => {
-        const result = await IdentityService.logout();
-        if (result.code === 200) {
-            apiClient.clearToken();
-            router.push('/identity');
-        }
+    const handleLogout = () => {
+        IdentityService.logout().then((result) => {
+            if (result.code === 200) {
+                apiClient.clearToken();
+                router.push('/identity');
+            }
+        }).catch((error) => {
+            console.error('Logout failed:', error);
+        });
     };
 
     const getActivePage = () => {

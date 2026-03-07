@@ -76,28 +76,26 @@ export default function DashboardPage() {
     void loadTrainingMetrics()
   }, []);
 
-  const loadTrainingMetrics = async () => {
-    try {
-      const [resultsRes, curvesRes, matrixRes] = await Promise.all([
-        fetch('/metrics/results.json'),
-        fetch('/metrics/box_curves.json'),
-        fetch('/metrics/confusion_matrix.json')
-      ]);
-
-      const [resultsData, curvesData, matrixData] = await Promise.all([
+  const loadTrainingMetrics = () => {
+    Promise.all([
+      fetch('/metrics/results.json'),
+      fetch('/metrics/box_curves.json'),
+      fetch('/metrics/confusion_matrix.json')
+    ]).then(([resultsRes, curvesRes, matrixRes]) => {
+      return Promise.all([
         resultsRes.json(),
         curvesRes.json(),
         matrixRes.json()
       ]);
-
+    }).then(([resultsData, curvesData, matrixData]) => {
       setResults(resultsData);
       setBoxCurves(curvesData);
       setConfusionMatrix(matrixData);
-    } catch (error) {
+    }).catch((error) => {
       console.error('Failed to load training metrics:', error);
-    } finally {
+    }).finally(() => {
       setMetricsLoading(false);
-    }
+    });
   };
 
   const CustomTooltip = ({ active, payload, label }: any) => {

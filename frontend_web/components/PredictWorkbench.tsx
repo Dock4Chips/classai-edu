@@ -28,7 +28,7 @@ import {
 } from '@/components/detection/workbench';
 import {FileInput} from '@/components/detection/input';
 import {DetectionList} from '@/components/detection/output';
-import {SettingsModal} from '@/components/SettingsModal';
+import {DeviceModelSettingModal} from '@/components/DeviceModelSettingModal';
 import {DetectionTaskService, DetectionTaskType} from '@/lib/service/detection_task';
 import {ModelConfigService} from '@/lib/service/model_config';
 import {DeviceService} from '@/lib/service/device';
@@ -745,7 +745,7 @@ export default function PredictWorkbench() {
             </ControlBar>
 
             {/* 设置 Modal */}
-            <SettingsModal
+            <DeviceModelSettingModal
                 isOpen={settingsOpen}
                 onClose={() => setSettingsOpen(false)}
                 onRefresh={() => {
