@@ -96,7 +96,7 @@ export function VideoSourceSelector({ value, onChange, disabled = false }: Video
 
   // 加载设备列表
   useEffect(() => {
-    void fetchDevices();
+    fetchDevices();
   }, []);
 
   // 当手动输入改变时，更新值
@@ -121,10 +121,9 @@ export function VideoSourceSelector({ value, onChange, disabled = false }: Video
     }
   }, [selectedDeviceId, mode, devices]);
 
-  const fetchDevices = async () => {
+  const fetchDevices = () => {
     setLoading(true);
-    try {
-      const results = await DeviceService.getDeviceList({ page: 1, page_size: 100 });
+    DeviceService.getDeviceList({ page: 1, page_size: 100 }).then((results) => {
       if (results.code === 200) {
         const allDevices = results.data.records || [];
         // 只显示已启用的在线设备
@@ -143,10 +142,11 @@ export function VideoSourceSelector({ value, onChange, disabled = false }: Video
           }
         }
       }
-    } catch (error) {
+    }).catch((error) => {
       notification.error('Failed to load devices');
-    }
-    setLoading(false);
+    }).finally(() => {
+      setLoading(false);
+    });
   };
 
   const handleModeChange = (newMode: SourceMode) => {

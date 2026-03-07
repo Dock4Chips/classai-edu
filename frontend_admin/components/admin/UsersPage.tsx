@@ -136,11 +136,11 @@ export default function UsersPage() {
     const setCurrentForm = isEditMode ? setUpdateForm : setAddForm;
 
     useEffect(() => {
-        void fetchUsers();
+        fetchUsers();
     }, [queryParams.current, queryParams.user_name, queryParams.email]);
 
     /** 获取用户列表 */
-    const fetchUsers = async () => {
+    const fetchUsers = () => {
         setLoading(true);
         const params = buildParams({
             page: Number(queryParams.current),
@@ -148,29 +148,38 @@ export default function UsersPage() {
             user_name: queryParams.user_name,
             email: queryParams.email,
         });
-        const results = await UserService.getUserList(params);
-        if (results.code === 200) {
-            setUsers(results.data.records || []);
-            setQueryParams(prev => ({
-                ...prev,
-                total: results.data.total,
-            }));
-        }
-        setLoading(false);
+        UserService.getUserList(params).then((results) => {
+            if (results.code === 200) {
+                setUsers(results.data.records || []);
+                setQueryParams(prev => ({
+                    ...prev,
+                    total: results.data.total,
+                }));
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     /** 删除 */
-    const handleDelete = async (userId: number) => {
-        const confirmed = await confirm.danger('Are you sure you want to delete this user?');
-        if (!confirmed) return;
+    const handleDelete = (userId: number) => {
+        confirm.danger('Are you sure you want to delete this user?').then((confirmed) => {
+            if (!confirmed) return;
 
-        setLoading(true);
-        const results = await UserService.deleteUser(userId);
-        if (results.code === 200) {
-            notification.success('Deleted successfully');
-            void fetchUsers();
-        }
-        setLoading(false);
+            setLoading(true);
+            return UserService.deleteUser(userId);
+        }).then((results) => {
+            if (results?.code === 200) {
+                notification.success('Deleted successfully');
+                return fetchUsers();
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     /** 打开新增 */
@@ -201,25 +210,27 @@ export default function UsersPage() {
     };
 
     /** 新增保存 */
-    const handleSaveAdd = async () => {
+    const handleSaveAdd = () => {
         const data = Object.fromEntries(
             addFormFields.map(f => [f.key, addForm[f.key]])
         );
 
         setLoading(true);
-        const results = await UserService.createUser(data);
-        if (results.code === 200) {
-            notification.success('Created successfully');
-            setModalOpen(false);
-            void fetchUsers();
-            return;
-        }
-        notification.error(results.msg);
-        setLoading(false);
+        UserService.createUser(data).then((results) => {
+            if (results.code === 200) {
+                notification.success('Created successfully');
+                setModalOpen(false);
+                return fetchUsers();
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     /** 编辑保存 - 只发送修改过的字段 */
-    const handleSaveUpdate = async () => {
+    const handleSaveUpdate = () => {
         if (!updateForm.user_id) return;
 
         // 只包含修改过的字段（对比原始数据）
@@ -234,15 +245,17 @@ export default function UsersPage() {
         const data = Object.fromEntries(changedFields);
 
         setLoading(true);
-        const results = await UserService.updateUser(updateForm.user_id, data);
-        if (results.code === 200) {
-            notification.success('Updated successfully');
-            setModalOpen(false);
-            void fetchUsers();
-            return;
-        }
-        notification.error(results.msg);
-        setLoading(false);
+        UserService.updateUser(updateForm.user_id, data).then((results) => {
+            if (results.code === 200) {
+                notification.success('Updated successfully');
+                setModalOpen(false);
+                return fetchUsers();
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     const columns: Column<any>[] = [

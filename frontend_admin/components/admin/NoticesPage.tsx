@@ -74,31 +74,38 @@ export default function NoticesPage() {
   const [form, setForm] = useState<Results>(() => getEmptyForm(formFields));
 
   useEffect(() => {
-    void fetchNotices();
+    fetchNotices();
   }, []);
 
-  const fetchNotices = async () => {
+  const fetchNotices = () => {
     setLoading(true);
-    const result = await NoticeService.getNoticeListWithReadStatus({ page: 1, page_size: 100 });
-    if (result?.data) {
-      setNotices(result.data.records || result.data || []);
-    }
-    setLoading(false);
+    NoticeService.getNoticeListWithReadStatus({ page: 1, page_size: 100 }).then((result) => {
+      if (result?.data) {
+        setNotices(result.data.records || result.data || []);
+      }
+    }).catch((error) => {
+      notification.error(error?.message);
+    }).finally(() => {
+      setLoading(false);
+    });
   };
 
-  const handleDelete = async (id: number) => {
-    const confirmed = await confirm.danger('Are you sure you want to delete this notice?');
-    if (!confirmed) return;
+  const handleDelete = (id: number) => {
+    confirm.danger('Are you sure you want to delete this notice?').then((confirmed) => {
+      if (!confirmed) return;
 
-    setLoading(true);
-    const results = await NoticeService.deleteNotice(id);
-    if (results.code === 200) {
-      notification.success('Deleted successfully');
-      void fetchNotices();
-    } else {
-      notification.error(results.msg);
-    }
-    setLoading(false);
+      setLoading(true);
+      return NoticeService.deleteNotice(id);
+    }).then((results) => {
+      if (results?.code === 200) {
+        notification.success('Deleted successfully');
+        return fetchNotices();
+      }
+    }).catch((error) => {
+      notification.error(error?.message);
+    }).finally(() => {
+      setLoading(false);
+    });
   };
 
   const handleAdd = () => {
@@ -126,23 +133,26 @@ export default function NoticesPage() {
     setModalOpen(true);
   };
 
-  const handleView = async (notice: any) => {
+  const handleView = (notice: any) => {
     setViewingNotice(notice);
     setViewModalOpen(true);
 
     // 标记为已读
     if (!notice.is_read) {
-      await NoticeService.markAsRead(notice.notice_id);
-      // 更新本地状态
-      setNotices(prev =>
-        prev.map(n =>
-          n.notice_id === notice.notice_id ? { ...n, is_read: 1 } : n
-        )
-      );
+      NoticeService.markAsRead(notice.notice_id).then(() => {
+        // 更新本地状态
+        setNotices(prev =>
+          prev.map(n =>
+            n.notice_id === notice.notice_id ? { ...n, is_read: 1 } : n
+          )
+        );
+      }).catch((error) => {
+        notification.error(error?.message);
+      });
     }
   };
 
-  const handleSaveAdd = async () => {
+  const handleSaveAdd = () => {
     if (!form.notice_title || !form.notice_content) {
       notification.error('Please fill in all required fields');
       return;
@@ -153,19 +163,20 @@ export default function NoticesPage() {
     );
 
     setLoading(true);
-    const results = await NoticeService.createNotice(data);
-    if (results.code === 200) {
-      notification.success('Created successfully');
-      setModalOpen(false);
-      void fetchNotices();
+    NoticeService.createNotice(data).then((results) => {
+      if (results.code === 200) {
+        notification.success('Created successfully');
+        setModalOpen(false);
+        return fetchNotices();
+      }
+    }).catch((error) => {
+      notification.error(error?.message);
+    }).finally(() => {
       setLoading(false);
-      return;
-    }
-    notification.error(results.msg);
-    setLoading(false);
+    });
   };
 
-  const handleSaveUpdate = async () => {
+  const handleSaveUpdate = () => {
     if (!originalNoticeData?.notice_id) return;
 
     // 只包含修改过的字段
@@ -185,16 +196,17 @@ export default function NoticesPage() {
     }
 
     setLoading(true);
-    const results = await NoticeService.updateNotice(originalNoticeData.notice_id, data);
-    if (results.code === 200) {
-      notification.success('Updated successfully');
-      setModalOpen(false);
-      void fetchNotices();
+    NoticeService.updateNotice(originalNoticeData.notice_id, data).then((results) => {
+      if (results.code === 200) {
+        notification.success('Updated successfully');
+        setModalOpen(false);
+        return fetchNotices();
+      }
+    }).catch((error) => {
+      notification.error(error?.message);
+    }).finally(() => {
       setLoading(false);
-      return;
-    }
-    notification.error(results.msg);
-    setLoading(false);
+    });
   };
 
   const columns: Column<any>[] = [

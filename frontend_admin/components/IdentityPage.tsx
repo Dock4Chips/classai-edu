@@ -24,52 +24,60 @@ export default function IdentityPage() {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        void fetchCaptchaImage();
+        fetchCaptchaImage();
     }, []);
 
-    const fetchCaptchaImage = async () => {
-        const results = await IdentityService.captchaImage();
-        if (results.code === 200) {
-            setCaptchaImage(results.data.image);
-            setUuidImg(results.data.uuid_img);
-            return;
-        }
-        notification.error(results.msg);
+
+    const fetchCaptchaImage = () => {
+        IdentityService.captchaImage().then((res) => {
+            if (res.code === 200) {
+                setCaptchaImage(res.data.image);
+                setUuidImg(res.data.uuid_img);
+                return;
+            }
+            notification.error(res.msg);
+        }).catch((error) => {
+            notification.error(error?.message);
+        });
     };
 
-    const handleLogin = async () => {
+
+    const handleLogin = () => {
         setIsLoading(true);
-        const results = await IdentityService.login(LoginType.PASSWORD, username, password, captcha, uuidImg);
-        setIsLoading(false);
-        if (results.code === 200) {
-            apiClient.setToken(results.data.token);
-            router.push(redirect);
-            notification.success(results.msg)
-            return
-        }
-        // 登录失败，刷新验证码
-        setCaptcha('');
-        void fetchCaptchaImage();
-        notification.error(results.msg);
+        IdentityService.login(LoginType.PASSWORD, username, password, captcha, uuidImg).then((res) => {
+            if (res.code === 200) {
+                apiClient.setToken(res.data.token);
+                router.push(redirect);
+                notification.success(res.msg);
+                return;
+            }
+            setCaptcha('');
+            fetchCaptchaImage();
+            notification.error(res.msg);
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setIsLoading(false);
+        });
     };
 
-    const handleLoginGoogle = async () => {
-        try {
-            const authUrl = await IdentityService.getGoogleAuthUrl();
-            window.location.href = authUrl;
-        } catch (error) {
-            notification.error('获取授权链接失败');
-        }
-    }
 
-    const handleLoginGithub = async () => {
-        try {
-            const authUrl = await IdentityService.getGithubAuthUrl();
+    const handleLoginGoogle = () => {
+        IdentityService.getGoogleAuthUrl().then((authUrl) => {
             window.location.href = authUrl;
-        } catch (error) {
-            notification.error('获取授权链接失败');
-        }
-    }
+        }).catch(() => {
+            notification.error('Failed to get authorization URL');
+        });
+    };
+
+
+    const handleLoginGithub = () => {
+        IdentityService.getGithubAuthUrl().then((authUrl) => {
+            window.location.href = authUrl;
+        }).catch(() => {
+            notification.error('Failed to get authorization URL');
+        });
+    };
 
     return (
         <div className="min-h-screen bg-white relative overflow-hidden flex items-center justify-center p-4 py-8">

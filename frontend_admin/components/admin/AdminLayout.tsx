@@ -3,7 +3,18 @@
 import {useState, useEffect} from 'react';
 import {motion} from 'framer-motion';
 import {Sidebar} from './Sidebar';
-import {Bell, Search, User, UserCircle, KeyRound, LogOut, FileText, Settings, ChevronLeft, ChevronRight} from 'lucide-react';
+import {
+    Bell,
+    Search,
+    User,
+    UserCircle,
+    KeyRound,
+    LogOut,
+    FileText,
+    Settings,
+    ChevronLeft,
+    ChevronRight
+} from 'lucide-react';
 import {IdentityService} from '@/lib/service/identity';
 import {NoticeService} from '@/lib/service/notice';
 import {apiClient, Results} from "@/lib/api";
@@ -16,9 +27,6 @@ interface AdminLayoutProps {
     children: React.ReactNode;
 }
 
-// ==================== 菜单配置 ====================
-
-/** 用户菜单配置 */
 const userMenuItems = [
     {
         key: 'profile',
@@ -50,7 +58,6 @@ const userMenuItems = [
     },
 ];
 
-// ==================== 组件 ====================
 
 export function AdminLayout({children}: AdminLayoutProps) {
     const router = useRouter();
@@ -62,8 +69,6 @@ export function AdminLayout({children}: AdminLayoutProps) {
     const [noticeModalOpen, setNoticeModalOpen] = useState(false);
     const [viewingNotice, setViewingNotice] = useState<any>(null);
     const [notificationOpen, setNotificationOpen] = useState(false);
-
-    // 通知列表 Modal 状态
     const [noticeListModalOpen, setNoticeListModalOpen] = useState(false);
     const [allNotices, setAllNotices] = useState<any[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -71,77 +76,104 @@ export function AdminLayout({children}: AdminLayoutProps) {
     const [total, setTotal] = useState(0);
     const [loadingNotices, setLoadingNotices] = useState(false);
 
+
     useEffect(() => {
-        void fetchUserInfo();
-        void fetchNotices();
+        fetchUserInfo();
+        fetchNotices();
     }, []);
 
-    const fetchUserInfo = async () => {
+
+    const fetchUserInfo = () => {
         setLoading(true);
-        const result = await IdentityService.getCurrentUser();
-        if (result?.code === 200 && result?.data) {
-            setUserInfo(result.data);
-        }
-        setLoading(false);
-    }
+        IdentityService.getCurrentUser().then((res) => {
+            if (res?.code === 200 && res?.data) {
+                setUserInfo(res.data);
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
+    };
 
-    const fetchNotices = async () => {
-        const result = await NoticeService.getNoticeListWithReadStatus({ page: 1, page_size: 10 });
-        if (result?.data) {
-            const noticeList = result.data.records || result.data || [];
-            setNotices(noticeList);
-            setUnreadCount(noticeList.filter((n: any) => !n.is_read).length);
-        }
-    }
 
-    const fetchAllNotices = async (page: number) => {
+    const fetchNotices = () => {
+        NoticeService.getNoticeListWithReadStatus({
+            page: 1,
+            page_size: 10
+        }).then((res) => {
+            if (res?.data) {
+                const noticeList = res.data.records || res.data || [];
+                setNotices(noticeList);
+                setUnreadCount(
+                    noticeList.filter((n: any) => !n.is_read).length
+                );
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        });
+    };
+
+
+    const fetchAllNotices = (page: number) => {
         setLoadingNotices(true);
-        const result = await NoticeService.getNoticeList({
+        NoticeService.getNoticeList({
             page,
             page_size: pageSize,
+        }).then((res) => {
+            if (res?.data) {
+                const noticeList = res.data.records || res.data || [];
+                setAllNotices(noticeList);
+                setTotal(res.data.total || noticeList.length);
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoadingNotices(false);
         });
-        if (result?.data) {
-            const noticeList = result.data.records || result.data || [];
-            setAllNotices(noticeList);
-            setTotal(result.data.total || noticeList.length);
-        }
-        setLoadingNotices(false);
     };
+
 
     const handleOpenNoticeList = () => {
         setNoticeListModalOpen(true);
         setNotificationOpen(false);
         setCurrentPage(1);
-        void fetchAllNotices(1);
+        fetchAllNotices(1);
     };
+
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);
-        void fetchAllNotices(page);
+        fetchAllNotices(page);
     };
 
-    const handleViewNotice = async (notice: any) => {
+
+    const handleViewNotice = (notice: any) => {
         setViewingNotice(notice);
         setNoticeModalOpen(true);
         setNotificationOpen(false);
-
-        // 标记为已读
         if (!notice.is_read) {
-            await NoticeService.markAsRead(notice.notice_id);
-            await fetchNotices();
+            NoticeService.markAsRead(notice.notice_id).then(() => {
+                fetchNotices();
+            }).catch((error) => {
+                notification.error(error?.message);
+            });
         }
-    }
+    };
 
-    const handleLogout = async () => {
-        const results = await IdentityService.logout()
-        if (results.code === 200) {
-            apiClient.clearToken()
-            router.push('/identity');
-            notification.success(results.data);
-            return;
-        }
-        notification.error(results.data)
 
+    const handleLogout = () => {
+        IdentityService.logout().then((results) => {
+            if (results.code === 200) {
+                apiClient.clearToken();
+                router.push('/identity');
+                notification.success(results.data);
+                return;
+            }
+            notification.error(results.data);
+        }).catch((error) => {
+            notification.error(error?.message);
+        });
     };
 
     return (
@@ -289,7 +321,8 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                         className="relative p-2.5 rounded-xl hover:bg-gray-100/80 transition-colors"
                                         onClick={() => setNotificationOpen(!notificationOpen)}
                                     >
-                                        <Bell className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors"/>
+                                        <Bell
+                                            className="w-5 h-5 text-gray-600 group-hover:text-blue-600 transition-colors"/>
                                         {unreadCount > 0 && (
                                             <span
                                                 className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center px-1 bg-red-500 text-white text-xs rounded-full">
@@ -308,7 +341,8 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                                 onClick={() => handleViewNotice(notice)}
                                             >
                                                 <div className="flex items-start gap-3">
-                                                    <div className={`mt-0.5 ${!notice.is_read ? 'w-2 h-2 bg-blue-500 rounded-full' : ''}`}/>
+                                                    <div
+                                                        className={`mt-0.5 ${!notice.is_read ? 'w-2 h-2 bg-blue-500 rounded-full' : ''}`}/>
                                                     <div className="flex-1 min-w-0">
                                                         <p className={`text-sm font-medium truncate ${!notice.is_read ? 'text-gray-900' : 'text-gray-500'}`}>
                                                             {notice.notice_title}
@@ -446,7 +480,8 @@ export function AdminLayout({children}: AdminLayoutProps) {
             </Modal>
 
             {/* Notice List Modal */}
-            <Modal isOpen={noticeListModalOpen} onClose={() => setNoticeListModalOpen(false)} title="All Notices" size="lg">
+            <Modal isOpen={noticeListModalOpen} onClose={() => setNoticeListModalOpen(false)} title="All Notices"
+                   size="lg">
                 <div className="space-y-4">
                     {/* Notice List */}
                     <div className="space-y-2 max-h-[50vh] overflow-y-auto">
@@ -458,8 +493,8 @@ export function AdminLayout({children}: AdminLayoutProps) {
                             allNotices.map((notice) => (
                                 <motion.div
                                     key={notice.notice_id}
-                                    whileHover={{ scale: 1.01, x: 4 }}
-                                    whileTap={{ scale: 0.99 }}
+                                    whileHover={{scale: 1.01, x: 4}}
+                                    whileTap={{scale: 0.99}}
                                     onClick={() => {
                                         setViewingNotice(notice);
                                         setNoticeModalOpen(true);
@@ -472,16 +507,19 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                     }`}
                                 >
                                     <div className="flex items-start gap-3">
-                                        <div className={`mt-1 ${!notice.is_read ? 'w-2 h-2 bg-blue-500 rounded-full flex-shrink-0' : ''}`}/>
+                                        <div
+                                            className={`mt-1 ${!notice.is_read ? 'w-2 h-2 bg-blue-500 rounded-full flex-shrink-0' : ''}`}/>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 mb-1">
                                                 <p className={`text-sm font-medium truncate ${!notice.is_read ? 'text-gray-900' : 'text-gray-600'}`}>
                                                     {notice.notice_title}
                                                 </p>
                                                 {notice.notice_type === '1' ? (
-                                                    <span className="px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full flex-shrink-0">Notice</span>
+                                                    <span
+                                                        className="px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full flex-shrink-0">Notice</span>
                                                 ) : (
-                                                    <span className="px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full flex-shrink-0">Announcement</span>
+                                                    <span
+                                                        className="px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full flex-shrink-0">Announcement</span>
                                                 )}
                                             </div>
                                             <p className="text-xs text-gray-400">
@@ -502,25 +540,25 @@ export function AdminLayout({children}: AdminLayoutProps) {
                             </span>
                             <div className="flex items-center gap-2">
                                 <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
+                                    whileHover={{scale: 1.05}}
+                                    whileTap={{scale: 0.95}}
                                     onClick={() => handlePageChange(currentPage - 1)}
                                     disabled={currentPage === 1}
                                     className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                 >
-                                    <ChevronLeft className="w-4 h-4" />
+                                    <ChevronLeft className="w-4 h-4"/>
                                 </motion.button>
                                 <span className="text-sm text-gray-700 px-3">
                                     Page {currentPage} of {Math.max(1, Math.ceil((total || allNotices.length) / pageSize))}
                                 </span>
                                 <motion.button
-                                    whileHover={{ scale: 1.05 }}
-                                    whileTap={{ scale: 0.95 }}
+                                    whileHover={{scale: 1.05}}
+                                    whileTap={{scale: 0.95}}
                                     onClick={() => handlePageChange(currentPage + 1)}
                                     disabled={currentPage >= Math.ceil((total || allNotices.length) / pageSize)}
                                     className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                                 >
-                                    <ChevronRight className="w-4 h-4" />
+                                    <ChevronRight className="w-4 h-4"/>
                                 </motion.button>
                             </div>
                         </div>

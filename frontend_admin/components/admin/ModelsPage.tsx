@@ -44,9 +44,23 @@ export default function ModelsPage() {
 
     /** 编辑表单字段配置 */
     const updateFormFields: FormFieldConfig[] = [
-        {key: 'model_name', label: 'Model Name', type: 'text', colSpan: 1, placeholder: 'Enter model name', required: true},
+        {
+            key: 'model_name',
+            label: 'Model Name',
+            type: 'text',
+            colSpan: 1,
+            placeholder: 'Enter model name',
+            required: true
+        },
         {key: 'model_version', label: 'Version', type: 'text', colSpan: 1, placeholder: 'v1.0'},
-        {key: 'model_path', label: 'Model Path', type: 'text', colSpan: 2, placeholder: '/path/to/model.pt', required: true},
+        {
+            key: 'model_path',
+            label: 'Model Path',
+            type: 'text',
+            colSpan: 2,
+            placeholder: '/path/to/model.pt',
+            required: true
+        },
         {
             key: 'model_size_mb',
             label: 'Model Size (MB)',
@@ -119,14 +133,35 @@ export default function ModelsPage() {
             ],
             placeholder: 'Select',
         },
-        {key: 'description', label: 'Description', type: 'textarea', rows: 3, colSpan: 2, placeholder: 'Enter description'},
+        {
+            key: 'description',
+            label: 'Description',
+            type: 'textarea',
+            rows: 3,
+            colSpan: 2,
+            placeholder: 'Enter description'
+        },
     ];
 
     /** 新增表单字段配置 */
     const addFormFields: FormFieldConfig[] = [
-        {key: 'model_name', label: 'Model Name', type: 'text', colSpan: 1, placeholder: 'Enter model name', required: true},
+        {
+            key: 'model_name',
+            label: 'Model Name',
+            type: 'text',
+            colSpan: 1,
+            placeholder: 'Enter model name',
+            required: true
+        },
         {key: 'model_version', label: 'Version', type: 'text', colSpan: 1, placeholder: 'v1.0'},
-        {key: 'model_path', label: 'Model Path', type: 'text', colSpan: 2, placeholder: '/path/to/model.pt', required: true},
+        {
+            key: 'model_path',
+            label: 'Model Path',
+            type: 'text',
+            colSpan: 2,
+            placeholder: '/path/to/model.pt',
+            required: true
+        },
         {
             key: 'model_size_mb',
             label: 'Model Size (MB)',
@@ -199,7 +234,14 @@ export default function ModelsPage() {
             ],
             placeholder: 'Select',
         },
-        {key: 'description', label: 'Description', type: 'textarea', rows: 3, colSpan: 2, placeholder: 'Enter description'},
+        {
+            key: 'description',
+            label: 'Description',
+            type: 'textarea',
+            rows: 3,
+            colSpan: 2,
+            placeholder: 'Enter description'
+        },
     ];
 
     /** 生成空表单 */
@@ -218,39 +260,48 @@ export default function ModelsPage() {
     const setCurrentForm = isEditMode ? setUpdateForm : setAddForm;
 
     useEffect(() => {
-        void fetchModels();
+        fetchModels();
     }, [queryParams.current]);
 
     /** 获取模型列表 */
-    const fetchModels = async () => {
+    const fetchModels = () => {
         setLoading(true);
         const params = {
             page: queryParams.current,
             page_size: queryParams.pageSize,
         };
-        const results = await ModelService.getModelList(params);
-        if (results.code === 200) {
-            setModels(results.data.records || []);
-            setQueryParams(prev => ({
-                ...prev,
-                total: results.data.total,
-            }));
-        }
-        setLoading(false);
+        ModelService.getModelList(params).then((results) => {
+            if (results.code === 200) {
+                setModels(results.data.records || []);
+                setQueryParams(prev => ({
+                    ...prev,
+                    total: results.data.total,
+                }));
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     /** 删除 */
-    const handleDelete = async (modelId: number) => {
-        const confirmed = await confirm.danger('Are you sure you want to delete this model?');
-        if (!confirmed) return;
+    const handleDelete = (modelId: number) => {
+        confirm.danger('Are you sure you want to delete this model?').then((confirmed) => {
+            if (!confirmed) return;
 
-        setLoading(true);
-        const results = await ModelService.deleteModel(modelId);
-        if (results.code === 200) {
-            notification.success('Deleted successfully');
-            void fetchModels();
-        }
-        setLoading(false);
+            setLoading(true);
+            return ModelService.deleteModel(modelId);
+        }).then((results) => {
+            if (results?.code === 200) {
+                notification.success('Deleted successfully');
+                return fetchModels();
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     /** 打开新增 */
@@ -294,25 +345,27 @@ export default function ModelsPage() {
     };
 
     /** 新增保存 */
-    const handleSaveAdd = async () => {
+    const handleSaveAdd = () => {
         const data = Object.fromEntries(
             addFormFields.map(f => [f.key, addForm[f.key]])
         );
 
         setLoading(true);
-        const results = await ModelService.createModel(data);
-        if (results.code === 200) {
-            notification.success('Created successfully');
-            setModalOpen(false);
-            void fetchModels();
-            return;
-        }
-        notification.error(results.msg);
-        setLoading(false);
+        ModelService.createModel(data).then((results) => {
+            if (results.code === 200) {
+                notification.success('Created successfully');
+                setModalOpen(false);
+                return fetchModels();
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     /** 编辑保存 - 只发送修改过的字段 */
-    const handleSaveUpdate = async () => {
+    const handleSaveUpdate = () => {
         if (!updateForm.model_id) return;
 
         // 只包含修改过的字段（对比原始数据）
@@ -327,15 +380,17 @@ export default function ModelsPage() {
         const data = Object.fromEntries(changedFields);
 
         setLoading(true);
-        const results = await ModelService.updateModel(updateForm.model_id, data);
-        if (results.code === 200) {
-            notification.success('Updated successfully');
-            setModalOpen(false);
-            void fetchModels();
-            return;
-        }
-        notification.error(results.msg);
-        setLoading(false);
+        ModelService.updateModel(updateForm.model_id, data).then((results) => {
+            if (results.code === 200) {
+                notification.success('Updated successfully');
+                setModalOpen(false);
+                return fetchModels();
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     const columns: Column<any>[] = [

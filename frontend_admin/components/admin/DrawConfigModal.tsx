@@ -22,53 +22,71 @@ interface DrawConfigModalProps {
     };
 }
 
-// ============== 类别管理子组件 ==============
-function ClassManagement({model, loadData}: {model: {model_id: number}; loadData: () => void}) {
+function ClassManagement({model, loadData}: { model: { model_id: number }; loadData: () => void }) {
     const {hasPermission} = usePermissions();
     const [classes, setClasses] = useState<any[]>([]);
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editingClass, setEditingClass] = useState<any>(null);
 
     useEffect(() => {
-        void fetchClasses();
+        fetchClasses();
     }, []);
 
-    const fetchClasses = async () => {
-        const result = await ModelClassService.getByModel(model.model_id);
-        if (result.code === 200) {
-            setClasses(result.data || []);
-        }
+
+    const fetchClasses = () => {
+        ModelClassService.getByModel(model.model_id).then((result) => {
+            if (result.code === 200) {
+                setClasses(result.data || []);
+            }
+        }).catch((error) => {
+            notification.error(error?.message || 'Failed to load classes');
+        });
     };
 
-    const handleDelete = async (classId: number) => {
-        const confirmed = await confirm.danger('Are you sure you want to delete this class?');
-        if (!confirmed) return;
 
-        const result = await ModelClassService.delete(classId);
-        if (result.code === 200) {
-            notification.success('Deleted successfully');
-            void fetchClasses();
-            loadData();
-        }
+    const handleDelete = (classId: number) => {
+        confirm.danger('Are you sure you want to delete this class?').then((confirmed) => {
+                if (!confirmed) return;
+                return ModelClassService.delete(classId);
+            }).then((result) => {
+                if (!result) return;
+                if (result.code === 200) {
+                    notification.success('Deleted successfully');
+                    fetchClasses();
+                    loadData();
+                }
+            }).catch((error) => {
+                notification.error(error?.message);
+            });
     };
+
 
     const handleEdit = (cls: any) => {
         setEditingClass(cls);
         setEditModalOpen(true);
     };
 
-    const handleSave = async (data: any) => {
-        const result = editingClass
-            ? await ModelClassService.update(editingClass.class_id, data)
-            : await ModelClassService.create({...data, model_id: model.model_id});
 
-        if (result.code === 200) {
-            notification.success(editingClass ? 'Updated successfully' : 'Created successfully');
-            setEditModalOpen(false);
-            setEditingClass(null);
-            void fetchClasses();
-            loadData();
-        }
+    const handleSave = (data: any) => {
+        const request = editingClass
+            ? ModelClassService.update(editingClass.class_id, data)
+            : ModelClassService.create({...data, model_id: model.model_id});
+
+        request
+            .then((result) => {
+                if (result.code === 200) {
+                    notification.success(
+                        editingClass ? 'Updated successfully' : 'Created successfully'
+                    );
+                    setEditModalOpen(false);
+                    setEditingClass(null);
+                    fetchClasses();
+                    loadData();
+                }
+            })
+            .catch((error) => {
+                notification.error(error?.message);
+            });
     };
 
     const columns: Column<any>[] = [
@@ -158,11 +176,11 @@ function ClassManagement({model, loadData}: {model: {model_id: number}; loadData
 
 // ============== 类别编辑对话框 ==============
 function ClassEditModal({
-    isOpen,
-    onClose,
-    classData,
-    onSave,
-}: {
+                            isOpen,
+                            onClose,
+                            classData,
+                            onSave,
+                        }: {
     isOpen: boolean;
     onClose: () => void;
     classData: any;
@@ -370,11 +388,11 @@ function DrawConfigList({classes, drawConfigs, loadData}: {
 
 // ============== 绘图配置编辑对话框 ==============
 function DrawConfigEditModal({
-    isOpen,
-    onClose,
-    configData,
-    onSave,
-}: {
+                                 isOpen,
+                                 onClose,
+                                 configData,
+                                 onSave,
+                             }: {
     isOpen: boolean;
     onClose: () => void;
     configData: any;

@@ -110,39 +110,47 @@ export default function RolesPage() {
     const setCurrentForm = isEditMode ? setUpdateForm : setAddForm;
 
     useEffect(() => {
-        void fetchRoles();
+        fetchRoles();
     }, [queryParams.current]);
 
     /** 获取角色列表 */
-    const fetchRoles = async () => {
+    const fetchRoles = () => {
         setLoading(true);
-        const result = await RoleService.getRoleList({
+        RoleService.getRoleList({
             page: queryParams.current,
             page_size: queryParams.pageSize,
+        }).then((result) => {
+            if (result?.data) {
+                setRoles(result.data.records || []);
+                setQueryParams(prev => ({
+                    ...prev,
+                    total: result.data.total || 0,
+                }));
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
         });
-
-        if (result?.data) {
-            setRoles(result.data.records || []);
-            setQueryParams(prev => ({
-                ...prev,
-                total: result.data.total || 0,
-            }));
-        }
-        setLoading(false);
     };
 
     /** 删除 */
-    const handleDelete = async (roleId: number) => {
-        const confirmed = await confirm.danger('Are you sure you want to delete this role?');
-        if (!confirmed) return;
+    const handleDelete = (roleId: number) => {
+        confirm.danger('Are you sure you want to delete this role?').then((confirmed) => {
+            if (!confirmed) return;
 
-        setLoading(true);
-        const results = await RoleService.deleteRole(roleId);
-        if (results.code === 200) {
-            notification.success('Deleted successfully');
-            void fetchRoles();
-        }
-        setLoading(false);
+            setLoading(true);
+            return RoleService.deleteRole(roleId);
+        }).then((results) => {
+            if (results?.code === 200) {
+                notification.success('Deleted successfully');
+                return fetchRoles();
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     /** 打开新增 */
@@ -173,25 +181,27 @@ export default function RolesPage() {
     };
 
     /** 新增保存 */
-    const handleSaveAdd = async () => {
+    const handleSaveAdd = () => {
         const data = Object.fromEntries(
             addFormFields.map(f => [f.key, addForm[f.key]])
         );
 
         setLoading(true);
-        const results = await RoleService.createRole(data);
-        if (results.code === 200) {
-            notification.success('Created successfully');
-            setModalOpen(false);
-            void fetchRoles();
-            return;
-        }
-        notification.error(results.msg);
-        setLoading(false);
+        RoleService.createRole(data).then((results) => {
+            if (results.code === 200) {
+                notification.success('Created successfully');
+                setModalOpen(false);
+                return fetchRoles();
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     /** 编辑保存 - 只发送修改过的字段 */
-    const handleSaveUpdate = async () => {
+    const handleSaveUpdate = () => {
         if (!updateForm.role_id) return;
 
         // 只包含修改过的字段（对比原始数据）
@@ -205,18 +215,18 @@ export default function RolesPage() {
 
         const data = Object.fromEntries(changedFields);
 
-        console.log('Changed fields:', data);
-
         setLoading(true);
-        const results = await RoleService.updateRole(updateForm.role_id, data);
-        if (results.code === 200) {
-            notification.success('Updated successfully');
-            setModalOpen(false);
-            void fetchRoles();
-            return;
-        }
-        notification.error(results.msg);
-        setLoading(false);
+        RoleService.updateRole(updateForm.role_id, data).then((results) => {
+            if (results.code === 200) {
+                notification.success('Updated successfully');
+                setModalOpen(false);
+                return fetchRoles();
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
 
     const columns: Column<any>[] = [
