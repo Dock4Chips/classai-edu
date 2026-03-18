@@ -3,6 +3,7 @@
 import {useState, useEffect} from 'react';
 import {motion} from 'framer-motion';
 import {Sidebar} from './Sidebar';
+import {LanguageSwitcher} from './LanguageSwitcher';
 import {
     Bell,
     Search,
@@ -367,6 +368,9 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                     },
                                 ]}
                             />
+
+                            {/* Language Switcher */}
+                            <LanguageSwitcher />
 
                             {/* User Profile */}
                             <Dropdown

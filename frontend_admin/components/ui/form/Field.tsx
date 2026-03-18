@@ -2,6 +2,7 @@
 
 import { Select } from '@/components/ui/select';
 import { cn } from '@/utils/cn';
+import type { FormFieldConfig, FormFieldProps } from './types';
 
 export function FormField({
   field,
@@ -9,7 +10,7 @@ export function FormField({
   onChange,
   error,
   className = '',
-}) {
+}: FormFieldProps) {
   const baseInputClass =
     'w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white ' +
     'focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black transition';
@@ -25,7 +26,7 @@ export function FormField({
 
         <Select
           value={value ?? ''}
-          onChange={onChange}
+          onChange={(v) => onChange(v)}
           options={field.options?.map(opt => ({
             value: opt.value,
             label: opt.label,
