@@ -1,10 +1,7 @@
 'use client';
 
-import { Dropdown, DropdownButton } from '@/components/ui/dropdown';
-import { cn } from '@/utils/cn'; // 如果你没有 cn，可以直接删掉用字符串拼接
-import type {
-  FormFieldProps,
-} from './types'; // 如果你没拆文件，可以直接 inline
+import { Select } from '@/components/ui/select';
+import { cn } from '@/utils/cn';
 
 export function FormField({
   field,
@@ -12,15 +9,13 @@ export function FormField({
   onChange,
   error,
   className = '',
-}: FormFieldProps) {
+}) {
   const baseInputClass =
     'w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white ' +
     'focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black transition';
 
-  /** ---------- SELECT（自定义 Dropdown） ---------- */
+  /** ---------- SELECT（统一使用 Select 组件） ---------- */
   if (field.type === 'select') {
-    const selected = field.options?.find(opt => opt.value === value);
-
     return (
       <div className={cn('space-y-1.5', className)}>
         <label className="text-sm font-medium text-gray-700">
@@ -28,29 +23,16 @@ export function FormField({
           {field.required && <span className="text-red-500 ml-1">*</span>}
         </label>
 
-        <Dropdown
-          trigger={
-            <DropdownButton
-              variant="default"
-              className={cn(
-                'w-full justify-between',
-                error && 'border-red-500'
-              )}
-            >
-              <span className={selected ? 'text-gray-900' : 'text-gray-400'}>
-                {selected?.label || field.placeholder || 'Please select'}
-              </span>
-            </DropdownButton>
-          }
-          items={
-            field.options?.map(opt => ({
-              key: String(opt.value),
-              label: opt.label,
-              disabled: opt.disabled,
-              onClick: () => onChange(opt.value),
-            })) || []
-          }
-          menuClassName="w-full"
+        <Select
+          value={value ?? ''}
+          onChange={onChange}
+          options={field.options?.map(opt => ({
+            value: opt.value,
+            label: opt.label,
+            disabled: opt.disabled,
+          })) || []}
+          placeholder={field.placeholder || 'Please select'}
+          size="md"
         />
 
         {field.description && (

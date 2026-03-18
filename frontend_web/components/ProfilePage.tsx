@@ -8,7 +8,7 @@ import { IdentityService } from '@/lib/service/identity';
 import { UserService } from '@/lib/service/user';
 import { Results } from '@/lib/api';
 import { notification } from '@/utils/notification';
-import { Dropdown, DropdownButton } from '@/components/ui/dropdown';
+import { Select } from '@/components/ui/select';
 
 export default function ProfilePage() {
   const [userInfo, setUserInfo] = useState<Results>();
@@ -208,20 +208,16 @@ export default function ProfilePage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
-                <Dropdown
-                  trigger={
-                    <DropdownButton variant="default" className="w-full justify-between">
-                      <span className={userInfo?.sex ? 'text-gray-900' : 'text-gray-400'}>
-                        {userInfo?.sex === '0' ? 'Male' : userInfo?.sex === '1' ? 'Female' : userInfo?.sex === '2' ? 'Unknown' : 'Select gender'}
-                      </span>
-                    </DropdownButton>
-                  }
-                  items={[
-                    { key: '0', label: 'Male', onClick: () => setUserInfo((prev) => ({ ...prev, sex: '0' })) },
-                    { key: '1', label: 'Female', onClick: () => setUserInfo((prev) => ({ ...prev, sex: '1' })) },
-                    { key: '2', label: 'Unknown', onClick: () => setUserInfo((prev) => ({ ...prev, sex: '2' })) },
+                <Select
+                  value={userInfo?.sex ?? ''}
+                  onChange={(value) => setUserInfo((prev) => ({ ...prev, sex: String(value) }))}
+                  options={[
+                    { value: '0', label: 'Male' },
+                    { value: '1', label: 'Female' },
+                    { value: '2', label: 'Unknown' },
                   ]}
-                  menuClassName="w-full"
+                  placeholder="Select gender"
+                  size="lg"
                 />
               </div>
 
