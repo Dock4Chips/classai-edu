@@ -21,8 +21,10 @@ import {Results} from '@/lib/api';
 import {buildParams} from '@/utils/buildParams';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
+import {useTranslation} from 'react-i18next';
 
 export default function UsersPage() {
+    const {t} = useTranslation();
     const {hasPermission} = usePermissions();
     const [users, setUsers] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -42,82 +44,82 @@ export default function UsersPage() {
 
     /** 编辑表单字段配置 */
     const updateFormFields: FormFieldConfig[] = [
-        {key: 'user_name', label: 'Username', type: 'text', colSpan: 2, placeholder: 'Enter username', required: true},
-        {key: 'nick_name', label: 'Nickname', type: 'text', colSpan: 2, placeholder: 'Enter nickname'},
-        {key: 'email', label: 'Email', type: 'email', colSpan: 2, placeholder: 'Enter email'},
-        {key: 'phonenumber', label: 'Phone', type: 'text', colSpan: 2, placeholder: 'Enter phone number'},
+        {key: 'user_name', label: t('user.username'), type: 'text', colSpan: 2, placeholder: t('user.username'), required: true},
+        {key: 'nick_name', label: t('user.nickname'), type: 'text', colSpan: 2, placeholder: t('user.nickname')},
+        {key: 'email', label: t('user.email'), type: 'email', colSpan: 2, placeholder: t('user.email')},
+        {key: 'phonenumber', label: t('user.phone'), type: 'text', colSpan: 2, placeholder: t('user.phone')},
         {
             key: 'sex',
-            label: 'Gender',
+            label: t('user.gender'),
             type: 'select',
             options: [
-                {value: '0', label: 'Male'},
-                {value: '1', label: 'Female'},
-                {value: '2', label: 'Unknown'},
+                {value: '0', label: t('user.genders.male')},
+                {value: '1', label: t('user.genders.female')},
+                {value: '2', label: t('user.genders.unknown')},
             ],
-            placeholder: 'Select gender',
+            placeholder: t('user.gender'),
             colSpan: 1,
         },
         {
             key: 'status',
-            label: 'Status',
+            label: t('common.status'),
             type: 'select',
             options: [
-                {value: '0', label: 'Active'},
-                {value: '1', label: 'Disabled'},
+                {value: '0', label: t('common.active')},
+                {value: '1', label: t('common.disabled')},
             ],
-            placeholder: 'Select status',
+            placeholder: t('common.select'),
             colSpan: 1,
         },
         {
             key: 'role_id',
-            label: 'Role ID',
+            label: t('user.roleId'),
             type: 'number',
-            placeholder: 'Enter role ID',
-            description: 'Assign a role to this user',
+            placeholder: t('user.roleId'),
+            description: t('user.roleId'),
             colSpan: 2,
         },
-        {key: 'remark', label: 'Remark', type: 'textarea', rows: 3, colSpan: 2, placeholder: 'Enter remarks'},
+        {key: 'remark', label: t('user.remark'), type: 'textarea', rows: 3, colSpan: 2, placeholder: t('user.remark')},
     ];
 
     /** 新增表单字段配置 */
     const addFormFields: FormFieldConfig[] = [
-        {key: 'user_name', label: 'Username', type: 'text', colSpan: 2, placeholder: 'Enter username', required: true},
-        {key: 'nick_name', label: 'Nickname', type: 'text', colSpan: 2, placeholder: 'Enter nickname'},
-        {key: 'email', label: 'Email', type: 'email', colSpan: 2, placeholder: 'Enter email'},
-        {key: 'phonenumber', label: 'Phone', type: 'text', colSpan: 2, placeholder: 'Enter phone number'},
+        {key: 'user_name', label: t('user.username'), type: 'text', colSpan: 2, placeholder: t('user.username'), required: true},
+        {key: 'nick_name', label: t('user.nickname'), type: 'text', colSpan: 2, placeholder: t('user.nickname')},
+        {key: 'email', label: t('user.email'), type: 'email', colSpan: 2, placeholder: t('user.email')},
+        {key: 'phonenumber', label: t('user.phone'), type: 'text', colSpan: 2, placeholder: t('user.phone')},
         {
             key: 'sex',
-            label: 'Gender',
+            label: t('user.gender'),
             type: 'select',
             options: [
-                {value: '0', label: 'Male'},
-                {value: '1', label: 'Female'},
-                {value: '2', label: 'Unknown'},
+                {value: '0', label: t('user.genders.male')},
+                {value: '1', label: t('user.genders.female')},
+                {value: '2', label: t('user.genders.unknown')},
             ],
             colSpan: 1,
-            placeholder: 'Select gender',
+            placeholder: t('user.gender'),
         },
         {
             key: 'status',
-            label: 'Status',
+            label: t('common.status'),
             type: 'select',
             options: [
-                {value: '0', label: 'Active'},
-                {value: '1', label: 'Disabled'},
+                {value: '0', label: t('common.active')},
+                {value: '1', label: t('common.disabled')},
             ],
             colSpan: 1,
-            placeholder: 'Select status',
+            placeholder: t('common.select'),
         },
         {
             key: 'role_id',
-            label: 'Role ID',
+            label: t('user.roleId'),
             type: 'number',
-            placeholder: 'Enter role ID',
+            placeholder: t('user.roleId'),
             colSpan: 2,
-            description: 'Assign a role to this user'
+            description: t('user.roleId')
         },
-        {key: 'remark', label: 'Remark', type: 'textarea', rows: 3, colSpan: 2, placeholder: 'Enter remarks'},
+        {key: 'remark', label: t('user.remark'), type: 'textarea', rows: 3, colSpan: 2, placeholder: t('user.remark')},
     ];
 
     /** 生成空表单 */
@@ -165,14 +167,14 @@ export default function UsersPage() {
 
     /** 删除 */
     const handleDelete = (userId: number) => {
-        confirm.danger('Are you sure you want to delete this user?').then((confirmed) => {
+        confirm.danger(t('common.confirmDelete')).then((confirmed) => {
             if (!confirmed) return;
 
             setLoading(true);
             return UserService.deleteUser(userId);
         }).then((results) => {
             if (results?.code === 200) {
-                notification.success('Deleted successfully');
+                notification.success(t('common.deletedSuccessfully'));
                 return fetchUsers();
             }
         }).catch((error) => {
@@ -218,7 +220,7 @@ export default function UsersPage() {
         setLoading(true);
         UserService.createUser(data).then((results) => {
             if (results.code === 200) {
-                notification.success('Created successfully');
+                notification.success(t('common.createdSuccessfully'));
                 setModalOpen(false);
                 return fetchUsers();
             }
@@ -247,7 +249,7 @@ export default function UsersPage() {
         setLoading(true);
         UserService.updateUser(updateForm.user_id, data).then((results) => {
             if (results.code === 200) {
-                notification.success('Updated successfully');
+                notification.success(t('common.updatedSuccessfully'));
                 setModalOpen(false);
                 return fetchUsers();
             }
@@ -264,37 +266,37 @@ export default function UsersPage() {
             title: 'ID',
             render: v => <span className="text-gray-500 font-mono">#{v}</span>,
         },
-        {key: 'user_name', title: 'Username'},
+        {key: 'user_name', title: t('user.username')},
         {
             key: 'email',
-            title: 'Email',
+            title: t('user.email'),
             render: v => v || <span className="text-gray-400">-</span>,
         },
         {
             key: 'status',
-            title: 'Status',
+            title: t('common.status'),
             render: v => (
                 <Badge variant={v === '0' ? 'success' : 'warning'}>
-                    {v === '0' ? 'Active' : 'Disabled'}
+                    {v === '0' ? t('common.active') : t('common.disabled')}
                 </Badge>
             ),
         },
         {
             key: 'create_time',
-            title: 'Created',
+            title: t('common.created'),
             render: v =>
                 v ? new Date(v).toLocaleString() : <span className="text-gray-400">-</span>,
         },
         {
             key: 'actions',
-            title: 'Actions',
+            title: t('common.actions'),
             render: (_, record) => {
                 // 根据权限过滤操作项
                 const items = [];
                 if (hasPermission('users:edit')) {
                     items.push({
                         key: 'edit',
-                        label: 'Edit',
+                        label: t('common.edit'),
                         icon: <Pencil className="w-4 h-4"/>,
                         onClick: () => handleEdit(record),
                     });
@@ -302,7 +304,7 @@ export default function UsersPage() {
                 if (hasPermission('users:delete')) {
                     items.push({
                         key: 'delete',
-                        label: 'Delete',
+                        label: t('common.delete'),
                         icon: <Trash2 className="w-4 h-4"/>,
                         danger: true,
                         onClick: () => handleDelete(record.user_id),
@@ -333,10 +335,10 @@ export default function UsersPage() {
             {/* header */}
             <motion.div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-4xl font-bold">User Management</h1>
+                    <h1 className="text-4xl font-bold">{t('user.title')}</h1>
                     <p className="text-gray-600 flex items-center gap-2">
                         <Sparkles size={18}/>
-                        Manage system users
+                        {t('user.title')}
                     </p>
                 </div>
                 {hasPermission('users:add') && (
@@ -344,12 +346,12 @@ export default function UsersPage() {
                         onClick={handleAdd}
                         className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
                     >
-                        <Plus size={16}/> Add User
+                        <Plus size={16}/> {t('user.addUser')}
                     </button>
                 )}
             </motion.div>
 
-            {/* search —— 原样保留 */}
+            {/* search */}
             <div className="flex gap-4">
                 <div className="flex-1 relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"/>
@@ -362,7 +364,7 @@ export default function UsersPage() {
                                 user_name: e.target.value.trim() || null,
                             }))
                         }
-                        placeholder="Search username..."
+                        placeholder={t('user.username')}
                         className="w-full pl-10 pr-4 py-3 border rounded-2xl"
                     />
                 </div>
@@ -375,7 +377,7 @@ export default function UsersPage() {
                             email: e.target.value.trim() || null,
                         }))
                     }
-                    placeholder="Search email..."
+                    placeholder={t('user.email')}
                     className="w-64 px-4 py-3 border rounded-2xl"
                 />
             </div>
@@ -398,7 +400,7 @@ export default function UsersPage() {
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={isEditMode ? 'Edit User' : 'Add User'}
+                title={isEditMode ? t('user.editUser') : t('user.addUser')}
             >
                 {/* 表单区域 */}
                 <div className="grid grid-cols-2 gap-4">
@@ -424,13 +426,13 @@ export default function UsersPage() {
                         onClick={() => setModalOpen(false)}
                         className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100"
                     >
-                        取消
+                        {t('common.cancel')}
                     </button>
                     <button
                         onClick={isEditMode ? handleSaveUpdate : handleSaveAdd}
                         className="bg-black text-white px-5 py-2 rounded-xl"
                     >
-                        保存
+                        {t('common.save')}
                     </button>
                 </div>
             </Modal>

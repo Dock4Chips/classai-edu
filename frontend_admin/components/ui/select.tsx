@@ -13,7 +13,7 @@ export interface SelectOption {
 
 export interface SelectProps {
   value: string | number;
-  onChange: (value: string | number) => void;
+  onChange: (value: string | number | null) => void;
   options: SelectOption[];
   disabled?: boolean;
   className?: string;
@@ -93,6 +93,11 @@ export function Select({
       onChange(option.value);
       setIsOpen(false);
     }
+  };
+
+  const handleClear = () => {
+    onChange('');
+    setIsOpen(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
