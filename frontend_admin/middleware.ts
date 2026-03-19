@@ -6,14 +6,6 @@ export function middleware(request: NextRequest) {
   const token = request.cookies.get('AUTH_TOKEN');
   const { pathname } = request.nextUrl;
 
-  // 设置默认语言 Cookie
-  if (!request.cookies.get('lang')) {
-    response.cookies.set('lang', 'en', {
-      path: '/',
-      maxAge: 60 * 60 * 24 * 365,
-    });
-  }
-
   // 需要登录的页面列表（/admin 下的所有页面）
   const protectedPaths = [
     '/admin',
@@ -55,12 +47,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/admin/dashboard', request.url));
   }
 
-  // 如果设置了语言 Cookie，需要返回 response
-  if (response.cookies.get('lang')) {
-    return response;
-  }
-
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {

@@ -144,5 +144,17 @@
     "email": "请输入有效的邮箱地址",
     "minLength": "最少 {min} 个字符",
     "maxLength": "最多 {max} 个字符"
+  },
+  "dashboard": {
+    "title": "仪表盘",
+    "welcome": "欢迎来到管理系统",
+    "totalUsers": "用户总数",
+    "activeUsers": "活跃用户",
+    "onlineUsers": "在线用户",
+    "totalLogins": "登录次数",
+    "recentActivity": "最近活动",
+    "noActivity": "暂无活动记录",
+    "loggedIn": "登录",
+    "unknown": "未知"
   }
 }

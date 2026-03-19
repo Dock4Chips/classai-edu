@@ -6,8 +6,10 @@ import {StatCard} from './StatCard';
 import {DashboardService} from '@/lib/service/dashboard';
 import {useEffect, useState} from 'react';
 import {notification} from "@/utils/notification";
+import {useTranslation} from 'react-i18next';
 
 export default function DashboardPage() {
+    const {t} = useTranslation();
     const [stats, setStats] = useState({
         totalUsers: 0,
         activeUsers: 0,
@@ -46,39 +48,39 @@ export default function DashboardPage() {
             >
                 <div>
                     <h1 className="text-4xl font-bold mb-2 text-black">
-                        Dashboard
+                        {t('dashboard.title')}
                     </h1>
                     <p className="text-gray-600 flex items-center gap-2">
                         <Sparkles className="text-indigo-500" size={18}/>
-                        <span>Welcome to the admin management system</span>
+                        <span>{t('dashboard.welcome')}</span>
                     </p>
                 </div>
             </motion.div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
-                    title="Total Users"
+                    title={t('dashboard.totalUsers')}
                     value={stats.totalUsers}
                     change={12.5}
                     icon={Users}
                     color="blue"
                 />
                 <StatCard
-                    title="Active Users"
+                    title={t('dashboard.activeUsers')}
                     value={stats.activeUsers}
                     change={8.2}
                     icon={Activity}
                     color="green"
                 />
                 <StatCard
-                    title="Online Users"
+                    title={t('dashboard.onlineUsers')}
                     value={stats.onlineUsers}
                     change={5.8}
                     icon={TrendingUp}
                     color="purple"
                 />
                 <StatCard
-                    title="Total Logins"
+                    title={t('dashboard.totalLogins')}
                     value={stats.totalLogins}
                     change={15.3}
                     icon={DollarSign}
@@ -103,7 +105,7 @@ export default function DashboardPage() {
                 <div className="p-6">
                     <h2 className="text-xl font-bold text-black mb-6 flex items-center gap-2">
                         <Activity className="text-indigo-500" size={20}/>
-                        <span>Recent Activity</span>
+                        <span>{t('dashboard.recentActivity')}</span>
                     </h2>
 
                     <div className="space-y-3">
@@ -129,10 +131,10 @@ export default function DashboardPage() {
                                 </div>
                                 <div className="flex-1">
                                     <p className="text-sm font-semibold text-gray-900">
-                                        {activity.user_name} logged in
+                                        {activity.user_name} {t('dashboard.loggedIn')}
                                     </p>
                                     <p className="text-xs text-gray-500 mt-0.5">
-                                        {activity.ipaddr} • {activity.login_location || 'Unknown'}
+                                        {activity.ipaddr} • {activity.login_location || t('dashboard.unknown')}
                                     </p>
                                 </div>
                                 <span className="text-xs text-gray-400 px-3 py-1.5 bg-gray-100 rounded-lg">
@@ -147,7 +149,7 @@ export default function DashboardPage() {
                                 className="text-center py-12"
                             >
                                 <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4"/>
-                                <p className="text-gray-400">No activity records</p>
+                                <p className="text-gray-400">{t('dashboard.noActivity')}</p>
                             </motion.div>
                         )}
                     </div>
