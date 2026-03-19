@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import Cookies from 'js-cookie';
 import { changeLanguage } from '@/i18n';
 
 type Language = 'en' | 'zh';
@@ -25,8 +24,8 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('en');
 
   useEffect(() => {
-    // 优先从 Cookie 读取，再 localStorage
-    const savedLang = (Cookies.get('lang') || localStorage.getItem('lang')) as Language;
+    // 只从 localStorage 读取
+    const savedLang = localStorage.getItem('lang') as Language;
     if (savedLang && (savedLang === 'en' || savedLang === 'zh')) {
       setLanguageState(savedLang);
       i18n.changeLanguage(savedLang);

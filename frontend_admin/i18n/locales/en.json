@@ -144,5 +144,17 @@
     "email": "Please enter a valid email",
     "minLength": "Minimum length is {min} characters",
     "maxLength": "Maximum length is {max} characters"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome to the admin management system",
+    "totalUsers": "Total Users",
+    "activeUsers": "Active Users",
+    "onlineUsers": "Online Users",
+    "totalLogins": "Total Logins",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No activity records",
+    "loggedIn": "logged in",
+    "unknown": "Unknown"
   }
 }
