@@ -13,11 +13,13 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^12.23.24",
+    "i18next": "^25.8.19",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.554.0",
     "next": "16.0.3",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "react-i18next": "^16.5.8",
     "recharts": "^3.7.0"
   },
   "devDependencies": {

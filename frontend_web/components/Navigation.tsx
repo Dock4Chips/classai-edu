@@ -22,6 +22,7 @@ import {NoticeService} from '@/lib/service/notice';
 import {apiClient} from '@/lib/api';
 import {Dropdown, DropdownButton} from '@/components/ui/dropdown';
 import {Modal} from '@/components/ui/modal';
+import {LanguageSwitcher} from '@/components/LanguageSwitcher';
 
 const navItems = ['Dashboard', 'Projects', 'Detection', 'Reports'];
 
@@ -245,6 +246,9 @@ export default function Navigation() {
                                 },
                             ]}
                         />
+
+                        {/* Language Switcher */}
+                        <LanguageSwitcher />
 
                         {/* User Profile */}
                         <Dropdown
