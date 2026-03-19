@@ -12,8 +12,10 @@ import { confirm } from '@/utils/confirm';
 import { FormFieldConfig } from '@/components/ui/form/types';
 import { Results } from '@/lib/api';
 import { usePermissions } from '@/lib/contexts/PermissionsContext';
+import {useTranslation} from 'react-i18next';
 
 export default function NoticesPage() {
+    const {t} = useTranslation();
     const {hasPermission} = usePermissions();
     const [notices, setNotices] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -27,41 +29,41 @@ export default function NoticesPage() {
   const formFields: FormFieldConfig[] = [
     {
       key: 'notice_title',
-      label: 'Title',
+      label: t('notice.noticeTitle'),
       type: 'text',
-      placeholder: 'Enter notice title',
+      placeholder: t('notice.enterNoticeTitle'),
       required: true,
       colSpan: 2,
     },
     {
       key: 'notice_type',
-      label: 'Type',
+      label: t('notice.type'),
       type: 'select',
       options: [
-        { label: 'Notice', value: '1' },
-        { label: 'Announcement', value: '2' },
+        { label: t('notice.notice'), value: '1' },
+        { label: t('notice.announcement'), value: '2' },
       ],
-      placeholder: 'Select type',
+      placeholder: t('notice.selectType'),
       required: true,
       colSpan: 1,
     },
     {
       key: 'status',
-      label: 'Status',
+      label: t('common.status'),
       type: 'select',
       options: [
-        { label: 'Active', value: '0' },
-        { label: 'Closed', value: '1' },
+        { label: t('common.active'), value: '0' },
+        { label: t('common.disabled'), value: '1' },
       ],
-      placeholder: 'Select status',
+      placeholder: t('common.select'),
       required: true,
       colSpan: 1,
     },
     {
       key: 'notice_content',
-      label: 'Content',
+      label: t('notice.content'),
       type: 'textarea',
-      placeholder: 'Enter notice content',
+      placeholder: t('notice.enterNoticeContent'),
       rows: 6,
       required: true,
       colSpan: 2,
@@ -91,14 +93,14 @@ export default function NoticesPage() {
   };
 
   const handleDelete = (id: number) => {
-    confirm.danger('Are you sure you want to delete this notice?').then((confirmed) => {
+    confirm.danger(t('common.confirmDelete')).then((confirmed) => {
       if (!confirmed) return;
 
       setLoading(true);
       return NoticeService.deleteNotice(id);
     }).then((results) => {
       if (results?.code === 200) {
-        notification.success('Deleted successfully');
+        notification.success(t('common.deletedSuccessfully'));
         return fetchNotices();
       }
     }).catch((error) => {
@@ -154,7 +156,7 @@ export default function NoticesPage() {
 
   const handleSaveAdd = () => {
     if (!form.notice_title || !form.notice_content) {
-      notification.error('Please fill in all required fields');
+      notification.error(t('notice.pleaseFillAllFields'));
       return;
     }
 
@@ -165,7 +167,7 @@ export default function NoticesPage() {
     setLoading(true);
     NoticeService.createNotice(data).then((results) => {
       if (results.code === 200) {
-        notification.success('Created successfully');
+        notification.success(t('common.createdSuccessfully'));
         setModalOpen(false);
         return fetchNotices();
       }
@@ -191,14 +193,14 @@ export default function NoticesPage() {
     const data = Object.fromEntries(changedFields);
 
     if (Object.keys(data).length === 0) {
-      notification.info('No changes made');
+      notification.info(t('notice.noChangesMade'));
       return;
     }
 
     setLoading(true);
     NoticeService.updateNotice(originalNoticeData.notice_id, data).then((results) => {
       if (results.code === 200) {
-        notification.success('Updated successfully');
+        notification.success(t('common.updatedSuccessfully'));
         setModalOpen(false);
         return fetchNotices();
       }
@@ -217,16 +219,16 @@ export default function NoticesPage() {
     },
     {
       key: 'is_read',
-      title: 'Status',
+      title: t('common.status'),
       render: (value) => (
         <span className={`px-2.5 py-1 rounded-lg text-sm font-medium ${value ? 'bg-gray-100 text-gray-500' : 'bg-red-100 text-red-600'}`}>
-          {value ? 'Read' : 'Unread'}
+          {value ? t('notice.read') : t('notice.unread')}
         </span>
       ),
     },
     {
       key: 'notice_title',
-      title: 'Title',
+      title: t('notice.noticeTitle'),
       render: (value, record) => (
         <span className={`font-medium ${record.is_read ? 'text-gray-600' : 'text-gray-900 font-semibold'}`}>
           {value}
@@ -235,11 +237,11 @@ export default function NoticesPage() {
     },
     {
       key: 'notice_type',
-      title: 'Type',
+      title: t('notice.type'),
       render: value => {
         const typeMap: Record<string, { text: string; color: string }> = {
-          '1': { text: 'Notice', color: 'bg-blue-100 text-blue-700' },
-          '2': { text: 'Announcement', color: 'bg-purple-100 text-purple-700' },
+          '1': { text: t('notice.notice'), color: 'bg-blue-100 text-blue-700' },
+          '2': { text: t('notice.announcement'), color: 'bg-purple-100 text-purple-700' },
         };
         const config = typeMap[value] || typeMap['1'];
         return (
@@ -251,11 +253,11 @@ export default function NoticesPage() {
     },
     {
       key: 'status',
-      title: 'Status',
+      title: t('common.status'),
       render: value => {
         const statusMap: Record<string, { text: string; color: string }> = {
-          '0': { text: 'Active', color: 'bg-emerald-100 text-emerald-700' },
-          '1': { text: 'Closed', color: 'bg-gray-100 text-gray-700' },
+          '0': { text: t('common.active'), color: 'bg-emerald-100 text-emerald-700' },
+          '1': { text: t('common.disabled'), color: 'bg-gray-100 text-gray-700' },
         };
         const config = statusMap[value] || statusMap['0'];
         return (
@@ -267,7 +269,7 @@ export default function NoticesPage() {
     },
     {
       key: 'create_time',
-      title: 'Created At',
+      title: t('notice.createdAt'),
       render: value => (
         <span className="text-gray-600 text-sm">
           {value ? new Date(value).toLocaleString() : '-'}
@@ -276,7 +278,7 @@ export default function NoticesPage() {
     },
     {
       key: 'actions',
-      title: 'Actions',
+      title: t('common.actions'),
       render: (_, record) => (
         <div className="flex items-center gap-2">
           <motion.button
@@ -284,7 +286,7 @@ export default function NoticesPage() {
             whileTap={{ scale: 0.95 }}
             onClick={() => handleView(record)}
             className="p-2.5 rounded-xl hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors"
-            title="View"
+            title={t('common.edit')}
           >
             <Eye className="w-4 h-4" />
           </motion.button>
@@ -294,7 +296,7 @@ export default function NoticesPage() {
               whileTap={{ scale: 0.95 }}
               onClick={() => handleEdit(record)}
               className="p-2.5 rounded-xl hover:bg-blue-50 text-gray-400 hover:text-blue-600 transition-colors"
-              title="Edit"
+              title={t('common.edit')}
             >
               <Edit className="w-4 h-4" />
             </motion.button>
@@ -305,7 +307,7 @@ export default function NoticesPage() {
               whileTap={{ scale: 0.95 }}
               onClick={() => handleDelete(record.notice_id)}
               className="p-2.5 rounded-xl hover:bg-rose-50 text-gray-400 hover:text-rose-600 transition-colors"
-              title="Delete"
+              title={t('common.delete')}
             >
               <Trash2 className="w-4 h-4" />
             </motion.button>
@@ -323,10 +325,10 @@ export default function NoticesPage() {
       {/* Header */}
       <motion.div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold">Notice Management</h1>
+          <h1 className="text-4xl font-bold">{t('notice.title')}</h1>
           <p className="text-gray-600 flex items-center gap-2">
             <Sparkles size={18} />
-            Manage system notices and announcements
+            {t('notice.manageSystemNotices')}
           </p>
         </div>
         {hasPermission('notices:add') && (
@@ -334,7 +336,7 @@ export default function NoticesPage() {
             onClick={handleAdd}
             className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2 hover:bg-gray-800 transition-all"
           >
-            <Plus size={16} /> Add Notice
+            <Plus size={16} /> {t('notice.addNotice')}
           </button>
         )}
       </motion.div>
@@ -348,7 +350,7 @@ export default function NoticesPage() {
       />
 
       {/* Edit/Create Modal */}
-      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={isEditMode ? 'Edit Notice' : 'Add Notice'}>
+      <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={isEditMode ? t('notice.editNotice') : t('notice.addNotice')}>
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             {formFields.map(field => (
@@ -371,49 +373,49 @@ export default function NoticesPage() {
               onClick={() => setModalOpen(false)}
               className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all font-medium"
             >
-              Cancel
+              {t('common.cancel')}
             </button>
             <button
               onClick={isEditMode ? handleSaveUpdate : handleSaveAdd}
               disabled={loading}
               className="bg-black text-white px-5 py-2.5 rounded-xl hover:bg-gray-800 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? 'Saving...' : (isEditMode ? 'Update' : 'Create')}
+              {loading ? t('common.loading') : (isEditMode ? t('common.updated') : t('common.created'))}
             </button>
           </div>
         </div>
       </Modal>
 
       {/* View Modal */}
-      <Modal isOpen={viewModalOpen} onClose={() => setViewModalOpen(false)} title="Notice Details">
+      <Modal isOpen={viewModalOpen} onClose={() => setViewModalOpen(false)} title={t('notice.noticeDetails')}>
         {viewingNotice && (
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-500">Title</label>
+              <label className="text-sm font-medium text-gray-500">{t('notice.noticeTitle')}</label>
               <p className="text-lg font-semibold text-gray-900 mt-1">{viewingNotice.notice_title}</p>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm font-medium text-gray-500">Type</label>
+                <label className="text-sm font-medium text-gray-500">{t('notice.type')}</label>
                 <p className="text-gray-900 mt-1">
-                  {viewingNotice.notice_type === '1' ? 'Notice' : 'Announcement'}
+                  {viewingNotice.notice_type === '1' ? t('notice.notice') : t('notice.announcement')}
                 </p>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-500">Status</label>
+                <label className="text-sm font-medium text-gray-500">{t('common.status')}</label>
                 <p className="text-gray-900 mt-1">
-                  {viewingNotice.status === '0' ? 'Active' : 'Closed'}
+                  {viewingNotice.status === '0' ? t('common.active') : t('common.disabled')}
                 </p>
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-500">Content</label>
+              <label className="text-sm font-medium text-gray-500">{t('notice.content')}</label>
               <div className="mt-2 p-4 bg-gray-50 rounded-lg">
                 <p className="text-gray-900 whitespace-pre-wrap">{viewingNotice.notice_content}</p>
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-500">Created At</label>
+              <label className="text-sm font-medium text-gray-500">{t('notice.createdAt')}</label>
               <p className="text-gray-900 mt-1">
                 {viewingNotice.create_time ? new Date(viewingNotice.create_time).toLocaleString() : '-'}
               </p>

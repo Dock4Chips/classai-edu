@@ -5,8 +5,10 @@ import {motion} from 'framer-motion';
 import {Shield, Eye, EyeOff, CheckCircle, Lock} from 'lucide-react';
 import {UserService} from '@/lib/service/user';
 import {notification} from '@/utils/notification';
+import {useTranslation} from 'react-i18next';
 
 export default function ChangePasswordPage() {
+    const {t} = useTranslation();
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -30,12 +32,12 @@ export default function ChangePasswordPage() {
 
     const handleSubmit = () => {
         if (!formData.old_password || !formData.new_password || !formData.confirm_password) {
-            notification.error('Please fill in all fields');
+            notification.error(t('changePassword.pleaseFillAllFields'));
             return;
         }
 
         if (formData.new_password !== formData.confirm_password) {
-            setError('Passwords do not match');
+            setError(t('changePassword.passwordsDoNotMatch'));
             return;
         }
         setLoading(true);
@@ -69,10 +71,10 @@ export default function ChangePasswordPage() {
                     initial={{opacity: 0, y: -20}}
                     animate={{opacity: 1, y: 0}}
                 >
-                    <h1 className="text-4xl font-bold">Change Password</h1>
+                    <h1 className="text-4xl font-bold">{t('changePassword.title')}</h1>
                     <p className="text-gray-600 flex items-center gap-2 mt-1">
                         <Shield size={18}/>
-                        Update your password to keep your account secure
+                        {t('changePassword.updatePasswordSecure')}
                     </p>
                 </motion.div>
 
@@ -87,7 +89,7 @@ export default function ChangePasswordPage() {
                         {/* Old Password */}
                         <div>
                             <label className="block text-sm font-semibold text-gray-900 mb-2">
-                                Current Password
+                                {t('changePassword.currentPassword')}
                             </label>
                             <div className="relative">
                                 <input
@@ -95,7 +97,7 @@ export default function ChangePasswordPage() {
                                     value={formData.old_password}
                                     onChange={(e) => handleChange('old_password', e.target.value)}
                                     className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all outline-none text-sm"
-                                    placeholder="Enter your current password"
+                                    placeholder={t('changePassword.enterCurrentPassword')}
                                 />
                                 <button
                                     type="button"
@@ -111,7 +113,7 @@ export default function ChangePasswordPage() {
                         <div>
                             <label className="block text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
                                 <Lock size={16}/>
-                                New Password
+                                {t('changePassword.newPassword')}
                             </label>
                             <div className="relative">
                                 <input
@@ -119,7 +121,7 @@ export default function ChangePasswordPage() {
                                     value={formData.new_password}
                                     onChange={(e) => handleChange('new_password', e.target.value)}
                                     className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all outline-none text-sm"
-                                    placeholder="Enter your new password"
+                                    placeholder={t('changePassword.enterNewPassword')}
                                 />
                                 <button
                                     type="button"
@@ -135,7 +137,7 @@ export default function ChangePasswordPage() {
                                                  className={formData.new_password.length >= 8 ? 'text-green-600' : formData.new_password.length >= 6 ? 'text-yellow-600' : 'text-red-600'}/>
                                     <span
                                         className={`text-sm font-medium ${formData.new_password.length >= 8 ? 'text-green-600' : formData.new_password.length >= 6 ? 'text-yellow-600' : 'text-red-600'}`}>
-                  Password strength: {formData.new_password.length >= 8 ? 'Strong' : formData.new_password.length >= 6 ? 'Medium' : 'Weak'}
+                  {t('changePassword.passwordStrength')}: {formData.new_password.length >= 8 ? t('changePassword.strong') : formData.new_password.length >= 6 ? t('changePassword.medium') : t('changePassword.weak')}
                 </span>
                                 </div>
                             )}
@@ -145,7 +147,7 @@ export default function ChangePasswordPage() {
                         <div>
                             <label className="block text-sm font-semibold text-gray-900 mb-2 flex items-center gap-2">
                                 <CheckCircle size={16}/>
-                                Confirm New Password
+                                {t('changePassword.confirmNewPassword')}
                             </label>
                             <div className="relative">
                                 <input
@@ -153,7 +155,7 @@ export default function ChangePasswordPage() {
                                     value={formData.confirm_password}
                                     onChange={(e) => handleChange('confirm_password', e.target.value)}
                                     className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all outline-none text-sm"
-                                    placeholder="Confirm your new password"
+                                    placeholder={t('changePassword.confirmNewPasswordPlaceholder')}
                                 />
                                 <button
                                     type="button"
@@ -169,18 +171,18 @@ export default function ChangePasswordPage() {
                             {formData.confirm_password && !error && formData.new_password === formData.confirm_password && (
                                 <div className="flex items-center gap-2 mt-2">
                                     <CheckCircle size={16} className="text-green-600"/>
-                                    <span className="text-sm font-medium text-green-600">Passwords match</span>
+                                    <span className="text-sm font-medium text-green-600">{t('changePassword.passwordsMatch')}</span>
                                 </div>
                             )}
                         </div>
 
                         {/* Password Requirements */}
                         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                            <h3 className="text-sm font-semibold text-blue-900 mb-2">Password Requirements:</h3>
+                            <h3 className="text-sm font-semibold text-blue-900 mb-2">{t('changePassword.passwordRequirements')}:</h3>
                             <ul className="text-sm text-blue-700 space-y-1">
-                                <li>• At least 6 characters long</li>
-                                <li>• Contains both uppercase and lowercase letters is recommended</li>
-                                <li>• Contains numbers and special characters is recommended</li>
+                                <li>• {t('changePassword.atLeast6Characters')}</li>
+                                <li>• {t('changePassword.upperAndLowerCaseRecommended')}</li>
+                                <li>• {t('changePassword.numbersAndSpecialCharsRecommended')}</li>
                             </ul>
                         </div>
 
@@ -194,7 +196,7 @@ export default function ChangePasswordPage() {
                                 className="px-6 py-3 bg-black text-white rounded-xl font-semibold shadow-lg hover:bg-gray-800 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 <Shield size={18}/>
-                                {loading ? 'Changing Password...' : 'Change Password'}
+                                {loading ? t('changePassword.changingPassword') : t('changePassword.changePassword')}
                             </motion.button>
                         </div>
                     </div>

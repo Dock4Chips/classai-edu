@@ -8,8 +8,11 @@ import { Results } from '@/lib/api';
 import { Table, Column } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Tabs } from '@/components/ui/tabs';
+import {useTranslation} from 'react-i18next';
+import {notification} from '@/utils/notification';
 
 export default function MonitorPage() {
+  const {t} = useTranslation();
   const [loginLogs, setLoginLogs] = useState<any[]>([]);
   const [onlineUsers, setOnlineUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -76,37 +79,37 @@ export default function MonitorPage() {
   const logColumns: Column<any>[] = [
     {
       key: 'user_name',
-      title: 'Username',
+      title: t('monitor.username'),
     },
     {
       key: 'ipaddr',
-      title: 'IP Address',
+      title: t('monitor.ipAddress'),
       render: value => (
         <code className="px-2 py-1 bg-gray-100 rounded text-sm text-gray-700">{value}</code>
       ),
     },
     {
       key: 'login_location',
-      title: 'Location',
+      title: t('monitor.location'),
       render: value => value || <span className="text-gray-400 text-sm">-</span>,
     },
     {
       key: 'browser',
-      title: 'Browser',
+      title: t('monitor.browser'),
       render: value => value || <span className="text-gray-400 text-sm">-</span>,
     },
     {
       key: 'status',
-      title: 'Status',
+      title: t('monitor.status'),
       render: value => (
         <Badge variant={value === '0' ? 'success' : 'error'}>
-          {value === '0' ? 'Success' : 'Failed'}
+          {value === '0' ? t('monitor.success') : t('monitor.failed')}
         </Badge>
       ),
     },
     {
       key: 'login_time',
-      title: 'Login Time',
+      title: t('monitor.loginTime'),
       render: value =>
         value ? new Date(value).toLocaleString() : <span className="text-gray-400">-</span>,
     },
@@ -115,23 +118,23 @@ export default function MonitorPage() {
   const onlineColumns: Column<any>[] = [
     {
       key: 'user_name',
-      title: 'Username',
+      title: t('monitor.username'),
     },
     {
       key: 'ipaddr',
-      title: 'IP Address',
+      title: t('monitor.ipAddress'),
       render: value => (
         <code className="px-2 py-1 bg-gray-100 rounded text-sm text-gray-700">{value}</code>
       ),
     },
     {
       key: 'browser',
-      title: 'Browser',
+      title: t('monitor.browser'),
       render: value => value || <span className="text-gray-400 text-sm">-</span>,
     },
     {
       key: 'login_time',
-      title: 'Login Time',
+      title: t('monitor.loginTime'),
       render: value =>
         value ? new Date(value).toLocaleString() : <span className="text-gray-400">-</span>,
     },
@@ -140,7 +143,7 @@ export default function MonitorPage() {
   const tabs = [
     {
       key: 'logs',
-      label: 'Login Logs',
+      label: t('monitor.loginLogs'),
       content: (
         <Table
           columns={logColumns}
@@ -157,7 +160,7 @@ export default function MonitorPage() {
     },
     {
       key: 'online',
-      label: 'Online Users',
+      label: t('monitor.onlineUsers'),
       content: (
         <Table
           columns={onlineColumns}
@@ -179,10 +182,10 @@ export default function MonitorPage() {
       {/* header */}
       <motion.div className="flex items-center justify-between">
         <div>
-          <h1 className="text-4xl font-bold">System Monitor</h1>
+          <h1 className="text-4xl font-bold">{t('monitor.title')}</h1>
           <p className="text-gray-600 flex items-center gap-2">
             <Sparkles size={18} />
-            Monitor system status
+            {t('monitor.monitorSystemStatus')}
           </p>
         </div>
       </motion.div>
