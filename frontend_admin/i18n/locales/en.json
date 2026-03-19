@@ -363,5 +363,41 @@
     "pleaseFillAllFields": "Please fill in all required fields",
     "noChangesMade": "No changes made",
     "noticeDetails": "Notice Details"
+  },
+  "sidebar": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "roles": "Roles",
+    "menus": "Menus",
+    "devices": "Devices",
+    "models": "Models",
+    "banners": "Banners",
+    "settings": "Settings",
+    "notices": "Notices",
+    "monitor": "Monitor",
+    "administration": "Administration",
+    "settingsOverview": "Settings Overview",
+    "logout": "Logout",
+    "loadingMenus": "Loading menus...",
+    "noAccessibleMenus": "No accessible menus"
+  },
+  "adminLayout": {
+    "search": "Search...",
+    "profile": "Profile",
+    "changePassword": "Change Password",
+    "settings": "Settings",
+    "logout": "Logout",
+    "notice": "Notice",
+    "announcement": "Announcement",
+    "viewAllNotices": "View All Notices",
+    "noticeDetails": "Notice Details",
+    "allNotices": "All Notices",
+    "loading": "Loading...",
+    "noNoticesFound": "No notices found",
+    "total": "Total:",
+    "notices": "notices",
+    "page": "Page",
+    "of": "of",
+    "pages": ""
   }
 }

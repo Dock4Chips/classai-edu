@@ -363,5 +363,41 @@
     "pleaseFillAllFields": "请填写所有必填字段",
     "noChangesMade": "没有修改",
     "noticeDetails": "公告详情"
+  },
+  "sidebar": {
+    "dashboard": "仪表盘",
+    "users": "用户管理",
+    "roles": "角色管理",
+    "menus": "菜单管理",
+    "devices": "设备管理",
+    "models": "模型管理",
+    "banners": "轮播图管理",
+    "settings": "系统设置",
+    "notices": "公告管理",
+    "monitor": "系统监控",
+    "administration": "系统管理",
+    "settingsOverview": "设置概览",
+    "logout": "退出登录",
+    "loadingMenus": "加载菜单中...",
+    "noAccessibleMenus": "无可用菜单"
+  },
+  "adminLayout": {
+    "search": "搜索...",
+    "profile": "个人中心",
+    "changePassword": "修改密码",
+    "settings": "系统设置",
+    "logout": "退出登录",
+    "notice": "通知",
+    "announcement": "公告",
+    "viewAllNotices": "查看全部公告",
+    "noticeDetails": "公告详情",
+    "allNotices": "所有公告",
+    "loading": "加载中...",
+    "noNoticesFound": "暂无公告",
+    "total": "共",
+    "notices": "条公告",
+    "page": "第",
+    "of": "页，共",
+    "pages": "页"
   }
 }

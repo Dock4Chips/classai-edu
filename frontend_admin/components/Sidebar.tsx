@@ -25,6 +25,7 @@ import {IdentityService} from "@/lib/service/identity";
 import {notification} from "@/utils/notification";
 import {apiClient} from "@/lib/api";
 import {usePermissions} from "@/lib/contexts/PermissionsContext";
+import {useTranslation} from 'react-i18next';
 
 interface MenuItem {
     key: string;
@@ -111,6 +112,7 @@ interface SidebarProps {
 export function Sidebar({collapsed, onToggle}: SidebarProps) {
     const router = useRouter();
     const pathname = usePathname();
+    const {t} = useTranslation();
     const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
     const {allowedMenuKeys, loading: menuLoading} = usePermissions();
 
@@ -125,7 +127,7 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
     // 根据模块选择菜单并过滤
     const baseMenuItems = isInSettingsModule ? settingsModuleMenuItems : mainMenuItems;
     const currentMenuItems = menuLoading ? [] : filterMenuItems(baseMenuItems);
-    const currentTitle = isInSettingsModule ? 'Settings' : 'Administration';
+    const currentTitle = isInSettingsModule ? t('sidebar.settings') : t('sidebar.administration');
 
     const toggleMenu = (key: string) => {
         setExpandedMenu(expandedMenu === key ? null : key);
@@ -249,11 +251,11 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
             <nav className="flex-1 overflow-y-auto py-5 px-3 space-y-1.5">
                 {menuLoading ? (
                     <div className="flex items-center justify-center h-full">
-                        <div className="text-gray-400 text-sm">Loading menus...</div>
+                        <div className="text-gray-400 text-sm">{t('sidebar.loadingMenus')}</div>
                     </div>
                 ) : currentMenuItems.length === 0 ? (
                     <div className="flex items-center justify-center h-full">
-                        <div className="text-gray-400 text-sm">No accessible menus</div>
+                        <div className="text-gray-400 text-sm">{t('sidebar.noAccessibleMenus')}</div>
                     </div>
                 ) : (
                     currentMenuItems.map((item, index) => {
@@ -316,7 +318,7 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
                                                 transition={{duration: 0.2}}
                                                 className={`relative z-10 text-sm font-medium whitespace-nowrap ${isActive ? 'text-white' : 'text-gray-700 group-hover:text-black'} transition-colors`}
                                             >
-                                                {item.label}
+                                                {t(`sidebar.${item.key}`)}
                                             </motion.span>
                                         )}
                                     </AnimatePresence>
@@ -388,7 +390,7 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
                                                             <span
                                                                 className={`relative z-10 text-sm font-medium whitespace-nowrap ${isChildActive ? 'text-black' : 'text-gray-700 group-hover:text-black'} transition-colors`}
                                                             >
-                                                                {child.label}
+                                                                {t(`sidebar.${child.key}`)}
                                                             </span>
                                                         </motion.button>
                                                     );
@@ -430,7 +432,7 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
                                 exit={{opacity: 0}}
                                 className="text-sm font-medium relative z-10"
                             >
-                                Logout
+                                {t('sidebar.logout')}
                             </motion.span>
                         )}
                     </AnimatePresence>
