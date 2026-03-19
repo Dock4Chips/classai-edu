@@ -23,6 +23,7 @@ import {Dropdown, DropdownButton} from '@/components/ui/dropdown';
 import {Modal} from '@/components/ui/modal';
 import {useRouter} from 'next/navigation';
 import {notification} from '@/utils/notification';
+import {useTranslation} from 'react-i18next';
 
 interface AdminLayoutProps {
     children: React.ReactNode;
@@ -62,6 +63,7 @@ const userMenuItems = [
 
 export function AdminLayout({children}: AdminLayoutProps) {
     const router = useRouter();
+    const {t} = useTranslation();
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
     const [userInfo, setUserInfo] = useState<Results>();
     const [loading, setLoading] = useState(false);
@@ -303,7 +305,7 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                     className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-blue-500 transition-colors"/>
                                 <input
                                     type="text"
-                                    placeholder="Search..."
+                                    placeholder={t('adminLayout.search')}
                                     className="w-full pl-10 pr-4 py-2 bg-gray-50/80 border border-gray-200 rounded-xl focus:border-blue-500 focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all outline-none text-sm placeholder-gray-400"
                                 />
                                 <div
@@ -349,7 +351,7 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                                             {notice.notice_title}
                                                         </p>
                                                         <p className="text-xs text-gray-500 truncate mt-0.5">
-                                                            {notice.notice_type === '1' ? 'Notice' : 'Announcement'}
+                                                            {notice.notice_type === '1' ? t('notice.notice') : t('notice.announcement')}
                                                         </p>
                                                     </div>
                                                 </div>
@@ -362,7 +364,7 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                     }] : []),
                                     {
                                         key: 'view_all',
-                                        label: 'View All Notices',
+                                        label: t('adminLayout.viewAllNotices'),
                                         icon: <FileText className="w-4 h-4"/>,
                                         onClick: handleOpenNoticeList,
                                     },
@@ -392,7 +394,7 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                             )}
                                             <div className="text-left hidden md:block">
                                                 <p className="text-sm font-semibold text-gray-900">
-                                                    {loading ? 'Loading...' : (userInfo?.user_name)}
+                                                    {loading ? t('adminLayout.loading') : (userInfo?.user_name)}
                                                 </p>
                                                 <p className="text-xs text-gray-500">{userInfo?.email}</p>
                                             </div>
@@ -428,17 +430,25 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                         disabled: true,
                                     },
                                     {key: 'user_info_divider', divider: true},
-                                    // 从配置生成菜单项
-                                    ...userMenuItems.map(item => ({
-                                        ...item,
-                                        onClick: () => {
-                                            if (item.key === 'logout') {
-                                                handleLogout();
-                                            } else if (item.path) {
-                                                router.push(item.path);
-                                            }
-                                        },
-                                    })),
+                                    // 从配置生成菜单项（使用国际化）
+                                    ...userMenuItems.map(item => {
+                                        if (item.key === 'menu_divider') {
+                                            return item;
+                                        }
+                                        // 将下划线转换为驼峰命名以匹配国际化键
+                                        const i18nKey = item.key.replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
+                                        return {
+                                            ...item,
+                                            label: t(`adminLayout.${i18nKey}`),
+                                            onClick: () => {
+                                                if (item.key === 'logout') {
+                                                    handleLogout();
+                                                } else if (item.path) {
+                                                    router.push(item.path);
+                                                }
+                                            },
+                                        };
+                                    }),
                                 ]}
                             />
                         </div>
@@ -452,29 +462,29 @@ export function AdminLayout({children}: AdminLayoutProps) {
             </div>
 
             {/* Notice Detail Modal */}
-            <Modal isOpen={noticeModalOpen} onClose={() => setNoticeModalOpen(false)} title="Notice Details">
+            <Modal isOpen={noticeModalOpen} onClose={() => setNoticeModalOpen(false)} title={t('adminLayout.noticeDetails')}>
                 {viewingNotice && (
                     <div className="space-y-4">
                         <div>
-                            <label className="text-sm font-medium text-gray-500">Title</label>
+                            <label className="text-sm font-medium text-gray-500">{t('notice.noticeTitle')}</label>
                             <p className="text-lg font-semibold text-gray-900 mt-1">{viewingNotice.notice_title}</p>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="text-sm font-medium text-gray-500">Type</label>
+                                <label className="text-sm font-medium text-gray-500">{t('notice.type')}</label>
                                 <p className="text-gray-900 mt-1">
-                                    {viewingNotice.notice_type === '1' ? 'Notice' : 'Announcement'}
+                                    {viewingNotice.notice_type === '1' ? t('notice.notice') : t('notice.announcement')}
                                 </p>
                             </div>
                         </div>
                         <div>
-                            <label className="text-sm font-medium text-gray-500">Content</label>
+                            <label className="text-sm font-medium text-gray-500">{t('notice.content')}</label>
                             <div className="mt-2 p-4 bg-gray-50 rounded-lg">
                                 <p className="text-gray-900 whitespace-pre-wrap">{viewingNotice.notice_content}</p>
                             </div>
                         </div>
                         <div>
-                            <label className="text-sm font-medium text-gray-500">Created At</label>
+                            <label className="text-sm font-medium text-gray-500">{t('notice.createdAt')}</label>
                             <p className="text-gray-900 mt-1">
                                 {viewingNotice.create_time ? new Date(viewingNotice.create_time).toLocaleString() : '-'}
                             </p>
@@ -484,15 +494,15 @@ export function AdminLayout({children}: AdminLayoutProps) {
             </Modal>
 
             {/* Notice List Modal */}
-            <Modal isOpen={noticeListModalOpen} onClose={() => setNoticeListModalOpen(false)} title="All Notices"
+            <Modal isOpen={noticeListModalOpen} onClose={() => setNoticeListModalOpen(false)} title={t('adminLayout.allNotices')}
                    size="lg">
                 <div className="space-y-4">
                     {/* Notice List */}
                     <div className="space-y-2 max-h-[50vh] overflow-y-auto">
                         {loadingNotices ? (
-                            <div className="text-center py-8 text-gray-500">Loading...</div>
+                            <div className="text-center py-8 text-gray-500">{t('adminLayout.loading')}</div>
                         ) : allNotices.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500">No notices found</div>
+                            <div className="text-center py-8 text-gray-500">{t('adminLayout.noNoticesFound')}</div>
                         ) : (
                             allNotices.map((notice) => (
                                 <motion.div
@@ -520,10 +530,10 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                                 </p>
                                                 {notice.notice_type === '1' ? (
                                                     <span
-                                                        className="px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full flex-shrink-0">Notice</span>
+                                                        className="px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full flex-shrink-0">{t('notice.notice')}</span>
                                                 ) : (
                                                     <span
-                                                        className="px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full flex-shrink-0">Announcement</span>
+                                                        className="px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full flex-shrink-0">{t('notice.announcement')}</span>
                                                 )}
                                             </div>
                                             <p className="text-xs text-gray-400">
@@ -540,7 +550,7 @@ export function AdminLayout({children}: AdminLayoutProps) {
                     {allNotices.length > 0 && (
                         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                             <span className="text-sm text-gray-500">
-                                Total: {total || allNotices.length} notices
+                                {t('adminLayout.total')} {total || allNotices.length} {t('adminLayout.notices')}
                             </span>
                             <div className="flex items-center gap-2">
                                 <motion.button
@@ -553,7 +563,7 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                     <ChevronLeft className="w-4 h-4"/>
                                 </motion.button>
                                 <span className="text-sm text-gray-700 px-3">
-                                    Page {currentPage} of {Math.max(1, Math.ceil((total || allNotices.length) / pageSize))}
+                                    {t('adminLayout.page')} {currentPage} {t('adminLayout.of')} {Math.max(1, Math.ceil((total || allNotices.length) / pageSize))}
                                 </span>
                                 <motion.button
                                     whileHover={{scale: 1.05}}
