@@ -4,8 +4,10 @@ import { motion } from 'framer-motion';
 import { Settings, Save, Sparkles, Shield, Bell, Globe, Lock, Mail, ToggleLeft, ToggleRight } from 'lucide-react';
 import { useState } from 'react';
 import { usePermissions } from '@/lib/contexts/PermissionsContext';
+import {useTranslation} from 'react-i18next';
 
 export default function SettingsPage() {
+  const {t} = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission('settings:edit');
 
@@ -36,11 +38,11 @@ export default function SettingsPage() {
         animate={{ opacity: 1, y: 0 }}
       >
         <h1 className="text-4xl font-bold mb-2 text-black">
-          System Settings
+          {t('settings.title')}
         </h1>
         <p className="text-gray-600 flex items-center gap-2">
           <Sparkles className="text-indigo-500" size={18} />
-          <span>Manage system configuration and preferences</span>
+          <span>{t('settings.manageSystemConfig')}</span>
         </p>
       </motion.div>
 
@@ -59,15 +61,15 @@ export default function SettingsPage() {
                 <Globe className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-black">General Settings</h2>
-                <p className="text-sm text-gray-500">Basic system configuration</p>
+                <h2 className="text-xl font-bold text-black">{t('settings.generalSettings')}</h2>
+                <p className="text-sm text-gray-500">{t('settings.basicSystemConfig')}</p>
               </div>
             </div>
           </div>
 
           <div className="p-6 space-y-5">
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">System Name</label>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">{t('settings.systemName')}</label>
               <input
                 type="text"
                 value={settings.systemName}
@@ -78,7 +80,7 @@ export default function SettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-gray-900 mb-2">System URL</label>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">{t('settings.systemUrl')}</label>
               <input
                 type="url"
                 value={settings.systemUrl}
@@ -104,8 +106,8 @@ export default function SettingsPage() {
                 <Shield className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-black">Security</h2>
-                <p className="text-sm text-gray-500">Password and authentication settings</p>
+                <h2 className="text-xl font-bold text-black">{t('settings.security')}</h2>
+                <p className="text-sm text-gray-500">{t('settings.passwordAndAuth')}</p>
               </div>
             </div>
           </div>
@@ -117,8 +119,8 @@ export default function SettingsPage() {
                   <Lock className="w-5 h-5 text-gray-700" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">Password Complexity</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Require uppercase, lowercase, numbers and special characters</p>
+                  <p className="text-sm font-semibold text-gray-900">{t('settings.passwordComplexity')}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{t('settings.requireUppercaseLowercaseNumbersSpecialChars')}</p>
                 </div>
               </div>
               <button
@@ -142,8 +144,8 @@ export default function SettingsPage() {
                   <Shield className="w-5 h-5 text-gray-700" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">Two-Factor Authentication</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Enable additional security verification layer</p>
+                  <p className="text-sm font-semibold text-gray-900">{t('settings.twoFactorAuth')}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{t('settings.enableAdditionalSecurityLayer')}</p>
                 </div>
               </div>
               <button
@@ -176,8 +178,8 @@ export default function SettingsPage() {
                 <Bell className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-black">Notifications</h2>
-                <p className="text-sm text-gray-500">Email and alert preferences</p>
+                <h2 className="text-xl font-bold text-black">{t('settings.notifications')}</h2>
+                <p className="text-sm text-gray-500">{t('settings.emailAlertPreferences')}</p>
               </div>
             </div>
           </div>
@@ -189,8 +191,8 @@ export default function SettingsPage() {
                   <Mail className="w-5 h-5 text-gray-700" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">Email Notifications</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Receive important system event notifications</p>
+                  <p className="text-sm font-semibold text-gray-900">{t('settings.emailNotifications')}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{t('settings.receiveSystemEventNotifications')}</p>
                 </div>
               </div>
               <button
@@ -214,8 +216,8 @@ export default function SettingsPage() {
                   <Bell className="w-5 h-5 text-gray-700" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">Login Alerts</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Send notifications on new device login</p>
+                  <p className="text-sm font-semibold text-gray-900">{t('settings.loginAlerts')}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{t('settings.sendNewDeviceLoginNotification')}</p>
                 </div>
               </div>
               <button
@@ -248,8 +250,8 @@ export default function SettingsPage() {
                 <Settings className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-black">System</h2>
-                <p className="text-sm text-gray-500">System-wide settings and modes</p>
+                <h2 className="text-xl font-bold text-black">{t('settings.systemOptions')}</h2>
+                <p className="text-sm text-gray-500">{t('settings.systemWideSettings')}</p>
               </div>
             </div>
           </div>
@@ -261,8 +263,8 @@ export default function SettingsPage() {
                   <Globe className="w-5 h-5 text-gray-700" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">Maintenance Mode</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Only administrators can access when enabled</p>
+                  <p className="text-sm font-semibold text-gray-900">{t('settings.maintenanceMode')}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{t('settings.onlyAdminAccessWhenEnabled')}</p>
                 </div>
               </div>
               <button
@@ -286,8 +288,8 @@ export default function SettingsPage() {
                   <Lock className="w-5 h-5 text-gray-700" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">Allow Registration</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Open new user registration to public</p>
+                  <p className="text-sm font-semibold text-gray-900">{t('settings.allowRegistration')}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{t('settings.openRegistrationToPublic')}</p>
                 </div>
               </div>
               <button
@@ -322,7 +324,7 @@ export default function SettingsPage() {
             className="px-6 py-3 bg-black text-white rounded-xl shadow-lg hover:shadow-xl flex items-center gap-2 font-semibold transition-all"
           >
             <Save className="w-4 h-4" />
-            <span>Save Changes</span>
+            <span>{t('settings.saveChanges')}</span>
           </motion.button>
         </motion.div>
       )}

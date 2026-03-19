@@ -13,8 +13,10 @@ import {notification} from '@/utils/notification';
 import {confirm} from '@/utils/confirm';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
+import {useTranslation} from 'react-i18next';
 
 export default function MenusPage() {
+    const {t} = useTranslation();
     const {hasPermission} = usePermissions();
     const [menus, setMenus] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -38,186 +40,186 @@ export default function MenusPage() {
     const updateFormFields: FormFieldConfig[] = [
         {
             key: 'menu_name',
-            label: 'Menu Name',
+            label: t('menu.menuName'),
             type: 'text',
             colSpan: 2,
-            placeholder: 'Enter menu name',
+            placeholder: t('menu.menuName'),
             required: true
         },
         {
             key: 'menu_key',
-            label: 'Menu Key',
+            label: t('menu.menuKey'),
             type: 'text',
             colSpan: 2,
-            placeholder: 'e.g., dashboard, users, settings',
-            description: 'Unique identifier for permission matching'
+            placeholder: t('menu.menuKeyPlaceholder'),
+            description: t('menu.menuKeyDescription')
         },
         {
             key: 'parent_id',
-            label: 'Parent Menu',
+            label: t('menu.parentMenu'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: 'Root Menu (Top Level)'},
+                {value: '0', label: t('menu.rootMenu')},
                 ...menus.filter(m => m.parent_id === 0).map(m => ({
                     value: String(m.menu_id),
                     label: m.menu_name
                 }))
             ],
-            placeholder: 'Select parent menu'
+            placeholder: t('menu.selectParentMenu')
         },
         {
             key: 'order_num',
-            label: 'Order',
+            label: t('menu.orderNum'),
             type: 'number',
             colSpan: 1,
             placeholder: '0',
-            description: 'Display order'
+            description: t('menu.displayOrder')
         },
         {
             key: 'path',
-            label: 'Path',
+            label: t('menu.path'),
             type: 'text',
             colSpan: 1,
             placeholder: '/admin/dashboard',
-            description: 'Route path'
+            description: t('menu.routePath')
         },
         {
             key: 'icon',
-            label: 'Icon',
+            label: t('menu.icon'),
             type: 'text',
             colSpan: 1,
             placeholder: 'LayoutDashboard',
-            description: 'Lucide icon name'
+            description: t('menu.lucideIcon')
         },
         {
             key: 'menu_type',
-            label: 'Menu Type',
+            label: t('menu.menuType'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: 'M', label: 'Directory'},
-                {value: 'C', label: 'Menu'},
-                {value: 'F', label: 'Button'},
+                {value: 'M', label: t('menu.menuTypes.directory')},
+                {value: 'C', label: t('menu.menuTypes.menu')},
+                {value: 'F', label: t('menu.menuTypes.button')},
             ],
-            placeholder: 'Select type'
+            placeholder: t('menu.selectType')
         },
         {
             key: 'status',
-            label: 'Status',
+            label: t('common.status'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: 0, label: 'Active'},
-                {value: 1, label: 'Disabled'},
+                {value: 0, label: t('common.active')},
+                {value: 1, label: t('common.disabled')},
             ],
-            placeholder: 'Select status'
+            placeholder: t('menu.selectStatus')
         },
         {
             key: 'is_visible',
-            label: 'Visible',
+            label: t('menu.visible'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: 1, label: 'Yes'},
-                {value: 0, label: 'No'},
+                {value: 1, label: t('common.yes')},
+                {value: 0, label: t('common.no')},
             ],
-            placeholder: 'Select visibility'
+            placeholder: t('menu.selectVisibility')
         },
-        {key: 'remark', label: 'Remark', type: 'textarea', rows: 3, colSpan: 2, placeholder: 'Enter remarks'},
+        {key: 'remark', label: t('user.remark'), type: 'textarea', rows: 3, colSpan: 2, placeholder: t('menu.enterRemarks')},
     ];
 
     /** 新增表单字段配置 */
     const addFormFields: FormFieldConfig[] = [
         {
             key: 'menu_name',
-            label: 'Menu Name',
+            label: t('menu.menuName'),
             type: 'text',
             colSpan: 2,
-            placeholder: 'Enter menu name',
+            placeholder: t('menu.menuName'),
             required: true
         },
         {
             key: 'menu_key',
-            label: 'Menu Key',
+            label: t('menu.menuKey'),
             type: 'text',
             colSpan: 2,
-            placeholder: 'e.g., dashboard, users, settings',
-            description: 'Unique identifier for permission matching'
+            placeholder: t('menu.menuKeyPlaceholder'),
+            description: t('menu.menuKeyDescription')
         },
         {
             key: 'parent_id',
-            label: 'Parent Menu',
+            label: t('menu.parentMenu'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: 'Root Menu (Top Level)'},
+                {value: '0', label: t('menu.rootMenu')},
                 ...menus.filter(m => m.parent_id === 0).map(m => ({
                     value: String(m.menu_id),
                     label: m.menu_name
                 }))
             ],
-            placeholder: 'Select parent menu'
+            placeholder: t('menu.selectParentMenu')
         },
         {
             key: 'order_num',
-            label: 'Order',
+            label: t('menu.orderNum'),
             type: 'number',
             colSpan: 1,
             placeholder: '0',
-            description: 'Display order'
+            description: t('menu.displayOrder')
         },
         {
             key: 'path',
-            label: 'Path',
+            label: t('menu.path'),
             type: 'text',
             colSpan: 1,
             placeholder: '/admin/dashboard',
-            description: 'Route path'
+            description: t('menu.routePath')
         },
         {
             key: 'icon',
-            label: 'Icon',
+            label: t('menu.icon'),
             type: 'text',
             colSpan: 1,
             placeholder: 'LayoutDashboard',
-            description: 'Lucide icon name'
+            description: t('menu.lucideIcon')
         },
         {
             key: 'menu_type',
-            label: 'Menu Type',
+            label: t('menu.menuType'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: 'M', label: 'Directory'},
-                {value: 'C', label: 'Menu'},
-                {value: 'F', label: 'Button'},
+                {value: 'M', label: t('menu.menuTypes.directory')},
+                {value: 'C', label: t('menu.menuTypes.menu')},
+                {value: 'F', label: t('menu.menuTypes.button')},
             ],
-            placeholder: 'Select type'
+            placeholder: t('menu.selectType')
         },
         {
             key: 'status',
-            label: 'Status',
+            label: t('common.status'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: 'Active'},
-                {value: '1', label: 'Disabled'},
+                {value: '0', label: t('common.active')},
+                {value: '1', label: t('common.disabled')},
             ],
-            placeholder: 'Select status'
+            placeholder: t('menu.selectStatus')
         },
         {
             key: 'is_visible',
-            label: 'Visible',
+            label: t('menu.visible'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '1', label: 'Yes'},
-                {value: '0', label: 'No'},
+                {value: '1', label: t('common.yes')},
+                {value: '0', label: t('common.no')},
             ],
-            placeholder: 'Select visibility'
+            placeholder: t('menu.selectVisibility')
         },
-        {key: 'remark', label: 'Remark', type: 'textarea', rows: 3, colSpan: 2, placeholder: 'Enter remarks'},
+        {key: 'remark', label: t('user.remark'), type: 'textarea', rows: 3, colSpan: 2, placeholder: t('menu.enterRemarks')},
     ];
 
     /** 生成空表单 */
@@ -260,13 +262,13 @@ export default function MenusPage() {
 
     /** 删除 */
     const handleDelete = async (menuId: number) => {
-        const confirmed = await confirm.danger('Are you sure you want to delete this menu?');
+        const confirmed = await confirm.danger(t('common.confirmDelete'));
         if (!confirmed) return;
 
         setLoading(true);
         const results = await MenuService.deleteMenu(menuId);
         if (results.code === 200) {
-            notification.success('Deleted successfully');
+            notification.success(t('common.deletedSuccessfully'));
             void fetchMenus();
         }
         setLoading(false);
@@ -329,7 +331,7 @@ export default function MenusPage() {
         setLoading(true);
         const result = await MenuService.assignMenusToRole(selectedRole.role_id, roleMenus);
         if (result.code === 200) {
-            notification.success('Menus assigned successfully');
+            notification.success(t('menu.menusAssignedSuccessfully'));
             setAssignModalOpen(false);
             setSelectedRole(null);
             setRoleMenus([]);
@@ -348,7 +350,7 @@ export default function MenusPage() {
         setLoading(true);
         const results = await MenuService.createMenu(data);
         if (results.code === 200) {
-            notification.success('Created successfully');
+            notification.success(t('common.createdSuccessfully'));
             setModalOpen(false);
             void fetchMenus();
             return;
@@ -374,7 +376,7 @@ export default function MenusPage() {
         setLoading(true);
         const results = await MenuService.updateMenu(updateForm.menu_id, data);
         if (results.code === 200) {
-            notification.success('Updated successfully');
+            notification.success(t('common.updatedSuccessfully'));
             setModalOpen(false);
             void fetchMenus();
             return;
@@ -391,20 +393,20 @@ export default function MenusPage() {
         },
         {
             key: 'menu_name',
-            title: 'Menu Name',
+            title: t('menu.menuName'),
             render: (value, record) => (
                 <div className="flex items-center gap-2">
                     {record.parent_id !== 0 && <span className="text-gray-400">└</span>}
                     <span>{value}</span>
                     {record.parent_id !== 0 && (
-                        <Badge variant="default" className="text-xs">Child</Badge>
+                        <Badge variant="default" className="text-xs">{t('menu.child')}</Badge>
                     )}
                 </div>
             ),
         },
         {
             key: 'menu_key',
-            title: 'Menu Key',
+            title: t('menu.menuKey'),
             render: value => (
                 <code className="px-2 py-1 bg-gray-100 rounded text-sm text-gray-700 font-mono">
                     {value || '-'}
@@ -413,17 +415,17 @@ export default function MenusPage() {
         },
         {
             key: 'path',
-            title: 'Path',
+            title: t('menu.path'),
             render: value => value || <span className="text-gray-400">-</span>,
         },
         {
             key: 'menu_type',
-            title: 'Type',
+            title: t('menu.menuType'),
             render: value => {
                 const typeMap: Record<string, {label: string; variant: any}> = {
-                    'M': {label: 'Directory', variant: 'info'},
-                    'C': {label: 'Menu', variant: 'default'},
-                    'F': {label: 'Button', variant: 'gradient'},
+                    'M': {label: t('menu.menuTypes.directory'), variant: 'info'},
+                    'C': {label: t('menu.menuTypes.menu'), variant: 'default'},
+                    'F': {label: t('menu.menuTypes.button'), variant: 'gradient'},
                 };
                 const config = typeMap[value] || typeMap['C'];
                 return <Badge variant={config.variant}>{config.label}</Badge>;
@@ -431,36 +433,36 @@ export default function MenusPage() {
         },
         {
             key: 'order_num',
-            title: 'Order',
+            title: t('menu.orderNum'),
             render: value => value ?? 0,
         },
         {
             key: 'status',
-            title: 'Status',
+            title: t('common.status'),
             render: value => (
                 <Badge variant={value === 0 ? 'success' : 'warning'}>
-                    {value === 0 ? 'Active' : 'Disabled'}
+                    {value === 0 ? t('common.active') : t('common.disabled')}
                 </Badge>
             ),
         },
         {
             key: 'is_visible',
-            title: 'Visible',
+            title: t('menu.visible'),
             render: value => (
                 <Badge variant={value === 1 ? 'success' : 'default'}>
-                    {value === 1 ? 'Yes' : 'No'}
+                    {value === 1 ? t('common.yes') : t('common.no')}
                 </Badge>
             ),
         },
         {
             key: 'actions',
-            title: 'Actions',
+            title: t('common.actions'),
             render: (_, record) => {
                 const items = [];
                 if (hasPermission('menus:edit')) {
                     items.push({
                         key: 'edit',
-                        label: 'Edit',
+                        label: t('common.edit'),
                         icon: <Pencil className="w-4 h-4"/>,
                         onClick: () => handleEdit(record),
                     });
@@ -468,7 +470,7 @@ export default function MenusPage() {
                 if (hasPermission('menus:delete')) {
                     items.push({
                         key: 'delete',
-                        label: 'Delete',
+                        label: t('common.delete'),
                         icon: <Trash2 className="w-4 h-4"/>,
                         danger: true,
                         onClick: () => handleDelete(record.menu_id),
@@ -498,10 +500,10 @@ export default function MenusPage() {
             {/* header */}
             <motion.div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-4xl font-bold">Menu Management</h1>
+                    <h1 className="text-4xl font-bold">{t('menu.title')}</h1>
                     <p className="text-gray-600 flex items-center gap-2">
                         <ListTree size={18}/>
-                        Manage system menus and permissions
+                        {t('menu.title')}
                     </p>
                 </div>
                 {hasPermission('menus:add') && (
@@ -509,7 +511,7 @@ export default function MenusPage() {
                         onClick={handleAdd}
                         className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
                     >
-                        <Plus size={16}/> Add Menu
+                        <Plus size={16}/> {t('menu.addMenu')}
                     </button>
                 )}
             </motion.div>
@@ -529,7 +531,7 @@ export default function MenusPage() {
                                 menu_name: e.target.value.trim() || null,
                             }))
                         }
-                        placeholder="Search menu name..."
+                        placeholder={t('menu.menuName')}
                         className="w-full pl-10 pr-4 py-3 border rounded-2xl"
                     />
                 </div>
@@ -552,7 +554,7 @@ export default function MenusPage() {
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={isEditMode ? 'Edit Menu' : 'Add Menu'}
+                title={isEditMode ? t('menu.editMenu') : t('menu.addMenu')}
                 size="lg"
             >
                 <div className="grid grid-cols-2 gap-4">
@@ -576,13 +578,13 @@ export default function MenusPage() {
                         onClick={() => setModalOpen(false)}
                         className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100"
                     >
-                        取消
+                        {t('common.cancel')}
                     </button>
                     <button
                         onClick={isEditMode ? handleSaveUpdate : handleSaveAdd}
                         className="bg-black text-white px-5 py-2 rounded-xl"
                     >
-                        保存
+                        {t('common.save')}
                     </button>
                 </div>
             </Modal>
@@ -595,7 +597,7 @@ export default function MenusPage() {
                     setSelectedRole(null);
                     setRoleMenus([]);
                 }}
-                title={`Assign Menus - ${selectedRole?.role_name || 'Role'}`}
+                title={`${t('menu.assignMenus')} - ${selectedRole?.role_name || t('role.roleName')}`}
                 size="lg"
             >
                 <div className="space-y-4">
@@ -650,13 +652,13 @@ export default function MenusPage() {
                             }}
                             className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl"
                         >
-                            取消
+                            {t('common.cancel')}
                         </button>
                         <button
                             onClick={handleSaveAssign}
                             className="px-5 py-2.5 bg-black text-white rounded-xl"
                         >
-                            保存
+                            {t('common.save')}
                         </button>
                     </div>
                 </div>

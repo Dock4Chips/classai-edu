@@ -13,8 +13,10 @@ import {notification} from '@/utils/notification';
 import {confirm} from '@/utils/confirm';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
+import {useTranslation} from 'react-i18next';
 
 export default function RolesPage() {
+    const {t} = useTranslation();
     const {hasPermission} = usePermissions();
     const [roles, setRoles] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -36,30 +38,30 @@ export default function RolesPage() {
     const updateFormFields: FormFieldConfig[] = [
         {
             key: 'role_name',
-            label: 'Role Name',
+            label: t('role.roleName'),
             type: 'text',
             colSpan: 2,
-            placeholder: 'Enter role name',
+            placeholder: t('role.roleName'),
             required: true
         },
         {
             key: 'role_key',
-            label: 'Role Key',
+            label: t('role.roleKey'),
             type: 'text',
             colSpan: 2,
-            placeholder: 'e.g., admin, user',
-            description: 'Unique identifier for the role'
+            placeholder: t('role.roleKeyPlaceholder'),
+            description: t('role.roleKeyDescription')
         },
         {
             key: 'status',
-            label: 'Status',
+            label: t('common.status'),
             type: 'select',
             colSpan: 2,
             options: [
-                {value: '0', label: 'Active'},
-                {value: '1', label: 'Disabled'},
+                {value: '0', label: t('common.active')},
+                {value: '1', label: t('common.disabled')},
             ],
-            placeholder: 'Select status',
+            placeholder: t('common.select'),
         },
     ];
 
@@ -67,30 +69,30 @@ export default function RolesPage() {
     const addFormFields: FormFieldConfig[] = [
         {
             key: 'role_name',
-            label: 'Role Name',
+            label: t('role.roleName'),
             type: 'text',
             colSpan: 2,
-            placeholder: 'Enter role name',
+            placeholder: t('role.roleName'),
             required: true
         },
         {
             key: 'role_key',
-            label: 'Role Key',
+            label: t('role.roleKey'),
             type: 'text',
             colSpan: 2,
-            placeholder: 'e.g., admin, user',
-            description: 'Unique identifier for the role'
+            placeholder: t('role.roleKeyPlaceholder'),
+            description: t('role.roleKeyDescription')
         },
         {
             key: 'status',
-            label: 'Status',
+            label: t('common.status'),
             type: 'select',
             colSpan: 2,
             options: [
-                {value: '0', label: 'Active'},
-                {value: '1', label: 'Disabled'},
+                {value: '0', label: t('common.active')},
+                {value: '1', label: t('common.disabled')},
             ],
-            placeholder: 'Select status',
+            placeholder: t('common.select'),
         },
     ];
 
@@ -136,14 +138,14 @@ export default function RolesPage() {
 
     /** 删除 */
     const handleDelete = (roleId: number) => {
-        confirm.danger('Are you sure you want to delete this role?').then((confirmed) => {
+        confirm.danger(t('role.confirmDeleteRole')).then((confirmed) => {
             if (!confirmed) return;
 
             setLoading(true);
             return RoleService.deleteRole(roleId);
         }).then((results) => {
             if (results?.code === 200) {
-                notification.success('Deleted successfully');
+                notification.success(t('common.deletedSuccessfully'));
                 return fetchRoles();
             }
         }).catch((error) => {
@@ -189,7 +191,7 @@ export default function RolesPage() {
         setLoading(true);
         RoleService.createRole(data).then((results) => {
             if (results.code === 200) {
-                notification.success('Created successfully');
+                notification.success(t('common.createdSuccessfully'));
                 setModalOpen(false);
                 return fetchRoles();
             }
@@ -218,7 +220,7 @@ export default function RolesPage() {
         setLoading(true);
         RoleService.updateRole(updateForm.role_id, data).then((results) => {
             if (results.code === 200) {
-                notification.success('Updated successfully');
+                notification.success(t('common.updatedSuccessfully'));
                 setModalOpen(false);
                 return fetchRoles();
             }
@@ -235,10 +237,10 @@ export default function RolesPage() {
             title: 'ID',
             render: value => <span className="text-gray-500 font-mono">#{value}</span>,
         },
-        {key: 'role_name', title: 'Role Name'},
+        {key: 'role_name', title: t('role.roleName')},
         {
             key: 'role_key',
-            title: 'Role Key',
+            title: t('role.roleKey'),
             render: value => (
                 <code
                     className="px-3 py-1.5 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg text-sm text-blue-700 font-mono">
@@ -248,29 +250,29 @@ export default function RolesPage() {
         },
         {
             key: 'status',
-            title: 'Status',
+            title: t('common.status'),
             render: value => (
                 <Badge variant={value === '0' ? 'success' : 'warning'}>
-                    {value === '0' ? 'Active' : 'Disabled'}
+                    {value === '0' ? t('common.active') : t('common.disabled')}
                 </Badge>
             ),
         },
         {
             key: 'create_time',
-            title: 'Created',
+            title: t('common.created'),
             render: value =>
                 value ? new Date(value).toLocaleString() : <span className="text-gray-400">-</span>,
         },
         {
             key: 'actions',
-            title: 'Actions',
+            title: t('common.actions'),
             render: (_, record) => {
                 // 根据权限过滤操作项
                 const items = [];
                 if (hasPermission('roles:edit')) {
                     items.push({
                         key: 'edit',
-                        label: 'Edit',
+                        label: t('common.edit'),
                         icon: <Pencil className="w-4 h-4"/>,
                         onClick: () => handleEdit(record),
                     });
@@ -278,7 +280,7 @@ export default function RolesPage() {
                 if (hasPermission('roles:assign')) {
                     items.push({
                         key: 'permissions',
-                        label: 'Permissions',
+                        label: t('role.menuPermissions'),
                         icon: <Key className="w-4 h-4"/>,
                         onClick: () => handlePermissions(record),
                     });
@@ -286,7 +288,7 @@ export default function RolesPage() {
                 if (hasPermission('roles:delete')) {
                     items.push({
                         key: 'delete',
-                        label: 'Delete',
+                        label: t('common.delete'),
                         icon: <Trash2 className="w-4 h-4"/>,
                         danger: true,
                         onClick: () => handleDelete(record.role_id),
@@ -317,10 +319,10 @@ export default function RolesPage() {
             {/* header */}
             <motion.div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-4xl font-bold">Role Management</h1>
+                    <h1 className="text-4xl font-bold">{t('role.title')}</h1>
                     <p className="text-gray-600 flex items-center gap-2">
                         <Sparkles size={18}/>
-                        Manage system roles
+                        {t('role.title')}
                     </p>
                 </div>
                 {hasPermission('roles:add') && (
@@ -328,7 +330,7 @@ export default function RolesPage() {
                         onClick={handleAdd}
                         className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
                     >
-                        <Plus size={16}/> Add Role
+                        <Plus size={16}/> {t('role.addRole')}
                     </button>
                 )}
             </motion.div>
@@ -347,7 +349,7 @@ export default function RolesPage() {
             />
 
             {/* modal */}
-            <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={isEditMode ? 'Edit Role' : 'Add Role'}>
+            <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} title={isEditMode ? t('role.editRole') : t('role.addRole')}>
                 <div className="space-y-4">
                     {currentFields.map(field => (
                         <FormField
@@ -360,13 +362,13 @@ export default function RolesPage() {
                 </div>
                 <div className="flex justify-end gap-3 mt-6">
                     <button onClick={() => setModalOpen(false)}
-                            className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all font-medium">取消
+                            className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 transition-all font-medium">{t('common.cancel')}
                     </button>
                     <button
                         onClick={isEditMode ? handleSaveUpdate : handleSaveAdd}
                         className="bg-black text-white px-5 py-2.5 rounded-xl hover:bg-gray-800 transition-all font-medium"
                     >
-                        保存
+                        {t('common.save')}
                     </button>
                 </div>
             </Modal>
@@ -378,20 +380,20 @@ export default function RolesPage() {
                     setPermissionsModalOpen(false);
                     setSelectedRole(null);
                 }}
-                title={`Manage Permissions - ${selectedRole?.role_name || 'Role'}`}
+                title={`${t('role.managePermissions')} - ${selectedRole?.role_name || t('role.roleName')}`}
                 size="lg"
             >
                 <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {[
-                            {id: 1, name: 'user:view', description: 'View users', checked: true},
-                            {id: 2, name: 'user:create', description: 'Create users', checked: false},
-                            {id: 3, name: 'user:edit', description: 'Edit users', checked: true},
-                            {id: 4, name: 'user:delete', description: 'Delete users', checked: false},
-                            {id: 5, name: 'role:view', description: 'View roles', checked: true},
-                            {id: 6, name: 'role:create', description: 'Create roles', checked: false},
-                            {id: 7, name: 'role:edit', description: 'Edit roles', checked: true},
-                            {id: 8, name: 'role:delete', description: 'Delete roles', checked: false},
+                            {id: 1, name: 'user:view', description: `${t('role.permission.view')} ${t('user.title')}`, checked: true},
+                            {id: 2, name: 'user:create', description: `${t('role.permission.create')} ${t('user.title')}`, checked: false},
+                            {id: 3, name: 'user:edit', description: `${t('role.permission.edit')} ${t('user.title')}`, checked: true},
+                            {id: 4, name: 'user:delete', description: `${t('role.permission.delete')} ${t('user.title')}`, checked: false},
+                            {id: 5, name: 'role:view', description: `${t('role.permission.view')} ${t('role.title')}`, checked: true},
+                            {id: 6, name: 'role:create', description: `${t('role.permission.create')} ${t('role.title')}`, checked: false},
+                            {id: 7, name: 'role:edit', description: `${t('role.permission.edit')} ${t('role.title')}`, checked: true},
+                            {id: 8, name: 'role:delete', description: `${t('role.permission.delete')} ${t('role.title')}`, checked: false},
                         ].map(permission => (
                             <motion.button
                                 key={permission.id}
@@ -423,16 +425,16 @@ export default function RolesPage() {
                             }}
                             className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl"
                         >
-                            取消
+                            {t('common.cancel')}
                         </button>
                         <button
                             onClick={() => {
-                                notification.success('Permissions updated successfully');
+                                notification.success(t('role.permissionsUpdated'));
                                 setPermissionsModalOpen(false);
                             }}
                             className="px-5 py-2.5 bg-black text-white rounded-xl"
                         >
-                            保存
+                            {t('common.save')}
                         </button>
                     </div>
                 </div>

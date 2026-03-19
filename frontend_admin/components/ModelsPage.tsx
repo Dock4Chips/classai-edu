@@ -24,8 +24,10 @@ import {Results} from '@/lib/api';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {DrawConfigModal} from './DrawConfigModal';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
+import {useTranslation} from 'react-i18next';
 
 export default function ModelsPage() {
+    const {t} = useTranslation();
     const {hasPermission} = usePermissions();
     const [models, setModels] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -46,100 +48,100 @@ export default function ModelsPage() {
     const updateFormFields: FormFieldConfig[] = [
         {
             key: 'model_name',
-            label: 'Model Name',
+            label: t('model.modelName'),
             type: 'text',
             colSpan: 1,
-            placeholder: 'Enter model name',
+            placeholder: t('model.enterModelName'),
             required: true
         },
-        {key: 'model_version', label: 'Version', type: 'text', colSpan: 1, placeholder: 'v1.0'},
+        {key: 'model_version', label: t('model.version'), type: 'text', colSpan: 1, placeholder: t('model.enterVersion')},
         {
             key: 'model_path',
-            label: 'Model Path',
+            label: t('model.modelPath'),
             type: 'text',
             colSpan: 2,
-            placeholder: '/path/to/model.pt',
+            placeholder: t('model.enterModelPath'),
             required: true
         },
         {
             key: 'model_size_mb',
-            label: 'Model Size (MB)',
+            label: t('model.modelSize'),
             type: 'number',
             colSpan: 1,
-            placeholder: '6.0',
+            placeholder: t('model.enterModelSize'),
         },
         {
             key: 'input_size',
-            label: 'Input Size',
+            label: t('model.inputSize'),
             type: 'number',
             colSpan: 1,
-            placeholder: '640',
+            placeholder: t('model.enterInputSize'),
         },
         {
             key: 'num_classes',
-            label: 'Num Classes',
+            label: t('model.numClasses'),
             type: 'number',
             colSpan: 1,
-            placeholder: '6',
+            placeholder: t('model.enterNumClasses'),
         },
         {
             key: 'inference_time_ms',
-            label: 'Inference Time (ms)',
+            label: t('model.inferenceTime'),
             type: 'number',
             colSpan: 1,
-            placeholder: '10',
+            placeholder: t('model.enterInferenceTime'),
         },
         {
             key: 'map50',
-            label: 'mAP@50',
+            label: t('model.map50'),
             type: 'number',
             colSpan: 1,
-            placeholder: '0.95',
+            placeholder: t('model.enterMap50'),
         },
         {
             key: 'map50_95',
-            label: 'mAP@50-95',
+            label: t('model.map50_95'),
             type: 'number',
             colSpan: 1,
-            placeholder: '0.75',
+            placeholder: t('model.enterMap50_95'),
         },
         {
             key: 'training_epochs',
-            label: 'Training Epochs',
+            label: t('model.trainingEpochs'),
             type: 'number',
             colSpan: 1,
-            placeholder: '100',
+            placeholder: t('model.enterTrainingEpochs'),
         },
-        {key: 'training_dataset', label: 'Training Dataset', type: 'text', colSpan: 1, placeholder: 'Dataset name'},
+        {key: 'training_dataset', label: t('model.trainingDataset'), type: 'text', colSpan: 1, placeholder: t('model.enterTrainingDataset')},
         {
             key: 'is_default',
-            label: 'Default Model',
+            label: t('model.defaultModel'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
+                {value: '0', label: t('model.no')},
+                {value: '1', label: t('model.yes')},
             ],
-            placeholder: 'Select',
+            placeholder: t('model.selectDefault'),
         },
         {
             key: 'is_active',
-            label: 'Active',
+            label: t('model.active'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
+                {value: '0', label: t('model.no')},
+                {value: '1', label: t('model.yes')},
             ],
-            placeholder: 'Select',
+            placeholder: t('model.selectActive'),
         },
         {
             key: 'description',
-            label: 'Description',
+            label: t('model.description'),
             type: 'textarea',
             rows: 3,
             colSpan: 2,
-            placeholder: 'Enter description'
+            placeholder: t('model.enterDescription')
         },
     ];
 
@@ -147,100 +149,100 @@ export default function ModelsPage() {
     const addFormFields: FormFieldConfig[] = [
         {
             key: 'model_name',
-            label: 'Model Name',
+            label: t('model.modelName'),
             type: 'text',
             colSpan: 1,
-            placeholder: 'Enter model name',
+            placeholder: t('model.enterModelName'),
             required: true
         },
-        {key: 'model_version', label: 'Version', type: 'text', colSpan: 1, placeholder: 'v1.0'},
+        {key: 'model_version', label: t('model.version'), type: 'text', colSpan: 1, placeholder: t('model.enterVersion')},
         {
             key: 'model_path',
-            label: 'Model Path',
+            label: t('model.modelPath'),
             type: 'text',
             colSpan: 2,
-            placeholder: '/path/to/model.pt',
+            placeholder: t('model.enterModelPath'),
             required: true
         },
         {
             key: 'model_size_mb',
-            label: 'Model Size (MB)',
+            label: t('model.modelSize'),
             type: 'number',
             colSpan: 1,
-            placeholder: '6.0',
+            placeholder: t('model.enterModelSize'),
         },
         {
             key: 'input_size',
-            label: 'Input Size',
+            label: t('model.inputSize'),
             type: 'number',
             colSpan: 1,
-            placeholder: '640',
+            placeholder: t('model.enterInputSize'),
         },
         {
             key: 'num_classes',
-            label: 'Num Classes',
+            label: t('model.numClasses'),
             type: 'number',
             colSpan: 1,
-            placeholder: '6',
+            placeholder: t('model.enterNumClasses'),
         },
         {
             key: 'inference_time_ms',
-            label: 'Inference Time (ms)',
+            label: t('model.inferenceTime'),
             type: 'number',
             colSpan: 1,
-            placeholder: '10',
+            placeholder: t('model.enterInferenceTime'),
         },
         {
             key: 'map50',
-            label: 'mAP@50',
+            label: t('model.map50'),
             type: 'number',
             colSpan: 1,
-            placeholder: '0.95',
+            placeholder: t('model.enterMap50'),
         },
         {
             key: 'map50_95',
-            label: 'mAP@50-95',
+            label: t('model.map50_95'),
             type: 'number',
             colSpan: 1,
-            placeholder: '0.75',
+            placeholder: t('model.enterMap50_95'),
         },
         {
             key: 'training_epochs',
-            label: 'Training Epochs',
+            label: t('model.trainingEpochs'),
             type: 'number',
             colSpan: 1,
-            placeholder: '100',
+            placeholder: t('model.enterTrainingEpochs'),
         },
-        {key: 'training_dataset', label: 'Training Dataset', type: 'text', colSpan: 1, placeholder: 'Dataset name'},
+        {key: 'training_dataset', label: t('model.trainingDataset'), type: 'text', colSpan: 1, placeholder: t('model.enterTrainingDataset')},
         {
             key: 'is_default',
-            label: 'Default Model',
+            label: t('model.defaultModel'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
+                {value: '0', label: t('model.no')},
+                {value: '1', label: t('model.yes')},
             ],
-            placeholder: 'Select',
+            placeholder: t('model.selectDefault'),
         },
         {
             key: 'is_active',
-            label: 'Active',
+            label: t('model.active'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
+                {value: '0', label: t('model.no')},
+                {value: '1', label: t('model.yes')},
             ],
-            placeholder: 'Select',
+            placeholder: t('model.selectActive'),
         },
         {
             key: 'description',
-            label: 'Description',
+            label: t('model.description'),
             type: 'textarea',
             rows: 3,
             colSpan: 2,
-            placeholder: 'Enter description'
+            placeholder: t('model.enterDescription')
         },
     ];
 
@@ -287,14 +289,14 @@ export default function ModelsPage() {
 
     /** 删除 */
     const handleDelete = (modelId: number) => {
-        confirm.danger('Are you sure you want to delete this model?').then((confirmed) => {
+        confirm.danger(t('common.confirmDelete')).then((confirmed) => {
             if (!confirmed) return;
 
             setLoading(true);
             return ModelService.deleteModel(modelId);
         }).then((results) => {
             if (results?.code === 200) {
-                notification.success('Deleted successfully');
+                notification.success(t('common.deletedSuccessfully'));
                 return fetchModels();
             }
         }).catch((error) => {
@@ -353,7 +355,7 @@ export default function ModelsPage() {
         setLoading(true);
         ModelService.createModel(data).then((results) => {
             if (results.code === 200) {
-                notification.success('Created successfully');
+                notification.success(t('common.createdSuccessfully'));
                 setModalOpen(false);
                 return fetchModels();
             }
@@ -382,7 +384,7 @@ export default function ModelsPage() {
         setLoading(true);
         ModelService.updateModel(updateForm.model_id, data).then((results) => {
             if (results.code === 200) {
-                notification.success('Updated successfully');
+                notification.success(t('common.updatedSuccessfully'));
                 setModalOpen(false);
                 return fetchModels();
             }
@@ -399,11 +401,11 @@ export default function ModelsPage() {
             title: 'ID',
             render: v => <span className="text-gray-500 font-mono">#{v}</span>,
         },
-        {key: 'model_name', title: 'Model Name'},
-        {key: 'num_classes', title: 'Classes', render: v => v ?? '-'},
+        {key: 'model_name', title: t('model.modelName')},
+        {key: 'num_classes', title: t('model.classes'), render: v => v ?? '-'},
         {
             key: 'is_active',
-            title: 'Active',
+            title: t('model.active'),
             render: v => (
                 <Badge variant={v === '1' || v === 1 ? 'success' : 'default'}>
                     {v === '1' || v === 1 ? <Check className="w-3 h-3"/> : <X className="w-3 h-3"/>}
@@ -412,55 +414,55 @@ export default function ModelsPage() {
         },
         {
             key: 'is_default',
-            title: 'Default',
+            title: t('model.defaultModel'),
             render: v => (
                 <span className={v === '1' || v === 1 ? 'text-yellow-600' : 'text-gray-400'}>
                     {v === '1' || v === 1 ? <Star className="w-4 h-4 fill-yellow-500"/> : '-'}
                 </span>
             ),
         },
-        {key: 'inference_time_ms', title: 'Inference (ms)', render: v => v ? `${v}ms` : '-'},
+        {key: 'inference_time_ms', title: t('model.inference'), render: v => v ? `${v}ms` : '-'},
         {
             key: 'map50',
-            title: 'mAP@50',
+            title: t('model.map50'),
             render: v => v ? (v * 100).toFixed(1) + '%' : '-',
         },
         {
             key: 'map50_95',
-            title: 'mAP@50-95',
+            title: t('model.map50_95'),
             render: v => v ? (v * 100).toFixed(1) + '%' : '-',
         },
-        {key: 'model_size_mb', title: 'Size (MB)', render: v => v ? `${v} MB` : '-'},
-        {key: 'model_version', title: 'Version', render: v => v || <span className="text-gray-400">-</span>},
+        {key: 'model_size_mb', title: t('model.size'), render: v => v ? `${v} MB` : '-'},
+        {key: 'model_version', title: t('model.version'), render: v => v || <span className="text-gray-400">-</span>},
         {
             key: 'create_time',
-            title: 'Created',
+            title: t('common.created'),
             render: v =>
                 v ? new Date(v).toLocaleString() : <span className="text-gray-400">-</span>,
         },
         {
             key: 'actions',
-            title: 'Actions',
+            title: t('common.actions'),
             render: (_, record) => {
                 const items = [];
                 if (hasPermission('models:edit')) {
                     items.push({
                         key: 'edit',
-                        label: 'Edit',
+                        label: t('common.edit'),
                         icon: <Pencil className="w-4 h-4"/>,
                         onClick: () => handleEdit(record),
                     });
                 }
                 items.push({
                     key: 'drawConfig',
-                    label: 'Draw Config',
+                    label: t('model.drawConfig'),
                     icon: <Palette className="w-4 h-4"/>,
                     onClick: () => handleDrawConfig(record),
                 });
                 if (hasPermission('models:delete')) {
                     items.push({
                         key: 'delete',
-                        label: 'Delete',
+                        label: t('common.delete'),
                         icon: <Trash2 className="w-4 h-4"/>,
                         danger: true,
                         onClick: () => handleDelete(record.model_id),
@@ -490,10 +492,10 @@ export default function ModelsPage() {
             {/* header */}
             <motion.div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-4xl font-bold">Model Management</h1>
+                    <h1 className="text-4xl font-bold">{t('model.title')}</h1>
                     <p className="text-gray-600 flex items-center gap-2">
                         <BrainCircuit size={18}/>
-                        Manage YOLO detection models
+                        {t('model.manageYoloDetectionModels')}
                     </p>
                 </div>
                 {hasPermission('models:add') && (
@@ -501,7 +503,7 @@ export default function ModelsPage() {
                         onClick={handleAdd}
                         className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
                     >
-                        <Plus size={16}/> Add Model
+                        <Plus size={16}/> {t('model.addModel')}
                     </button>
                 )}
             </motion.div>
@@ -524,7 +526,7 @@ export default function ModelsPage() {
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={isEditMode ? 'Edit Model' : 'Add Model'}
+                title={isEditMode ? t('model.editModel') : t('model.addModel')}
                 size="lg"
             >
                 {/* 表单区域 */}
@@ -551,13 +553,13 @@ export default function ModelsPage() {
                         onClick={() => setModalOpen(false)}
                         className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100"
                     >
-                        Cancel
+                        {t('common.cancel')}
                     </button>
                     <button
                         onClick={isEditMode ? handleSaveUpdate : handleSaveAdd}
                         className="bg-black text-white px-5 py-2 rounded-xl"
                     >
-                        Save
+                        {t('common.save')}
                     </button>
                 </div>
             </Modal>

@@ -27,8 +27,10 @@ import {confirm} from '@/utils/confirm';
 import {Results} from '@/lib/api';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
+import {useTranslation} from 'react-i18next';
 
 export default function DevicesPage() {
+    const {t} = useTranslation();
     const {hasPermission} = usePermissions();
     const [devices, setDevices] = useState<any[]>([]);
     const [loading, setLoading] = useState(false);
@@ -45,55 +47,55 @@ export default function DevicesPage() {
 
     /** 设备类型选项 */
     const deviceTypeOptions = [
-        {value: '0', label: 'Camera'},
-        {value: '1', label: 'Drone'},
-        {value: '2', label: 'IP Camera'},
-        {value: '3', label: 'USB Camera'},
+        {value: '0', label: t('device.deviceTypes.camera')},
+        {value: '1', label: t('device.deviceTypes.drone')},
+        {value: '2', label: t('device.deviceTypes.ipCamera')},
+        {value: '3', label: t('device.deviceTypes.usbCamera')},
     ];
 
     /** 连接类型选项 */
     const connectionTypeOptions = [
-        {value: '0', label: 'RTSP'},
-        {value: '1', label: 'HTTP'},
-        {value: '2', label: 'USB'},
+        {value: '0', label: t('device.connectionTypes.rtsp')},
+        {value: '1', label: t('device.connectionTypes.http')},
+        {value: '2', label: t('device.connectionTypes.usb')},
     ];
 
     /** 设备状态选项 */
     const statusOptions = [
-        {value: '0', label: 'Online'},
-        {value: '1', label: 'Offline'},
-        {value: '2', label: 'Error'},
-        {value: '3', label: 'Maintenance'},
+        {value: '0', label: t('device.statuses.online')},
+        {value: '1', label: t('device.statuses.offline')},
+        {value: '2', label: t('device.statuses.error')},
+        {value: '3', label: t('device.statuses.maintenance')},
     ];
 
     /** 基础表单字段 */
     const baseFields: FormFieldConfig[] = [
-        {key: 'device_name', label: 'Device Name', type: 'text', colSpan: 1, placeholder: 'Enter device name', required: true},
-        {key: 'device_code', label: 'Device Code', type: 'text', colSpan: 1, placeholder: 'Enter device code'},
+        {key: 'device_name', label: t('device.deviceName'), type: 'text', colSpan: 1, placeholder: t('device.enterDeviceName'), required: true},
+        {key: 'device_code', label: t('device.deviceCode'), type: 'text', colSpan: 1, placeholder: t('device.enterDeviceCode')},
         {
             key: 'device_type',
-            label: 'Device Type',
+            label: t('device.deviceType'),
             type: 'select',
             options: deviceTypeOptions,
             colSpan: 1,
-            placeholder: 'Select type',
+            placeholder: t('device.selectType'),
             required: true,
         },
         {
             key: 'connection_type',
-            label: 'Connection Type',
+            label: t('device.connectionType'),
             type: 'select',
             options: connectionTypeOptions,
             colSpan: 1,
-            placeholder: 'Select type',
+            placeholder: t('device.selectType'),
         },
-        {key: 'description', label: 'Description', type: 'textarea', rows: 3, colSpan: 2, placeholder: 'Enter description'},
+        {key: 'description', label: t('device.description'), type: 'textarea', rows: 3, colSpan: 2, placeholder: t('device.enterDescription')},
     ];
 
     /** RTSP URL 字段 */
     const rtspField: FormFieldConfig = {
         key: 'rtsp_url',
-        label: 'RTSP URL',
+        label: t('device.rtspUrl'),
         type: 'text',
         colSpan: 2,
         placeholder: 'rtsp://...',
@@ -102,21 +104,21 @@ export default function DevicesPage() {
     /** HTTP URL 字段 */
     const httpField: FormFieldConfig = {
         key: 'http_url',
-        label: 'HTTP URL',
+        label: t('device.httpUrl'),
         type: 'text',
         colSpan: 2,
         placeholder: 'http://...',
     };
 
-    /** USB Device Index 字段（只读，默认0） */
+    /** USB Device Index 字段（只读，默认 0） */
     const deviceIndexField: FormFieldConfig = {
         key: 'device_index',
-        label: 'Device Index',
+        label: t('device.deviceIndex'),
         type: 'number',
         colSpan: 2,
         placeholder: '0',
         disabled: true,
-        description: 'USB camera index (fixed at 0)',
+        description: t('device.usbCameraIndex'),
     };
 
     /** 获取动态表单字段 */
@@ -136,11 +138,11 @@ export default function DevicesPage() {
         if (isEdit) {
             fields.push({
                 key: 'status',
-                label: 'Status',
+                label: t('device.status'),
                 type: 'select',
                 options: statusOptions,
                 colSpan: 2,
-                placeholder: 'Select status',
+                placeholder: t('device.selectType'),
             });
         }
 
@@ -167,7 +169,7 @@ export default function DevicesPage() {
         rtspField,
         httpField,
         deviceIndexField,
-        {key: 'status', label: 'Status', type: 'select', colSpan: 2, options: statusOptions, placeholder: 'Select status'},
+        {key: 'status', label: t('device.status'), type: 'select', colSpan: 2, options: statusOptions, placeholder: t('device.selectType')},
     ];
 
     /** 新增表单 */
@@ -227,14 +229,14 @@ export default function DevicesPage() {
 
     /** 删除 */
     const handleDelete = (deviceId: number) => {
-        confirm.danger('Are you sure you want to delete this device?').then((confirmed) => {
+        confirm.danger(t('common.confirmDelete')).then((confirmed) => {
             if (!confirmed) return;
 
             setLoading(true);
             return DeviceService.deleteDevice(deviceId);
         }).then((results) => {
             if (results?.code === 200) {
-                notification.success('Deleted successfully');
+                notification.success(t('common.deletedSuccessfully'));
                 return fetchDevices();
             }
         }).catch((error) => {
@@ -288,7 +290,7 @@ export default function DevicesPage() {
         setLoading(true);
         DeviceService.createDevice(data).then((results) => {
             if (results.code === 200) {
-                notification.success('Created successfully');
+                notification.success(t('common.createdSuccessfully'));
                 setModalOpen(false);
                 return fetchDevices();
             }
@@ -324,7 +326,7 @@ export default function DevicesPage() {
         setLoading(true);
         DeviceService.updateDevice(updateForm.device_id, data).then((results) => {
             if (results.code === 200) {
-                notification.success('Updated successfully');
+                notification.success(t('common.updatedSuccessfully'));
                 setModalOpen(false);
                 return fetchDevices();
             }
@@ -338,10 +340,10 @@ export default function DevicesPage() {
     /** 获取设备类型标签 */
     const getDeviceTypeBadge = (type: number) => {
         const configs = [
-            {label: 'Camera', variant: 'default' as const, icon: <Camera className="w-3 h-3"/>, bg: 'bg-slate-100', text: 'text-slate-700'},
-            {label: 'Drone', variant: 'purple' as const, icon: <Router className="w-3 h-3"/>, bg: 'bg-purple-100', text: 'text-purple-700'},
-            {label: 'IP Camera', variant: 'info' as const, icon: <Video className="w-3 h-3"/>, bg: 'bg-blue-100', text: 'text-blue-700'},
-            {label: 'USB Camera', variant: 'gradient' as const, icon: <Usb className="w-3 h-3"/>, bg: 'bg-green-100', text: 'text-green-700'},
+            {label: t('device.deviceTypes.camera'), variant: 'default' as const, icon: <Camera className="w-3 h-3"/>, bg: 'bg-slate-100', text: 'text-slate-700'},
+            {label: t('device.deviceTypes.drone'), variant: 'purple' as const, icon: <Router className="w-3 h-3"/>, bg: 'bg-purple-100', text: 'text-purple-700'},
+            {label: t('device.deviceTypes.ipCamera'), variant: 'info' as const, icon: <Video className="w-3 h-3"/>, bg: 'bg-blue-100', text: 'text-blue-700'},
+            {label: t('device.deviceTypes.usbCamera'), variant: 'gradient' as const, icon: <Usb className="w-3 h-3"/>, bg: 'bg-green-100', text: 'text-green-700'},
         ];
         const c = configs[type] || configs[0];
         return (
@@ -355,10 +357,10 @@ export default function DevicesPage() {
     /** 获取状态标签 */
     const getStatusBadge = (status: number) => {
         const configs = [
-            {label: 'Online', variant: 'success' as const, icon: <Wifi className="w-3 h-3"/>},
-            {label: 'Offline', variant: 'warning' as const, icon: <WifiOff className="w-3 h-3"/>},
-            {label: 'Error', variant: 'error' as const, icon: <AlertCircle className="w-3 h-3"/>},
-            {label: 'Maintenance', variant: 'default' as const, icon: <Wrench className="w-3 h-3"/>},
+            {label: t('device.statuses.online'), variant: 'success' as const, icon: <Wifi className="w-3 h-3"/>},
+            {label: t('device.statuses.offline'), variant: 'warning' as const, icon: <WifiOff className="w-3 h-3"/>},
+            {label: t('device.statuses.error'), variant: 'error' as const, icon: <AlertCircle className="w-3 h-3"/>},
+            {label: t('device.statuses.maintenance'), variant: 'default' as const, icon: <Wrench className="w-3 h-3"/>},
         ];
         const c = configs[status] || configs[1];
         return (
@@ -375,51 +377,51 @@ export default function DevicesPage() {
             title: 'ID',
             render: v => <span className="text-gray-500 font-mono">#{v}</span>,
         },
-        {key: 'device_name', title: 'Device Name'},
-        {key: 'device_code', title: 'Device Code', render: v => v || <span className="text-gray-400">-</span>},
+        {key: 'device_name', title: t('device.deviceName')},
+        {key: 'device_code', title: t('device.deviceCode'), render: v => v || <span className="text-gray-400">-</span>},
         {
             key: 'device_type',
-            title: 'Type',
+            title: t('device.deviceType'),
             render: v => getDeviceTypeBadge(v),
         },
         {
             key: 'connection_type',
-            title: 'Connection',
+            title: t('device.connectionType'),
             render: v => {
-                const labels = ['RTSP', 'HTTP', 'USB', 'File'];
+                const labels = [t('device.connectionTypes.rtsp'), t('device.connectionTypes.http'), t('device.connectionTypes.usb'), 'File'];
                 return <span className="text-gray-600">{labels[v] || '-'}</span>;
             },
         },
-        {key: 'location', title: 'Location', render: v => v || <span className="text-gray-400">-</span>},
+        {key: 'location', title: t('device.location'), render: v => v || <span className="text-gray-400">-</span>},
         {
             key: 'status',
-            title: 'Status',
+            title: t('device.status'),
             render: v => getStatusBadge(v),
         },
         {
             key: 'is_enabled',
-            title: 'Enabled',
+            title: t('device.enabled'),
             render: v => (
                 <Badge variant={v === '1' || v === 1 ? 'success' : 'default'}>
-                    {v === '1' || v === 1 ? 'Yes' : 'No'}
+                    {v === '1' || v === 1 ? t('common.yes') : t('common.no')}
                 </Badge>
             ),
         },
         {
             key: 'create_time',
-            title: 'Created',
+            title: t('common.created'),
             render: v =>
                 v ? new Date(v).toLocaleString() : <span className="text-gray-400">-</span>,
         },
         {
             key: 'actions',
-            title: 'Actions',
+            title: t('common.actions'),
             render: (_, record) => {
                 const items = [];
                 if (hasPermission('devices:edit')) {
                     items.push({
                         key: 'edit',
-                        label: 'Edit',
+                        label: t('common.edit'),
                         icon: <Pencil className="w-4 h-4"/>,
                         onClick: () => handleEdit(record),
                     });
@@ -427,7 +429,7 @@ export default function DevicesPage() {
                 if (hasPermission('devices:delete')) {
                     items.push({
                         key: 'delete',
-                        label: 'Delete',
+                        label: t('common.delete'),
                         icon: <Trash2 className="w-4 h-4"/>,
                         danger: true,
                         onClick: () => handleDelete(record.device_id),
@@ -459,10 +461,10 @@ export default function DevicesPage() {
 
             <motion.div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-4xl font-bold">Device Management</h1>
+                    <h1 className="text-4xl font-bold">{t('device.title')}</h1>
                     <p className="text-gray-600 flex items-center gap-2">
                         <Camera size={18}/>
-                        Manage detection devices
+                        {t('device.manageDetectionDevices')}
                     </p>
                 </div>
                 {hasPermission('devices:add') && (
@@ -470,7 +472,7 @@ export default function DevicesPage() {
                         onClick={handleAdd}
                         className="px-5 py-2.5 bg-black text-white rounded-xl flex gap-2"
                     >
-                        <Plus size={16}/> Add Device
+                        <Plus size={16}/> {t('device.addDevice')}
                     </button>
                 )}
             </motion.div>
@@ -493,7 +495,7 @@ export default function DevicesPage() {
             <Modal
                 isOpen={modalOpen}
                 onClose={() => setModalOpen(false)}
-                title={isEditMode ? 'Edit Device' : 'Add Device'}
+                title={isEditMode ? t('device.editDevice') : t('device.addDevice')}
                 size="lg"
             >
                 {/* 表单区域 */}
@@ -520,13 +522,13 @@ export default function DevicesPage() {
                         onClick={() => setModalOpen(false)}
                         className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100"
                     >
-                        Cancel
+                        {t('common.cancel')}
                     </button>
                     <button
                         onClick={isEditMode ? handleSaveUpdate : handleSaveAdd}
                         className="bg-black text-white px-5 py-2 rounded-xl"
                     >
-                        Save
+                        {t('common.save')}
                     </button>
                 </div>
             </Modal>

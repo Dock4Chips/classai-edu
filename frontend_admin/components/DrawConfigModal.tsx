@@ -12,6 +12,7 @@ import {ModelDrawConfigService} from '@/lib/service/model_draw_config';
 import {notification} from '@/utils/notification';
 import {confirm} from '@/utils/confirm';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
+import {useTranslation} from 'react-i18next';
 
 interface DrawConfigModalProps {
     isOpen: boolean;
@@ -23,6 +24,7 @@ interface DrawConfigModalProps {
 }
 
 function ClassManagement({model, loadData}: { model: { model_id: number }; loadData: () => void }) {
+    const {t} = useTranslation();
     const {hasPermission} = usePermissions();
     const [classes, setClasses] = useState<any[]>([]);
     const [editModalOpen, setEditModalOpen] = useState(false);
@@ -45,13 +47,13 @@ function ClassManagement({model, loadData}: { model: { model_id: number }; loadD
 
 
     const handleDelete = (classId: number) => {
-        confirm.danger('Are you sure you want to delete this class?').then((confirmed) => {
+        confirm.danger(t('common.confirmDelete')).then((confirmed) => {
                 if (!confirmed) return;
                 return ModelClassService.delete(classId);
             }).then((result) => {
                 if (!result) return;
                 if (result.code === 200) {
-                    notification.success('Deleted successfully');
+                    notification.success(t('common.deletedSuccessfully'));
                     fetchClasses();
                     loadData();
                 }
@@ -76,7 +78,7 @@ function ClassManagement({model, loadData}: { model: { model_id: number }; loadD
             .then((result) => {
                 if (result.code === 200) {
                     notification.success(
-                        editingClass ? 'Updated successfully' : 'Created successfully'
+                        editingClass ? t('common.updatedSuccessfully') : t('common.createdSuccessfully')
                     );
                     setEditModalOpen(false);
                     setEditingClass(null);
@@ -90,13 +92,13 @@ function ClassManagement({model, loadData}: { model: { model_id: number }; loadD
     };
 
     const columns: Column<any>[] = [
-        {key: 'class_index', title: 'Index', render: v => <span className="font-mono">#{v}</span>},
-        {key: 'class_name', title: 'Code', render: v => <code className="text-sm">{v}</code>},
-        {key: 'class_name_en', title: 'English Name'},
-        {key: 'class_name_zh', title: 'Chinese Name'},
+        {key: 'class_index', title: t('model.index'), render: v => <span className="font-mono">#{v}</span>},
+        {key: 'class_name', title: t('model.classCode'), render: v => <code className="text-sm">{v}</code>},
+        {key: 'class_name_en', title: t('model.englishName')},
+        {key: 'class_name_zh', title: t('model.chineseName')},
         {
             key: 'is_active',
-            title: 'Active',
+            title: t('model.active'),
             render: v => (
                 <Badge variant={v ? 'success' : 'default'}>
                     {v ? <Check className="w-3 h-3"/> : <XIcon className="w-3 h-3"/>}
@@ -105,7 +107,7 @@ function ClassManagement({model, loadData}: { model: { model_id: number }; loadD
         },
         {
             key: 'actions',
-            title: 'Actions',
+            title: t('common.actions'),
             render: (_, record) => {
                 const items = [];
                 if (hasPermission('models:class:edit')) {
@@ -114,7 +116,7 @@ function ClassManagement({model, loadData}: { model: { model_id: number }; loadD
                             key="edit"
                             onClick={() => handleEdit(record)}
                             className="p-1.5 hover:bg-gray-100 rounded-lg"
-                            title="Edit"
+                            title={t('common.edit')}
                         >
                             <Pencil className="w-4 h-4 text-gray-600"/>
                         </button>
@@ -126,7 +128,7 @@ function ClassManagement({model, loadData}: { model: { model_id: number }; loadD
                             key="delete"
                             onClick={() => handleDelete(record.class_id)}
                             className="p-1.5 hover:bg-red-50 rounded-lg"
-                            title="Delete"
+                            title={t('common.delete')}
                         >
                             <Trash2 className="w-4 h-4 text-red-600"/>
                         </button>
@@ -153,7 +155,7 @@ function ClassManagement({model, loadData}: { model: { model_id: number }; loadD
                         }}
                         className="px-4 py-2 bg-black text-white rounded-xl flex items-center gap-2 text-sm"
                     >
-                        <Plus className="w-4 h-4"/> Add Class
+                        <Plus className="w-4 h-4"/> {t('model.addClass')}
                     </button>
                 )}
             </div>
@@ -186,6 +188,7 @@ function ClassEditModal({
     classData: any;
     onSave: (data: any) => void;
 }) {
+    const {t} = useTranslation();
     const isEdit = !!classData;
     const [form, setForm] = useState({
         class_name: '',
@@ -224,26 +227,16 @@ function ClassEditModal({
     }, [classData]);
 
     const fields: FormFieldConfig[] = [
-        {key: 'class_name', label: 'Class Code', type: 'text', colSpan: 1, required: true},
-        {key: 'class_index', label: 'Index', type: 'number', colSpan: 1, required: true},
-        {key: 'class_name_en', label: 'English Name', type: 'text', colSpan: 1, required: true},
-        {key: 'class_name_zh', label: 'Chinese Name', type: 'text', colSpan: 1, required: true},
-        {key: 'class_code', label: 'Display Code', type: 'text', colSpan: 1},
-        // {
-        //     key: 'is_active',
-        //     label: 'Active',
-        //     type: 'select',
-        //     colSpan: 1,
-        //     options: [
-        //         {value: '0', label: 'No'},
-        //         {value: '1', label: 'Yes'},
-        //     ],
-        // },
-        {key: 'description', label: 'Description', type: 'textarea', rows: 3, colSpan: 2},
+        {key: 'class_name', label: t('model.classCode'), type: 'text', colSpan: 1, required: true},
+        {key: 'class_index', label: t('model.index'), type: 'number', colSpan: 1, required: true},
+        {key: 'class_name_en', label: t('model.englishName'), type: 'text', colSpan: 1, required: true},
+        {key: 'class_name_zh', label: t('model.chineseName'), type: 'text', colSpan: 1, required: true},
+        {key: 'class_code', label: t('model.displayCode'), type: 'text', colSpan: 1},
+        {key: 'description', label: t('model.description'), type: 'textarea', rows: 3, colSpan: 2},
     ];
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title={isEdit ? 'Edit Class' : 'Add Class'} size="lg">
+        <Modal isOpen={isOpen} onClose={onClose} title={isEdit ? t('model.editClass') : t('model.addClass')} size="lg">
             <div className="grid grid-cols-2 gap-4">
                 {fields.map(field => (
                     <div key={field.key} className={field.colSpan === 2 ? 'col-span-2' : ''}>
@@ -257,13 +250,13 @@ function ClassEditModal({
             </div>
             <div className="flex justify-end gap-3 mt-6">
                 <button onClick={onClose} className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100">
-                    Cancel
+                    {t('common.cancel')}
                 </button>
                 <button
                     onClick={() => onSave(form)}
                     className="bg-black text-white px-5 py-2 rounded-xl"
                 >
-                    Save
+                    {t('common.save')}
                 </button>
             </div>
         </Modal>
@@ -276,6 +269,7 @@ function DrawConfigList({classes, drawConfigs, loadData}: {
     drawConfigs: any[];
     loadData: () => void;
 }) {
+    const {t} = useTranslation();
     const {hasPermission} = usePermissions();
     const [editModalOpen, setEditModalOpen] = useState(false);
     const [editingConfig, setEditingConfig] = useState<any>(null);
@@ -297,7 +291,7 @@ function DrawConfigList({classes, drawConfigs, loadData}: {
     const handleSave = async (configId: number, data: any) => {
         const result = await ModelDrawConfigService.update(configId, data);
         if (result.code === 200) {
-            notification.success('Updated successfully');
+            notification.success(t('common.updatedSuccessfully'));
             setEditModalOpen(false);
             setEditingConfig(null);
             loadData();
@@ -307,7 +301,7 @@ function DrawConfigList({classes, drawConfigs, loadData}: {
     const columns: Column<any>[] = [
         {
             key: 'class_name',
-            title: 'Class',
+            title: t('model.classCode'),
             render: (_, r) => (
                 <div>
                     <div className="font-medium">{r.class_name_zh}</div>
@@ -317,7 +311,7 @@ function DrawConfigList({classes, drawConfigs, loadData}: {
         },
         {
             key: 'color',
-            title: 'Color',
+            title: t('model.borderColor'),
             render: (_, r) => {
                 const color = r.drawConfig?.color_hex || '#FF0000';
                 return (
@@ -333,34 +327,34 @@ function DrawConfigList({classes, drawConfigs, loadData}: {
         },
         {
             key: 'border',
-            title: 'Border',
-            render: (_, r) => r.drawConfig ? `Thickness: ${r.drawConfig.border_thickness || 2}` : '-',
+            title: t('model.borderThickness'),
+            render: (_, r) => r.drawConfig ? `${t('model.borderThickness')}: ${r.drawConfig.border_thickness || 2}` : '-',
         },
         {
             key: 'alpha',
-            title: 'Alpha',
+            title: t('model.borderAlpha'),
             render: (_, r) => r.drawConfig ? r.drawConfig.border_alpha || 0.8 : '-',
         },
         {
             key: 'display_label',
-            title: 'Show Label',
+            title: t('model.showLabel'),
             render: (_, r) => r.drawConfig?.display_label ? '✓' : '✗',
         },
         {
             key: 'actions',
-            title: 'Actions',
+            title: t('common.actions'),
             render: (_, record) => {
                 const hasConfig = !!record.drawConfig;
                 return hasConfig && hasPermission('models:class:edit') ? (
                     <button
                         onClick={() => handleEdit(record)}
                         className="p-1.5 hover:bg-gray-100 rounded-lg"
-                        title="Edit"
+                        title={t('common.edit')}
                     >
                         <Pencil className="w-4 h-4 text-gray-600"/>
                     </button>
                 ) : hasConfig ? (
-                    <span className="text-gray-400 text-sm">No permission</span>
+                    <span className="text-gray-400 text-sm">{t('common.no')}</span>
                 ) : (
                     <span className="text-gray-400 text-sm">No config</span>
                 );
@@ -398,6 +392,7 @@ function DrawConfigEditModal({
     configData: any;
     onSave: (configId: number, data: any) => void;
 }) {
+    const {t} = useTranslation();
     const config = configData?.drawConfig;
     const cls = configData;
 
@@ -435,10 +430,10 @@ function DrawConfigEditModal({
     }, [config]);
 
     const fields: FormFieldConfig[] = [
-        {key: 'color_hex', label: 'Border Color', type: 'color', colSpan: 1},
+        {key: 'color_hex', label: t('model.borderColor'), type: 'color', colSpan: 1},
         {
             key: 'border_thickness',
-            label: 'Border Thickness',
+            label: t('model.borderThickness'),
             type: 'number',
             colSpan: 1,
             min: 1,
@@ -446,37 +441,37 @@ function DrawConfigEditModal({
         },
         {
             key: 'border_alpha',
-            label: 'Border Alpha',
+            label: t('model.borderAlpha'),
             type: 'number',
             colSpan: 1,
             step: '0.1',
             min: 0,
             max: 1,
         },
-        {key: 'text_color', label: 'Text Color', type: 'color', colSpan: 1},
+        {key: 'text_color', label: t('model.textColor'), type: 'color', colSpan: 1},
         {
             key: 'display_label',
-            label: 'Show Label',
+            label: t('model.showLabel'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
+                {value: '0', label: t('common.no')},
+                {value: '1', label: t('common.yes')},
             ],
         },
         {
             key: 'display_confidence',
-            label: 'Show Confidence',
+            label: t('model.showConfidence'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
+                {value: '0', label: t('common.no')},
+                {value: '1', label: t('common.yes')},
             ],
         },
         {
             key: 'font_scale',
-            label: 'Font Scale',
+            label: t('model.fontScale'),
             type: 'number',
             colSpan: 1,
             step: '0.1',
@@ -485,7 +480,7 @@ function DrawConfigEditModal({
         },
         {
             key: 'font_thickness',
-            label: 'Font Thickness',
+            label: t('model.fontThickness'),
             type: 'number',
             colSpan: 1,
             min: 1,
@@ -493,32 +488,32 @@ function DrawConfigEditModal({
         },
         {
             key: 'display_box',
-            label: 'Show Box',
+            label: t('model.showBox'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
+                {value: '0', label: t('common.no')},
+                {value: '1', label: t('common.yes')},
             ],
         },
         {
             key: 'box_fill',
-            label: 'Fill Box',
+            label: t('model.fillBox'),
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: 'No'},
-                {value: '1', label: 'Yes'},
+                {value: '0', label: t('common.no')},
+                {value: '1', label: t('common.yes')},
             ],
         },
-        {key: 'background_color', label: 'Background Color', type: 'color', colSpan: 2},
+        {key: 'background_color', label: t('model.backgroundColor'), type: 'color', colSpan: 2},
     ];
 
     return (
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title={`Edit Draw Config - ${cls?.class_name_en || cls?.class_name}`}
+            title={`${t('model.editDrawConfig')} - ${cls?.class_name_en || cls?.class_name}`}
             size="lg"
         >
             <div className="grid grid-cols-2 gap-4">
@@ -534,13 +529,13 @@ function DrawConfigEditModal({
             </div>
             <div className="flex justify-end gap-3 mt-6">
                 <button onClick={onClose} className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100">
-                    Cancel
+                    {t('common.cancel')}
                 </button>
                 <button
                     onClick={() => onSave(config?.config_id, form)}
                     className="bg-black text-white px-5 py-2 rounded-xl"
                 >
-                    Save
+                    {t('common.save')}
                 </button>
             </div>
         </Modal>
@@ -549,6 +544,7 @@ function DrawConfigEditModal({
 
 // ============== 主对话框组件 ==============
 export function DrawConfigModal({isOpen, onClose, model}: DrawConfigModalProps) {
+    const {t} = useTranslation();
     const [classes, setClasses] = useState<any[]>([]);
     const [drawConfigs, setDrawConfigs] = useState<any[]>([]);
 
@@ -581,13 +577,13 @@ export function DrawConfigModal({isOpen, onClose, model}: DrawConfigModalProps) 
     const tabs = [
         {
             key: 'classes',
-            label: 'Class Management',
+            label: t('model.classManagement'),
             icon: <Layers className="w-4 h-4"/>,
             content: <ClassManagement model={model} loadData={loadData}/>,
         },
         {
             key: 'draw',
-            label: 'Draw Style Configuration',
+            label: t('model.drawStyleConfiguration'),
             icon: <Palette className="w-4 h-4"/>,
             content: <DrawConfigList classes={classes} drawConfigs={drawConfigs} loadData={loadData}/>,
         },
@@ -597,7 +593,7 @@ export function DrawConfigModal({isOpen, onClose, model}: DrawConfigModalProps) 
         <Modal
             isOpen={isOpen}
             onClose={onClose}
-            title={`Draw Configuration - ${model.model_name}`}
+            title={`${t('model.drawConfiguration')} - ${model.model_name}`}
             size="xl"
         >
             <div className="space-y-6">
@@ -610,7 +606,7 @@ export function DrawConfigModal({isOpen, onClose, model}: DrawConfigModalProps) 
                         onClick={onClose}
                         className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100"
                     >
-                        Close
+                        {t('common.close')}
                     </button>
                 </div>
             </div>

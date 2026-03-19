@@ -8,8 +8,10 @@ import { UserService } from '@/lib/service/user';
 import { Results } from '@/lib/api';
 import { FormField, type FormFieldConfig } from '@/components/ui/form';
 import { notification } from '@/utils/notification';
+import {useTranslation} from 'react-i18next';
 
 export default function ProfilePage() {
+  const {t} = useTranslation();
   const [userInfo, setUserInfo] = useState<Results>();
   const [originalUserInfo, setOriginalUserInfo] = useState<Results>();
   const [loading, setLoading] = useState(false);
@@ -38,53 +40,53 @@ export default function ProfilePage() {
   const formFields: FormFieldConfig[] = [
     {
       key: 'user_name',
-      label: 'Username',
+      label: t('profile.username'),
       type: 'text',
       colSpan: 1,
-      placeholder: 'Username',
+      placeholder: t('profile.username'),
       disabled: true,
-      description: 'Username cannot be changed',
+      description: t('profile.usernameCannotBeChanged'),
     },
     {
       key: 'nick_name',
-      label: 'Nickname',
+      label: t('profile.nickname'),
       type: 'text',
       colSpan: 1,
-      placeholder: 'Enter nickname',
+      placeholder: t('profile.enterNickname'),
     },
     {
       key: 'email',
-      label: 'Email',
+      label: t('profile.email'),
       type: 'email',
       colSpan: 2,
-      placeholder: 'Enter email',
+      placeholder: t('profile.enterEmail'),
     },
     {
       key: 'phonenumber',
-      label: 'Phone Number',
+      label: t('profile.phoneNumber'),
       type: 'text',
       colSpan: 2,
-      placeholder: 'Enter phone number',
+      placeholder: t('profile.enterPhoneNumber'),
     },
     {
       key: 'sex',
-      label: 'Gender',
+      label: t('profile.gender'),
       type: 'select',
       colSpan: 2,
       options: [
-        { value: '0', label: 'Male' },
-        { value: '1', label: 'Female' },
-        { value: '2', label: 'Unknown' },
+        { value: '0', label: t('user.genders.male') },
+        { value: '1', label: t('user.genders.female') },
+        { value: '2', label: t('user.genders.unknown') },
       ],
-      placeholder: 'Select gender',
+      placeholder: t('profile.selectGender'),
     },
     {
       key: 'remark',
-      label: 'Bio',
+      label: t('profile.bio'),
       type: 'textarea',
       colSpan: 2,
       rows: 4,
-      placeholder: 'Tell us about yourself',
+      placeholder: t('profile.tellUsAboutYourself'),
     },
   ];
 
@@ -103,14 +105,14 @@ export default function ProfilePage() {
     const data = Object.fromEntries(changedFields);
 
     if (Object.keys(data).length === 0) {
-      notification.info('No changes to save');
+      notification.info(t('profile.noChangesToSave'));
       return;
     }
 
     setSaving(true);
     UserService.updateUser(userInfo.user_id, data).then((results) => {
       if (results.code === 200) {
-        notification.success('Profile updated successfully');
+        notification.success(t('profile.profileUpdatedSuccessfully'));
         setOriginalUserInfo({ ...userInfo });
       }
     }).catch((error) => {
@@ -153,10 +155,10 @@ export default function ProfilePage() {
         className="flex items-center justify-between"
       >
         <div>
-          <h1 className="text-4xl font-bold">Profile</h1>
+          <h1 className="text-4xl font-bold">{t('profile.title')}</h1>
           <p className="text-gray-600 flex items-center gap-2 mt-1">
             <Sparkles size={18} />
-            Manage your personal information
+            {t('profile.managePersonalInfo')}
           </p>
         </div>
       </motion.div>
@@ -199,7 +201,7 @@ export default function ProfilePage() {
               <Mail size={16} />
               {userInfo?.email}
             </p>
-            <p className="text-gray-400 text-sm mt-1">Click avatar to upload</p>
+            <p className="text-gray-400 text-sm mt-1">{t('profile.clickAvatarToUpload')}</p>
           </div>
           {/* Hidden file input */}
           <input
@@ -239,7 +241,7 @@ export default function ProfilePage() {
             className="px-6 py-3 bg-black text-white rounded-xl font-semibold shadow-lg hover:bg-gray-800 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Save size={18} />
-            {saving ? 'Saving...' : 'Save Changes'}
+            {saving ? t('profile.saving') : t('profile.saveChanges')}
           </motion.button>
         </div>
       </motion.div>
