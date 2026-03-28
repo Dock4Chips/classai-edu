@@ -425,7 +425,7 @@ export default function MenusPage() {
                 const typeMap: Record<string, {label: string; variant: any}> = {
                     'M': {label: t('menu.menuTypes.directory'), variant: 'info'},
                     'C': {label: t('menu.menuTypes.menu'), variant: 'default'},
-                    'F': {label: t('menu.menuTypes.button'), variant: 'gradient'},
+                    'F': {label: t('menu.menuTypes.button'), variant: 'purple'},
                 };
                 const config = typeMap[value] || typeMap['C'];
                 return <Badge variant={config.variant}>{config.label}</Badge>;

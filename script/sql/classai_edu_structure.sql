@@ -11,7 +11,7 @@
  Target Server Version : 80034 (8.0.34)
  File Encoding         : 65001
 
- Date: 12/03/2026 16:39:29
+ Date: 22/03/2026 15:36:04
 */
 
 SET NAMES utf8mb4;
@@ -46,7 +46,9 @@ CREATE TABLE `class_index_banner` (
   `updated_by` bigint DEFAULT NULL COMMENT '更新人ID',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `user_id` bigint DEFAULT NULL,
-  PRIMARY KEY (`id`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `fk_banner_user` (`user_id`),
+  CONSTRAINT `fk_banner_user` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`) ON DELETE SET NULL
 ) ENGINE=InnoDB AUTO_INCREMENT=38 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='AI检测结果表';
 
 -- ----------------------------
@@ -72,7 +74,7 @@ CREATE TABLE `detection_class_count` (
   KEY `fk_class_count_class` (`class_id`),
   CONSTRAINT `fk_class_count_class` FOREIGN KEY (`class_id`) REFERENCES `model_class` (`class_id`),
   CONSTRAINT `fk_class_count_task` FOREIGN KEY (`task_id`) REFERENCES `detection_task` (`task_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=99 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='类别统计表';
+) ENGINE=InnoDB AUTO_INCREMENT=100 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='类别统计表';
 
 -- ----------------------------
 -- Table structure for detection_detail
@@ -110,9 +112,11 @@ CREATE TABLE `detection_detail` (
   KEY `idx_confidence` (`confidence`),
   KEY `idx_detection_time` (`detection_time`),
   KEY `idx_task_class` (`task_id`,`class_name`),
+  KEY `fk_detail_user` (`user_id`),
   CONSTRAINT `fk_detail_class` FOREIGN KEY (`class_id`) REFERENCES `model_class` (`class_id`),
-  CONSTRAINT `fk_detail_task` FOREIGN KEY (`task_id`) REFERENCES `detection_task` (`task_id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=119 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='检测详情表';
+  CONSTRAINT `fk_detail_task` FOREIGN KEY (`task_id`) REFERENCES `detection_task` (`task_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_detail_user` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='检测详情表';
 
 -- ----------------------------
 -- Table structure for detection_summary
@@ -138,7 +142,9 @@ CREATE TABLE `detection_summary` (
   PRIMARY KEY (`summary_id`),
   UNIQUE KEY `uk_task_summary` (`task_id`),
   KEY `idx_total_detections` (`total_detections`),
-  CONSTRAINT `fk_summary_task` FOREIGN KEY (`task_id`) REFERENCES `detection_task` (`task_id`) ON DELETE CASCADE
+  KEY `fk_summary_user` (`user_id`),
+  CONSTRAINT `fk_summary_task` FOREIGN KEY (`task_id`) REFERENCES `detection_task` (`task_id`) ON DELETE CASCADE,
+  CONSTRAINT `fk_summary_user` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='检测汇总表';
 
 -- ----------------------------
@@ -166,7 +172,7 @@ CREATE TABLE `detection_task` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint DEFAULT NULL COMMENT '更新人ID',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  `user_id` int NOT NULL,
+  `user_id` bigint NOT NULL,
   `is_deleted` tinyint DEFAULT '0',
   PRIMARY KEY (`task_id`,`user_id`) USING BTREE,
   KEY `idx_task_type_status` (`task_type`,`task_status`),
@@ -175,9 +181,11 @@ CREATE TABLE `detection_task` (
   KEY `idx_is_active` (`is_active`),
   KEY `idx_create_time` (`create_time`),
   KEY `task_id` (`task_id`),
+  KEY `fk_task_user` (`user_id`),
   CONSTRAINT `fk_task_device` FOREIGN KEY (`device_id`) REFERENCES `device` (`device_id`) ON DELETE SET NULL,
-  CONSTRAINT `fk_task_model` FOREIGN KEY (`model_id`) REFERENCES `model_config` (`model_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=110 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='检测任务表';
+  CONSTRAINT `fk_task_model` FOREIGN KEY (`model_id`) REFERENCES `model_config` (`model_id`),
+  CONSTRAINT `fk_task_user` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=112 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='检测任务表';
 
 -- ----------------------------
 -- Table structure for device
@@ -435,7 +443,7 @@ CREATE TABLE `sys_login_log` (
   `updated_by` bigint DEFAULT NULL COMMENT '更新人ID',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`login_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='登录日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='登录日志表';
 
 -- ----------------------------
 -- Table structure for sys_menu
@@ -462,7 +470,8 @@ CREATE TABLE `sys_menu` (
   PRIMARY KEY (`menu_id`),
   KEY `idx_user_id` (`user_id`),
   KEY `idx_parent_id` (`parent_id`),
-  KEY `idx_menu_key` (`menu_key`)
+  KEY `idx_menu_key` (`menu_key`),
+  CONSTRAINT `fk_menu_user` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=123 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='菜单权限表';
 
 -- ----------------------------
@@ -498,7 +507,8 @@ CREATE TABLE `sys_notice_read` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uk_notice_user` (`notice_id`,`user_id`),
   KEY `idx_notice_id` (`notice_id`),
-  KEY `idx_user_id` (`user_id`)
+  KEY `idx_user_id` (`user_id`),
+  CONSTRAINT `fk_notice_read_user` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='通知用户阅读记录表';
 
 -- ----------------------------
@@ -524,8 +534,10 @@ CREATE TABLE `sys_oper_log` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint DEFAULT NULL COMMENT '更新人ID',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`oper_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=14745 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='操作日志表';
+  PRIMARY KEY (`oper_id`) USING BTREE,
+  KEY `fk_oper_log_oper_user` (`oper_user_id`),
+  CONSTRAINT `fk_oper_log_oper_user` FOREIGN KEY (`oper_user_id`) REFERENCES `sys_user` (`user_id`) ON DELETE SET NULL
+) ENGINE=InnoDB AUTO_INCREMENT=16637 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='操作日志表';
 
 -- ----------------------------
 -- Table structure for sys_role
@@ -610,7 +622,9 @@ CREATE TABLE `sys_user_online` (
   `create_time` datetime DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `updated_by` bigint DEFAULT NULL COMMENT '更新人ID',
   `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`session_id`)
+  PRIMARY KEY (`session_id`),
+  KEY `fk_user_online_user` (`user_id`),
+  CONSTRAINT `fk_user_online_user` FOREIGN KEY (`user_id`) REFERENCES `sys_user` (`user_id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='在线用户表';
 
 SET FOREIGN_KEY_CHECKS = 1;
