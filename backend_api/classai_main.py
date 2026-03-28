@@ -43,3 +43,8 @@ app.include_router(api_router)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=7869)
+
+
+# https://console.cloud.google.com/auth/clients?project=valiant-nucleus-454009-n5
+
+# https://github.com/settings/apps/classai-edu
