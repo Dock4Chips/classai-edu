@@ -12,6 +12,7 @@ from repository.model_draw_config_repository import (
 )
 from schema.model_draw_config_schema import ModelDrawConfigCreateSchema, ModelDrawConfigUpdateSchema
 from tools.color_tool import update_color_from_hex
+from yolo_edu.services.model_config_service import ModelConfigService
 
 pro_model_draw_config_router = APIRouter(
     prefix='/api/model/draw/config',
@@ -59,6 +60,7 @@ async def add_model_draw_config(data: ModelDrawConfigCreateSchema = Body(...)):
 async def edit_model_draw_config(config_id: int, data: ModelDrawConfigUpdateSchema = Body(...)):
     payload = update_color_from_hex(data.dict(exclude_unset=True))
     update_model_draw_config(config_id, payload)
+    ModelConfigService.clear_cache()
     return Res.ok("修改成功")
 
 

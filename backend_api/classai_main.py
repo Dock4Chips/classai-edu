@@ -23,10 +23,8 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# 异常处理器
 handler_exception(app)
 
-# 中间件
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -37,13 +35,11 @@ app.add_middleware(
 app.add_middleware(ResContext)
 app.middleware("http")(security)
 
-# 路由注册
 app.include_router(api_router)
 
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=7869)
-
 
 # https://console.cloud.google.com/auth/clients?project=valiant-nucleus-454009-n5
 

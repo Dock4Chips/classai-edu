@@ -10,6 +10,7 @@ from repository.model_config_repository import (
     delete_model
 )
 from schema.model_config_schema import ModelConfigCreateUpdateSchema
+from yolo_edu.services.model_config_service import ModelConfigService
 
 pro_model_config_router = APIRouter(
     prefix='/api/model/config',
@@ -48,6 +49,7 @@ async def add_model_config(data: ModelConfigCreateUpdateSchema = Body(...)):
 @pro_model_config_router.put('/{model_id}')
 async def edit_model_config(model_id: int, data: ModelConfigCreateUpdateSchema = Body(...)):
     update_model(model_id, data.dict(exclude_unset=True))
+    ModelConfigService.clear_cache()
     return Res.ok("修改成功")
 
 

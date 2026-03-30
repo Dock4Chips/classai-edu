@@ -1,5 +1,5 @@
 import ast
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 from master_tools.logger_tool import log
 from repository.model_config_repository import page_list_model
 from repository.model_class_repository import get_model_class_by_model_id
@@ -8,7 +8,7 @@ from repository.model_draw_config_repository import get_model_draw_config_by_mod
 
 class ModelConfigService:
 
-    _cached_config: Dict = None
+    _cached_config: Optional[Dict] = None
 
     @classmethod
     def load_active_model_config(cls) -> Dict:
@@ -201,6 +201,11 @@ class ModelConfigService:
             'num_classes': config['num_classes'],
         }
 
+    @classmethod
+    def clear_cache(cls) -> None:
+        '''清空模型配置缓存'''
+        cls._cached_config = None
+        log.info("[ModelConfigService] Cache cleared")
 
 if __name__ == '__main__':
     info =  ModelConfigService.load_active_model_config()
