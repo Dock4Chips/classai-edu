@@ -11,6 +11,7 @@ from repository.model_class_repository import (
     delete_model_class
 )
 from schema.model_class_schema import ModelClassCreateSchema, ModelClassUpdateSchema
+from yolo_edu.services.model_config_service import ModelConfigService
 
 pro_model_class_router = APIRouter(
     prefix='/api/model/class',
@@ -56,6 +57,7 @@ async def add_model_class(data: ModelClassCreateSchema = Body(...)):
 @pro_model_class_router.put('/{class_id}')
 async def edit_model_class(class_id: int, data: ModelClassUpdateSchema = Body(...)):
     update_model_class(class_id, data.dict(exclude_unset=True))
+    ModelConfigService.clear_cache()
     return Res.ok("修改成功")
 
 
