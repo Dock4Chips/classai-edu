@@ -5,7 +5,12 @@ from typing import Any
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse
 from auth.authorization import Authorization
-from config import redis_client
+from config import (
+    redis_client,
+    DASHBOARD_METRICS_DIR,
+    DASHBOARD_METRICS_CACHE_TTL_SECONDS,
+    DASHBOARD_METRICS_REDIS_PREFIX,
+)
 from models.exceptions import ServiceException
 from models.result import Res
 from repository.dashboard_repository import get_admin_dashboard_stats
@@ -14,16 +19,18 @@ pro_dashboard_router = APIRouter(
     prefix='/api/dashboard',
     dependencies=[Depends(Authorization.val_token)]
 )
+pub_dashboard_router = APIRouter(
+    prefix='/api/dashboard'
+)
 
-BASE_DIR = Path(__file__).resolve().parents[2]
-METRICS_DIR = BASE_DIR / "yolo_edu" / "scripts" / "metrics"
+METRICS_DIR = Path(DASHBOARD_METRICS_DIR)
 METRICS_FILE_MAP = {
     "results": "results.json",
     "box-curves": "box_curves.json",
     "confusion-matrix": "confusion_matrix.json",
 }
-METRICS_CACHE_TTL_SECONDS = 60
-METRICS_REDIS_PREFIX = "dashboard:metrics"
+METRICS_CACHE_TTL_SECONDS = DASHBOARD_METRICS_CACHE_TTL_SECONDS
+METRICS_REDIS_PREFIX = DASHBOARD_METRICS_REDIS_PREFIX
 
 
 def _load_metrics_json(file_key: str) -> Any:
@@ -97,7 +104,7 @@ async def admin_dashboard_stats():
     })
 
 
-@pro_dashboard_router.get('/web/metrics/{file_key}')
+@pub_dashboard_router.get('/web/metrics/{file_key}')
 async def get_web_metrics(file_key: str, request: Request):
     # 单文件：Redis 缓存 + ETag，降低高并发时磁盘/带宽开销
     if file_key not in METRICS_FILE_MAP:
@@ -116,7 +123,7 @@ async def get_web_metrics(file_key: str, request: Request):
     return JSONResponse(content=Res.ok(data), headers=headers)
 
 
-@pro_dashboard_router.get('/web/metrics')
+@pub_dashboard_router.get('/web/metrics')
 async def get_all_web_metrics(request: Request):
     # 聚合：Redis 缓存 + ETag，减少首页并发与重复大响应
     etag = _build_all_etag()

@@ -9,7 +9,7 @@ from .sys_monitor_router import pro_sys_monitor_router
 from .sys_role_router import pro_sys_role_router
 from .sys_notice_router import pro_sys_notice_router, pub_sys_notice_router
 from .sys_config_router import pro_sys_config_router
-from .dashboard_show_router import pro_dashboard_router
+from .dashboard_show_router import pro_dashboard_router, pub_dashboard_router
 from .model_config_router import pro_model_config_router
 from .model_class_router import pro_model_class_router
 from .model_draw_config_router import pro_model_draw_config_router
@@ -31,6 +31,7 @@ api_router.include_router(pub_sys_notice_router)
 api_router.include_router(pro_sys_notice_router)
 api_router.include_router(pro_sys_config_router)
 api_router.include_router(pro_dashboard_router)
+api_router.include_router(pub_dashboard_router)
 api_router.include_router(pro_model_config_router)
 api_router.include_router(pro_model_class_router)
 api_router.include_router(pro_model_draw_config_router)
