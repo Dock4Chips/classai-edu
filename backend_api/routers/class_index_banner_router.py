@@ -73,9 +73,18 @@ async def common_process_det(file):
         model_id=model_info.get('model_id'),
     )
 
-    results = await detection_img_task_service(task_data, [file],False)
+    results = await detection_img_task_service(task_data, [file], False)
+    if not results:
+        raise ServiceException(msg="检测失败，未返回结果")
+
     dets = results[0].get('dets', [])
-    height, width = results[0].get('dets')[0].get('orig_shape')
+    if not dets:
+        raise ServiceException(msg="检测结果为空，请更换图片后重试")
+
+    orig_shape = dets[0].get('orig_shape')
+    if not orig_shape or len(orig_shape) < 2:
+        raise ServiceException(msg="检测结果缺少尺寸信息")
+    height, width = orig_shape
 
     cls_counts = {}
     for det in dets:
