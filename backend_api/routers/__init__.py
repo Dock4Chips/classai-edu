@@ -19,26 +19,29 @@ from .report_page_data_router import pro_report_page_data_router
 
 api_router = APIRouter()
 
+routers = [
+    pro_identity_router,
+    pub_identity_router,
+    pro_class_index_banner_router,
+    pub_class_index_banner_router,
+    pro_sys_user_router,
+    pro_sys_monitor_router,
+    pro_sys_role_router,
+    pub_sys_notice_router,
+    pro_sys_notice_router,
+    pro_sys_config_router,
+    pro_dashboard_router,
+    pub_dashboard_router,
+    pro_model_config_router,
+    pro_model_class_router,
+    pro_model_draw_config_router,
+    pro_device_router,
+    pro_sys_menu_router,
+    pro_report_page_data_router,
+    predict_ws_router,
+    pro_predict_router,
+    pro_detection_task_router,
+]
 
-api_router.include_router(pub_identity_router)
-api_router.include_router(pro_identity_router)
-api_router.include_router(pro_class_index_banner_router)
-api_router.include_router(pub_class_index_banner_router)
-api_router.include_router(pro_sys_user_router)
-api_router.include_router(pro_sys_monitor_router)
-api_router.include_router(pro_sys_role_router)
-api_router.include_router(pub_sys_notice_router)
-api_router.include_router(pro_sys_notice_router)
-api_router.include_router(pro_sys_config_router)
-api_router.include_router(pro_dashboard_router)
-api_router.include_router(pub_dashboard_router)
-api_router.include_router(pro_model_config_router)
-api_router.include_router(pro_model_class_router)
-api_router.include_router(pro_model_draw_config_router)
-api_router.include_router(pro_device_router)
-api_router.include_router(pro_sys_menu_router)
-api_router.include_router(pro_report_page_data_router)
-
-api_router.include_router(predict_ws_router)
-api_router.include_router(pro_predict_router)
-api_router.include_router(pro_detection_task_router)
+for router in routers:
+    api_router.include_router(router)
