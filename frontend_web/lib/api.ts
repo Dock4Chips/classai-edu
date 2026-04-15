@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance, type AxiosResponse, type AxiosError } from 'axios';
+import axios, { type AxiosInstance, type AxiosResponse, type AxiosError, type AxiosRequestConfig } from 'axios';
 import type { InternalAxiosRequestConfig } from 'axios';
 
 import Cookies from 'js-cookie';
@@ -67,18 +67,23 @@ export class ApiClient {
         return token;
     }
 
-    // GET
-    get<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
+    // GET (保留原写法)
+    get<T>(endpoint: string, params?: Record<string, unknown>): Promise<T> {
         return this.instance.get(endpoint, { params });
     }
 
+    // GET (新增: 支持 axios config，如 responseType)
+    getWithConfig<T>(endpoint: string, config?: AxiosRequestConfig): Promise<T> {
+        return this.instance.get(endpoint, config);
+    }
+
     // POST
-    post<T>(endpoint: string, data?: any, config?: any): Promise<T> {
+    post<T>(endpoint: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
         return this.instance.post(endpoint, data, config);
     }
 
     // PUT
-    put<T>(endpoint: string, data?: any, config?: any): Promise<T> {
+    put<T>(endpoint: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> {
         return this.instance.put(endpoint, data, config);
     }
 
@@ -89,7 +94,7 @@ export class ApiClient {
 }
 
 export interface Results {
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 // 创建实例

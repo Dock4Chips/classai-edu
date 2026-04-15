@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from './Navigation';
-import { ReportService } from '@/lib/service/report';
+import { ReportListItem, ReportService } from '@/lib/service/report';
 import { useTranslation } from 'react-i18next';
 import {
   FileText,
@@ -22,75 +22,6 @@ import {
   Activity,
   Grid3x3
 } from 'lucide-react';
-
-const reportsData = [
-  {
-    id: 'onnx',
-    titleKey: 'reports.modelExportOnnx',
-    type: 'model',
-    date: '2025-12-23',
-    periodKey: 'reports.periodOnnx',
-    status: 'completed',
-    size: 'model.onnx',
-    downloadType: 'model' as const,
-    downloadKey: 'onnx' as const
-  },
-  {
-    id: 'coreml',
-    titleKey: 'reports.modelExportCoreml',
-    type: 'model',
-    date: '2025-12-23',
-    periodKey: 'reports.periodCoreml',
-    status: 'completed',
-    size: 'model.mlmodel',
-    downloadType: 'model' as const,
-    downloadKey: 'coreml' as const
-  },
-  {
-    id: 'torchscript',
-    titleKey: 'reports.modelExportTorchscript',
-    type: 'model',
-    date: '2025-12-23',
-    periodKey: 'reports.periodTorchscript',
-    status: 'completed',
-    size: 'model.torchscript',
-    downloadType: 'model' as const,
-    downloadKey: 'torchscript' as const
-  },
-  {
-    id: 'box-curves',
-    titleKey: 'reports.metricsBoxCurves',
-    type: 'metrics',
-    date: '2025-12-23',
-    periodKey: 'reports.periodBoxCurves',
-    status: 'completed',
-    size: 'box_curves.json',
-    downloadType: 'metrics' as const,
-    downloadKey: 'box-curves' as const
-  },
-  {
-    id: 'confusion-matrix',
-    titleKey: 'reports.metricsConfusionMatrix',
-    type: 'metrics',
-    date: '2025-12-23',
-    periodKey: 'reports.periodConfusionMatrix',
-    status: 'completed',
-    size: 'confusion_matrix.json',
-    downloadType: 'metrics' as const,
-    downloadKey: 'confusion-matrix' as const
-  },
-  {
-    id: 'results',
-    titleKey: 'reports.metricsTrainingResults',
-    type: 'metrics',
-    date: '2025-12-23',
-    periodKey: 'reports.periodResults',
-    status: 'completed',
-    size: 'results.json',
-    downloadType: 'metrics' as const,
-    downloadKey: 'results' as const
-  }
-];
 
 // JSON Preview Modal
 const JsonPreviewModal = ({ isOpen, onClose, title, data, closeText }: { isOpen: boolean; onClose: () => void; title: string; data: unknown; closeText: string }) => {
@@ -137,6 +68,7 @@ const JsonPreviewModal = ({ isOpen, onClose, title, data, closeText }: { isOpen:
 
 export default function ReportsPage() {
   const { t } = useTranslation();
+  const [reportsData, setReportsData] = useState<ReportListItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'model' | 'metrics'>('all');
   const [previewModal, setPreviewModal] = useState<{ isOpen: boolean; title: string; data: unknown }>({
@@ -145,6 +77,18 @@ export default function ReportsPage() {
     data: null
   });
   const [isFilterExpanded, setIsFilterExpanded] = useState(true);
+
+  useEffect(() => {
+    ReportService.getReportList()
+      .then((response) => {
+        if (response?.code === 200 && Array.isArray(response?.data)) {
+          setReportsData(response.data as ReportListItem[]);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load report list:', error);
+      });
+  }, []);
 
   const filteredReports = reportsData.filter(report =>
     (filterType === 'all' || report.type === filterType) &&
@@ -182,7 +126,7 @@ export default function ReportsPage() {
     }
   };
 
-  const handleDownload = (report: typeof reportsData[0]) => {
+  const handleDownload = (report: ReportListItem) => {
     if (report.downloadType === 'model') {
       ReportService.downloadModel(report.downloadKey);
     } else {
@@ -190,25 +134,19 @@ export default function ReportsPage() {
     }
   };
 
-  const handlePreview = (report: typeof reportsData[0]) => {
-    const fileMap = {
-      'box-curves': '/metrics/box_curves.json',
-      'confusion-matrix': '/metrics/confusion_matrix.json',
-      'results': '/metrics/results.json'
-    };
-
-    fetch(fileMap[report.downloadKey as keyof typeof fileMap])
+  const handlePreview = (report: ReportListItem) => {
+    if (report.downloadType !== 'metrics') {
+      return;
+    }
+    ReportService.getMetricsJson(report.downloadKey)
       .then((response) => {
-        if (!response.ok) {
+        if (response?.code !== 200) {
           throw new Error('Failed to load JSON');
         }
-        return response.json();
-      })
-      .then((data) => {
         setPreviewModal({
           isOpen: true,
           title: t(report.titleKey),
-          data
+          data: response.data
         });
       })
       .catch((error) => {
