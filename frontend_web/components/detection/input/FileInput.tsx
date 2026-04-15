@@ -3,6 +3,7 @@
 import { Upload } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface FileInputProps {
   onFileSelect?: (file: File) => void;
@@ -12,6 +13,7 @@ interface FileInputProps {
 
 export function FileInput({ onFileSelect, accept = 'image/*,video/*', multiple = false }: FileInputProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const { t } = useTranslation();
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -72,9 +74,9 @@ export function FileInput({ onFileSelect, accept = 'image/*,video/*', multiple =
             <Upload className="text-gray-600" size={32} />
           </motion.div>
           <p className="mb-2 text-sm text-gray-700">
-            <span className="font-semibold">Click to upload</span> or drag and drop
+            <span className="font-semibold">{t('detection.common.clickToUpload')}</span> {t('detection.common.orDragAndDrop')}
           </p>
-          <p className="text-xs text-gray-500">Image or Video files</p>
+          <p className="text-xs text-gray-500">{t('detection.common.imageOrVideoFiles')}</p>
         </div>
         <input id="file-upload" type="file" className="hidden" accept={accept} multiple={multiple} onChange={handleFileInput} />
       </motion.label>

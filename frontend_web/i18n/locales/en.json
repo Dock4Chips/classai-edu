@@ -1,9 +1,9 @@
 {
   "dashboard": {
-    "aiPoweredAnalysisReady": "AI-Powered Analysis Ready",
+    "aiPoweredAnalysisReady": "YOLO Detection Ready",
     "transformYourClassroom": "Transform Your Classroom",
-    "withAISIntelligence": "with AI Intelligence",
-    "analyzeStudentBehavior": "Analyze student behavior in real-time with our advanced AI. Get instant insights and improve learning outcomes.",
+    "withAISIntelligence": "with YOLO Vision",
+    "analyzeStudentBehavior": "Analyze student behavior in real time with YOLO-based detection. Get instant insights and improve learning outcomes.",
     "startNewDetection": "Start New Detection",
     "watchDemo": "Watch Demo",
     "quickActions": "Quick Actions",
@@ -46,6 +46,37 @@
     "staff": "Staff",
     "usingMobile": "Using Mobile"
   },
+  "navigation": {
+    "search": "Search...",
+    "loading": "Loading...",
+    "nav": {
+      "dashboard": "Dashboard",
+      "projects": "Projects",
+      "detection": "Detection",
+      "reports": "Reports"
+    },
+    "profile": {
+      "profile": "Profile",
+      "changePassword": "Change Password",
+      "logout": "Logout"
+    },
+    "notice": {
+      "viewAllNotices": "View All Notices",
+      "noticeDetails": "Notice Details",
+      "allNotices": "All Notices",
+      "noNoticesFound": "No notices found",
+      "title": "Title",
+      "typeLabel": "Type",
+      "content": "Content",
+      "createdAt": "Created At",
+      "totalNotices": "Total: {{total}} notices",
+      "pageOf": "Page {{page}} of {{pages}}",
+      "type": {
+        "notice": "Notice",
+        "announcement": "Announcement"
+      }
+    }
+  },
   "reports": {
     "title": "Reports",
     "subtitle": "View and generate analysis reports",
@@ -61,9 +92,61 @@
     "metricsBoxCurves": "Metrics - Box Curves Data",
     "metricsConfusionMatrix": "Metrics - Confusion Matrix",
     "metricsTrainingResults": "Metrics - Training Results",
+    "periodOnnx": "ONNX",
+    "periodCoreml": "CoreML",
+    "periodTorchscript": "TorchScript",
+    "periodBoxCurves": "Box Curves",
+    "periodConfusionMatrix": "Confusion Matrix",
+    "periodResults": "Results",
     "download": "Download",
     "view": "View",
     "close": "Close"
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your personal information",
+    "noChangesToSave": "No changes to save",
+    "profileUpdatedSuccessfully": "Profile updated successfully",
+    "username": "Username",
+    "nickname": "Nickname",
+    "enterNickname": "Enter nickname",
+    "email": "Email",
+    "enterEmail": "Enter email",
+    "phoneNumber": "Phone Number",
+    "enterPhoneNumber": "Enter phone number",
+    "gender": "Gender",
+    "genderMale": "Male",
+    "genderFemale": "Female",
+    "genderUnknown": "Unknown",
+    "selectGender": "Select gender",
+    "bio": "Bio",
+    "tellUsAboutYourself": "Tell us about yourself",
+    "saving": "Saving...",
+    "saveChanges": "Save Changes"
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "subtitle": "Update your password to keep your account secure",
+    "pleaseFillAllFields": "Please fill in all fields",
+    "passwordsDoNotMatch": "Passwords do not match",
+    "failedToUpdatePassword": "Failed to update password",
+    "currentPassword": "Current Password",
+    "enterCurrentPassword": "Enter your current password",
+    "newPassword": "New Password",
+    "enterNewPassword": "Enter your new password",
+    "confirmNewPassword": "Confirm New Password",
+    "confirmYourNewPassword": "Confirm your new password",
+    "passwordStrength": "Password strength",
+    "strong": "Strong",
+    "medium": "Medium",
+    "weak": "Weak",
+    "passwordsMatch": "Passwords match",
+    "passwordRequirements": "Password Requirements:",
+    "requirementMinLength": "At least 6 characters long",
+    "requirementCase": "Contains both uppercase and lowercase letters is recommended",
+    "requirementNumberSpecial": "Contains numbers and special characters is recommended",
+    "changingPassword": "Changing Password...",
+    "changePassword": "Change Password"
   },
   "projects": {
     "title": "Projects",
@@ -87,8 +170,182 @@
     "noProjectsHint": "Try adjusting your filters or search query",
     "loadingProjects": "Loading projects...",
     "pageOf": "{total} total",
+    "pageInfo": "Page {page} of {pages} ({total} total)",
     "switchToListView": "Switch to list view",
     "switchToGridView": "Switch to grid view",
     "searchProjects": "Search projects"
+  },
+  "detection": {
+    "common": {
+      "error": "Error",
+      "unknownError": "Unknown error",
+      "pleaseLoginFirst": "Please login first.",
+      "pleaseSelectDevice": "Please select a device.",
+      "clickToUpload": "Click to upload",
+      "orDragAndDrop": "or drag and drop",
+      "imageOrVideoFiles": "Image or Video files",
+      "detections": "detections",
+      "tracks": "tracks",
+      "objects": "objects",
+      "noDetectionsYet": "No detections yet",
+      "noTracksYet": "No tracks yet",
+      "id": "ID",
+      "frames": "Frames",
+      "session": "Session",
+      "input": "Input",
+      "output": "Output",
+      "resolution": "Resolution",
+      "model": "Model",
+      "device": "Device",
+      "confidence": "Confidence",
+      "selectModel": "Select Model",
+      "selectDevice": "Select Device",
+      "noTask": "No Task",
+      "noFileSelected": "No file selected",
+      "noFileLoaded": "No file loaded",
+      "preview": "Preview",
+      "processing": "Processing...",
+      "status": {
+        "idle": "Idle",
+        "ready": "Ready",
+        "processing": "Processing",
+        "completed": "Completed",
+        "failed": "Failed"
+      },
+      "connection": {
+        "connected": "Connected",
+        "connecting": "Connecting...",
+        "failed": "Connection Failed",
+        "disconnected": "Disconnected"
+      }
+    },
+    "workspace": {
+      "title": "Detection Workspace",
+      "subtitle": "Select a task to start processing data",
+      "start": "Start",
+      "tasks": {
+        "detection": {
+          "title": "Object Detection",
+          "description": "Run YOLO on images/video",
+          "features": {
+            "boundingBoxes": "bounding boxes",
+            "classLabels": "class labels",
+            "confidenceScore": "confidence score"
+          }
+        },
+        "tracking": {
+          "title": "Object Tracking",
+          "description": "Track objects across video frames",
+          "features": {
+            "objectIds": "object IDs",
+            "trajectories": "trajectories",
+            "timeline": "timeline"
+          }
+        }
+      }
+    },
+    "predict": {
+      "fileUpload": "File Upload",
+      "cameraStream": "Camera Stream",
+      "camera": "Camera",
+      "enterTaskName": "Enter task name...",
+      "clickToSetTaskName": "Click to set task name",
+      "required": "Optional",
+      "selectFileToStart": "Select a file to start detection",
+      "useDeviceListInCameraMode": "Please use the device list for detection in camera mode",
+      "detectionResult": "Detection Result",
+      "waitForOutput": "Wait for the detection output",
+      "startDetection": "Start Detection",
+      "stopDetection": "Stop Detection"
+    },
+    "track": {
+      "trackingTask": "Tracking Task",
+      "objectTrackingTask": "Object Tracking Task",
+      "useDeviceListForTracking": "Tracking uses camera stream from device list",
+      "cameraStreamInput": "Camera Stream Input",
+      "trackingResult": "Tracking Result",
+      "waitForTrackingOutput": "Wait for tracking output",
+      "startTracking": "Start Tracking",
+      "stopTracking": "Stop Tracking"
+    },
+    "settings": {
+      "title": "Settings",
+      "tabs": {
+        "models": "Models",
+        "devices": "Devices"
+      },
+      "modelList": "Model List",
+      "deviceList": "Device List",
+      "addDevice": "Add Device",
+      "editDevice": "Edit Device",
+      "save": "Save",
+      "cancel": "Cancel",
+      "columns": {
+        "id": "ID",
+        "modelName": "Model Name",
+        "classes": "Classes",
+        "active": "Active",
+        "default": "Default",
+        "inferenceMs": "Inference (ms)",
+        "sizeMb": "Size (MB)",
+        "version": "Version",
+        "deviceName": "Device Name",
+        "deviceCode": "Device Code",
+        "type": "Type",
+        "connection": "Connection",
+        "location": "Location",
+        "status": "Status",
+        "actions": "Actions"
+      },
+      "actions": {
+        "edit": "Edit",
+        "delete": "Delete"
+      },
+      "fields": {
+        "deviceName": "Device Name",
+        "enterDeviceName": "Enter device name",
+        "deviceCode": "Device Code",
+        "enterDeviceCode": "Enter device code",
+        "deviceType": "Device Type",
+        "connectionType": "Connection Type",
+        "description": "Description",
+        "enterDescription": "Enter description",
+        "rtspUrl": "RTSP URL",
+        "httpUrl": "HTTP URL",
+        "deviceIndex": "Device Index",
+        "usbCameraIndexDesc": "USB camera index (fixed at 0)",
+        "selectType": "Select type",
+        "selectStatus": "Select status"
+      },
+      "options": {
+        "deviceType": {
+          "camera": "Camera",
+          "drone": "Drone",
+          "ipCamera": "IP Camera",
+          "usbCamera": "USB Camera"
+        },
+        "connectionType": {
+          "rtsp": "RTSP",
+          "http": "HTTP",
+          "usb": "USB",
+          "file": "File"
+        },
+        "status": {
+          "online": "Online",
+          "offline": "Offline",
+          "error": "Error",
+          "maintenance": "Maintenance"
+        }
+      },
+      "messages": {
+        "confirmDeleteDevice": "Are you sure you want to delete this device?",
+        "deletedSuccessfully": "Deleted successfully",
+        "failedToDeleteDevice": "Failed to delete device",
+        "createdSuccessfully": "Created successfully",
+        "failedToCreateDevice": "Failed to create device",
+        "updatedSuccessfully": "Updated successfully",
+        "failedToUpdateDevice": "Failed to update device"
+      }
+    }
   }
 }

@@ -19,6 +19,7 @@ import {
 import {DetectionTaskService} from "@/lib/service/detection_task";
 import {Results} from "@/lib/api";
 import {notification} from "@/utils/notification";
+import {useTranslation} from "react-i18next";
 
 // Task Type Enum
 enum TaskType {
@@ -49,6 +50,7 @@ interface Project {
 }
 
 export default function ProjectsPage() {
+    const {t} = useTranslation();
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'running' | 'failed' | 'completed'>('all');
     const [searchQuery, setSearchQuery] = useState('');
@@ -137,13 +139,21 @@ export default function ProjectsPage() {
         return matchesStatus && matchesSearch;
     });
 
+    const filterLabelMap: Record<'all' | 'pending' | 'running' | 'failed' | 'completed', string> = {
+        all: t('projects.filterAll'),
+        pending: t('projects.filterPending'),
+        running: t('projects.filterRunning'),
+        failed: t('projects.filterFailed'),
+        completed: t('projects.filterCompleted'),
+    };
+
 
     const ProjectCard = ({project, index}: { project: Project; index: number }) => {
         const statusConfig = {
-            pending: {icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50', label: 'Pending'},
-            running: {icon: Clock, color: 'text-blue-500', bg: 'bg-blue-50', label: 'Running'},
-            completed: {icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-50', label: 'Completed'},
-            failed: {icon: XCircle, color: 'text-rose-500', bg: 'bg-rose-50', label: 'Failed'}
+            pending: {icon: Clock, color: 'text-amber-500', bg: 'bg-amber-50', label: t('projects.statusPending')},
+            running: {icon: Clock, color: 'text-blue-500', bg: 'bg-blue-50', label: t('projects.statusRunning')},
+            completed: {icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-50', label: t('projects.statusCompleted')},
+            failed: {icon: XCircle, color: 'text-rose-500', bg: 'bg-rose-50', label: t('projects.statusFailed')}
         };
 
         const typeConfig = {
@@ -163,16 +173,16 @@ export default function ProjectsPage() {
                 initial={{opacity: 0, y: 20}}
                 animate={{opacity: 1, y: 0}}
                 transition={{delay: index * 0.05}}
-                className="group bg-white rounded-2xl p-6 shadow-lg shadow-gray-100 hover:shadow-2xl transition-all"
+                className="group h-full flex flex-col bg-white rounded-2xl p-6 shadow-lg shadow-gray-100 hover:shadow-2xl transition-all"
             >
                 <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
+                    <div className="flex-1 min-h-[138px]">
                         <div className="flex items-center gap-3 mb-2">
                             <div className={`p-2.5 rounded-xl ${type.bg}`}>
                                 <TypeIcon className={type.color} size={20}/>
                             </div>
-                            <div>
-                                <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                            <div className="flex-1 min-w-0">
+                                <h3 className="text-lg font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-3">
                                     {project.name}
                                 </h3>
                                 <p className="text-sm text-gray-500">{project.date}</p>
@@ -186,23 +196,23 @@ export default function ProjectsPage() {
                     </button>
                 </div>
 
-                <div className="grid grid-cols-4 gap-4 mb-4">
+                <div className="grid grid-cols-4 gap-4 mt-auto">
                     <div>
-                        <div className="text-xs text-gray-500 mb-1">Objects</div>
+                        <div className="text-xs text-gray-500 mb-1">{t('projects.objects')}</div>
                         <div className="text-sm font-medium text-gray-900">{project.objects}</div>
                     </div>
                     <div>
-                        <div className="text-xs text-gray-500 mb-1">Classes</div>
+                        <div className="text-xs text-gray-500 mb-1">{t('projects.classes')}</div>
                         <div className="text-sm font-medium text-gray-900">{project.classes}</div>
                     </div>
                     <div>
-                        <div className="text-xs text-gray-500 mb-1">Conf</div>
+                        <div className="text-xs text-gray-500 mb-1">{t('projects.conf')}</div>
                         <div className="text-sm font-medium text-gray-900">{project.conf.toFixed(2)}</div>
                     </div>
                     <div>
-                        <div className="text-xs text-gray-500 mb-1">Status</div>
+                        <div className="text-xs text-gray-500 mb-1">{t('projects.status')}</div>
                         <div
-                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium ${status.bg} ${status.color}`}>
+                            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium whitespace-nowrap ${status.bg} ${status.color}`}>
                             <StatusIcon size={14}/>
                             {status.label}
                         </div>
@@ -224,8 +234,8 @@ export default function ProjectsPage() {
                     animate={{opacity: 1, y: 0}}
                     className="mb-8"
                 >
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Projects</h1>
-                    <p className="text-gray-500">Manage your classroom analysis projects</p>
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('projects.title')}</h1>
+                    <p className="text-gray-500">{t('projects.subtitle')}</p>
                 </motion.div>
 
                 {/* Filters */}
@@ -241,13 +251,13 @@ export default function ProjectsPage() {
                             <button
                                 key={status}
                                 onClick={() => setFilterStatus(status)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium capitalize transition-all ${
+                                className={`px-4 py-2 rounded-lg text-sm font-medium capitalize whitespace-nowrap transition-all ${
                                     filterStatus === status
                                         ? 'bg-black text-white shadow-md'
                                         : 'text-gray-600 hover:bg-gray-50'
                                 }`}
                             >
-                                {status}
+                                {filterLabelMap[status]}
                             </button>
                         ))}
                     </div>
@@ -259,7 +269,7 @@ export default function ProjectsPage() {
                             <div className="relative">
                                 <input
                                     type="text"
-                                    placeholder="Search by name..."
+                                    placeholder={t('projects.search')}
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     className="w-64 h-10 pl-10 pr-10 bg-white rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-black/20 transition-all"
@@ -279,7 +289,7 @@ export default function ProjectsPage() {
                             <button
                                 onClick={() => setShowSearch(true)}
                                 className="p-2.5 bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-colors"
-                                title="Search projects"
+                                title={t('projects.searchProjects')}
                             >
                                 <Search size={18} className="text-gray-600"/>
                             </button>
@@ -289,7 +299,7 @@ export default function ProjectsPage() {
                         <button
                             onClick={() => setViewMode(viewMode === 'grid' ? 'list' : 'grid')}
                             className="p-2.5 bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-colors"
-                            title={`Switch to ${viewMode === 'grid' ? 'list' : 'grid'} view`}
+                            title={viewMode === 'grid' ? t('projects.switchToListView') : t('projects.switchToGridView')}
                         >
                             <Grid size={18} className="text-gray-600"/>
                         </button>
@@ -300,7 +310,7 @@ export default function ProjectsPage() {
                 {loading ? (
                     <div className="text-center py-20">
                         <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-black"></div>
-                        <p className="mt-4 text-gray-500">Loading projects...</p>
+                        <p className="mt-4 text-gray-500">{t('projects.loadingProjects')}</p>
                     </div>
                 ) : (
                     <>
@@ -345,17 +355,17 @@ export default function ProjectsPage() {
                                         {/* Stats */}
                                         <div className="flex items-center gap-8">
                                             <div className="text-center">
-                                                <div className="text-xs text-gray-500">Objects</div>
+                                                <div className="text-xs text-gray-500">{t('projects.objects')}</div>
                                                 <div
                                                     className="text-sm font-medium text-gray-900">{project.objects}</div>
                                             </div>
                                             <div className="text-center">
-                                                <div className="text-xs text-gray-500">Classes</div>
+                                                <div className="text-xs text-gray-500">{t('projects.classes')}</div>
                                                 <div
                                                     className="text-sm font-medium text-gray-900">{project.classes}</div>
                                             </div>
                                             <div className="text-center">
-                                                <div className="text-xs text-gray-500">Conf</div>
+                                                <div className="text-xs text-gray-500">{t('projects.conf')}</div>
                                                 <div
                                                     className="text-sm font-medium text-gray-900">{project.conf.toFixed(2)}</div>
                                             </div>
@@ -369,32 +379,32 @@ export default function ProjectsPage() {
                                                         icon: Clock,
                                                         color: 'text-amber-500',
                                                         bg: 'bg-amber-50',
-                                                        label: 'Pending'
+                                                        label: t('projects.statusPending')
                                                     },
                                                     running: {
                                                         icon: Clock,
                                                         color: 'text-blue-500',
                                                         bg: 'bg-blue-50',
-                                                        label: 'Running'
+                                                        label: t('projects.statusRunning')
                                                     },
                                                     completed: {
                                                         icon: CheckCircle2,
                                                         color: 'text-emerald-500',
                                                         bg: 'bg-emerald-50',
-                                                        label: 'Completed'
+                                                        label: t('projects.statusCompleted')
                                                     },
                                                     failed: {
                                                         icon: XCircle,
                                                         color: 'text-rose-500',
                                                         bg: 'bg-rose-50',
-                                                        label: 'Failed'
+                                                        label: t('projects.statusFailed')
                                                     }
                                                 };
                                                 const status = statusConfig[project.status];
                                                 const StatusIcon = status.icon;
                                                 return (
                                                     <div
-                                                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium ${status.bg} ${status.color}`}>
+                                                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap ${status.bg} ${status.color}`}>
                                                         <StatusIcon size={16}/>
                                                         {status.label}
                                                     </div>
@@ -422,8 +432,8 @@ export default function ProjectsPage() {
                                     className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                     <FolderOpen size={40} className="text-gray-400"/>
                                 </div>
-                                <h3 className="text-xl font-semibold text-gray-900 mb-2">No projects found</h3>
-                                <p className="text-gray-500">Try adjusting your filters or search query</p>
+                                <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('projects.noProjectsFound')}</h3>
+                                <p className="text-gray-500">{t('projects.noProjectsHint')}</p>
                             </motion.div>
                         )}
 
@@ -471,7 +481,11 @@ export default function ProjectsPage() {
                                 </button>
 
                                 <span className="ml-4 text-sm text-gray-500">
-                                    Page {pagination.page} of {pagination.pages} ({pagination.total} total)
+                                    {t('projects.pageInfo', {
+                                        page: pagination.page,
+                                        pages: pagination.pages,
+                                        total: pagination.total
+                                    })}
                                 </span>
                             </motion.div>
                         )}

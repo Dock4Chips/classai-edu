@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronLeft, Settings } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 
@@ -12,6 +12,11 @@ interface WorkbenchHeaderProps {
     input: string;
     resolution: string;
   };
+  labels?: {
+    session?: string;
+    input?: string;
+    resolution?: string;
+  };
   leftContent?: React.ReactNode;
   rightContent?: React.ReactNode;
 }
@@ -20,9 +25,14 @@ export function WorkbenchHeader({
   title,
   backButton,
   sessionInfo,
+  labels,
   leftContent,
   rightContent,
 }: WorkbenchHeaderProps) {
+  const sessionLabel = labels?.session || 'Session';
+  const inputLabel = labels?.input || 'Input';
+  const resolutionLabel = labels?.resolution || 'Resolution';
+
   return (
     <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-b border-gray-200">
       <div className="max-w-full mx-auto px-6 py-4">
@@ -44,13 +54,13 @@ export function WorkbenchHeader({
               {sessionInfo && (
                 <div className="flex items-center gap-4 mt-1">
                   <span className="text-xs text-gray-500">
-                    Session: <span className="font-mono text-gray-700">{sessionInfo.id}</span>
+                    {sessionLabel}: <span className="font-mono text-gray-700">{sessionInfo.id}</span>
                   </span>
                   <span className="text-xs text-gray-500">
-                    Input: <span className="text-gray-700">{sessionInfo.input}</span>
+                    {inputLabel}: <span className="text-gray-700">{sessionInfo.input}</span>
                   </span>
                   <span className="text-xs text-gray-500">
-                    Resolution: <span className="text-gray-700">{sessionInfo.resolution}</span>
+                    {resolutionLabel}: <span className="text-gray-700">{sessionInfo.resolution}</span>
                   </span>
                 </div>
               )}

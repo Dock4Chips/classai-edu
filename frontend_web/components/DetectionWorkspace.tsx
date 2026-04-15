@@ -6,30 +6,39 @@ import { Box, Target, CheckCircle2 } from 'lucide-react';
 import { AnimatedContent } from '@/components/ui/animated-content';
 import { Card } from '@/components/ui/card';
 import Navigation from './Navigation';
-
-// Task configuration
-const tasks = [
-  {
-    id: 'detection',
-    title: 'Object Detection',
-    description: 'Run YOLO on images/video',
-    icon: Box,
-    features: ['bounding boxes', 'class labels', 'confidence score'],
-    href: '/detection/predict',
-    color: 'from-blue-500 to-cyan-500',
-  },
-  {
-    id: 'tracking',
-    title: 'Object Tracking',
-    description: 'Track objects across video frames',
-    icon: Target,
-    features: ['object IDs', 'trajectories', 'timeline'],
-    href: '/detection/track',
-    color: 'from-violet-500 to-purple-500',
-  },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function DetectionWorkspace() {
+  const { t } = useTranslation();
+  const tasks = [
+    {
+      id: 'detection',
+      title: t('detection.workspace.tasks.detection.title'),
+      description: t('detection.workspace.tasks.detection.description'),
+      icon: Box,
+      features: [
+        t('detection.workspace.tasks.detection.features.boundingBoxes'),
+        t('detection.workspace.tasks.detection.features.classLabels'),
+        t('detection.workspace.tasks.detection.features.confidenceScore'),
+      ],
+      href: '/detection/predict',
+      color: 'from-blue-500 to-cyan-500',
+    },
+    {
+      id: 'tracking',
+      title: t('detection.workspace.tasks.tracking.title'),
+      description: t('detection.workspace.tasks.tracking.description'),
+      icon: Target,
+      features: [
+        t('detection.workspace.tasks.tracking.features.objectIds'),
+        t('detection.workspace.tasks.tracking.features.trajectories'),
+        t('detection.workspace.tasks.tracking.features.timeline'),
+      ],
+      href: '/detection/track',
+      color: 'from-violet-500 to-purple-500',
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
@@ -45,10 +54,10 @@ export default function DetectionWorkspace() {
         <AnimatedContent delay={0}>
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Detection Workspace
+              {t('detection.workspace.title')}
             </h1>
             <p className="text-gray-500">
-              Select a task to start processing data
+              {t('detection.workspace.subtitle')}
             </p>
           </div>
         </AnimatedContent>
@@ -94,7 +103,7 @@ export default function DetectionWorkspace() {
                       whileTap={{ scale: 0.98 }}
                       className="w-full py-3 px-6 bg-black text-white rounded-xl font-medium hover:bg-gray-800 transition-colors"
                     >
-                      Start
+                      {t('detection.workspace.start')}
                     </motion.button>
                   </motion.div>
                 </Card>

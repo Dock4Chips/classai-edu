@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface DetectionItem {
   id: number;
@@ -38,6 +39,7 @@ export function DetectionList({
   highlightedId,
 }: DetectionListProps) {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const { t } = useTranslation();
 
   // Sort detections
   const sortedDetections = [...detections].sort((a, b) => {
@@ -54,8 +56,10 @@ export function DetectionList({
     <div className="space-y-2">
       {/* Header */}
       <div className="flex items-center justify-between px-2 py-2">
-        <h3 className="text-sm font-semibold text-gray-700">Detections</h3>
-        <span className="text-xs text-gray-500">{detections.length} objects</span>
+        <h3 className="text-sm font-semibold text-gray-700">{t('detection.common.detections')}</h3>
+        <span className="text-xs text-gray-500">
+          {detections.length} {t('detection.common.objects')}
+        </span>
       </div>
 
       {/* List */}
@@ -131,7 +135,7 @@ export function DetectionList({
         {/* Empty State */}
         {sortedDetections.length === 0 && (
           <div className="px-3 py-8 text-center">
-            <p className="text-sm text-gray-500">No detections yet</p>
+            <p className="text-sm text-gray-500">{t('detection.common.noDetectionsYet')}</p>
           </div>
         )}
       </div>

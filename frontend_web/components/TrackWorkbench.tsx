@@ -29,42 +29,44 @@ import {Results} from "@/lib/api";
 import {useWebSocket} from '@/hooks/useWebSocket';
 import Cookies from 'js-cookie';
 import {notification} from "@/utils/notification";
+import {useTranslation} from 'react-i18next';
 
 function StatusIndicator({status}: { status: SessionStatus }) {
+    const {t} = useTranslation();
     const statusConfig = {
         idle: {
             bg: 'bg-gray-100',
             dot: 'bg-gray-500',
             text: 'text-gray-600',
-            label: 'Idle',
+            label: t('detection.common.status.idle'),
             pulse: false
         },
         ready: {
             bg: 'bg-blue-50',
             dot: 'bg-blue-500',
             text: 'text-blue-600',
-            label: 'Ready',
+            label: t('detection.common.status.ready'),
             pulse: true
         },
         running: {
             bg: 'bg-blue-50',
             dot: 'bg-blue-500',
             text: 'text-amber-600',
-            label: 'Processing',
+            label: t('detection.common.status.processing'),
             pulse: true
         },
         completed: {
             bg: 'bg-emerald-50',
             dot: 'bg-emerald-500',
             text: 'text-emerald-600',
-            label: 'Completed',
+            label: t('detection.common.status.completed'),
             pulse: false
         },
         error: {
             bg: 'bg-rose-50',
             dot: 'bg-rose-500',
             text: 'text-rose-600',
-            label: 'Failed',
+            label: t('detection.common.status.failed'),
             pulse: false
         },
     };
@@ -97,6 +99,7 @@ function TaskInfoBadge({
     taskName: string;
     status: SessionStatus;
 }) {
+    const {t} = useTranslation();
     return (
         <div className="flex items-center gap-3">
             <div className={`
@@ -105,7 +108,7 @@ function TaskInfoBadge({
             `}>
                 <Hash size={16} className="text-gray-600"/>
                 <span className="flex-1 text-sm font-semibold text-gray-700">
-                    {taskName || 'Object Tracking Task'}
+                    {taskName || t('detection.track.objectTrackingTask')}
                 </span>
             </div>
 
@@ -115,6 +118,7 @@ function TaskInfoBadge({
 }
 
 export default function TrackWorkbench() {
+    const {t} = useTranslation();
     const [status, setStatus] = useState<SessionStatus>('idle');
     const [confidence, setConfidence] = useState(0.4);
     const [highlightedId, setHighlightedId] = useState<number | undefined>();
@@ -149,7 +153,7 @@ export default function TrackWorkbench() {
 
     const getWsUrl = () => {
         const token = Cookies.get('AUTH_TOKEN');
-        if (!token) return notification.error('Please login first.', 'Error');
+        if (!token) return notification.error(t('detection.common.pleaseLoginFirst'), t('detection.common.error'));
         return `${getWsBaseURL()}/api/stream/ws?token=${token}`;
     };
 
@@ -167,14 +171,14 @@ export default function TrackWorkbench() {
         };
 
         if (msg.type === 'error' || msg.type === 'unknown action') {
-            notification.error(msg.message || 'Unknown error', 'Error');
+            notification.error(msg.message || t('detection.common.unknownError'), t('detection.common.error'));
             return;
         }
 
         if (msg.detections) {
             setWsDetections(msg.detections);
         }
-    }, []);
+    }, [t]);
 
     // 处理二进制帧
     const handleWsBinary = useCallback((blob: Blob) => {
@@ -194,6 +198,28 @@ export default function TrackWorkbench() {
         reconnect: false,
         autoConnect: false,
     });
+
+    function fetchDevice() {
+        DeviceService.getDeviceList(1, 100).then((res) => {
+            if (res.code === 200 && res.data?.records) {
+                setDeviceList(res.data.records);
+                if (res.data.records.length > 0) {
+                    setSelectedDeviceId(res.data.records[0].device_id);
+                }
+            }
+        });
+    }
+
+    function fetchModelConfig() {
+        ModelConfigService.getModelList(1, 10).then((res) => {
+            if (res.code === 200 && res.data?.records) {
+                setModelList(res.data.records);
+                if (res.data.records.length > 0) {
+                    setSelectedModelId(res.data.records[0].model_id);
+                }
+            }
+        });
+    }
 
     useEffect(() => {
         void fetchModelConfig();
@@ -215,33 +241,11 @@ export default function TrackWorkbench() {
         };
     }, []);
 
-    const fetchDevice = async () => {
-        DeviceService.getDeviceList(1, 100).then((res) => {
-            if (res.code === 200 && res.data?.records) {
-                setDeviceList(res.data.records);
-                if (res.data.records.length > 0) {
-                    setSelectedDeviceId(res.data.records[0].device_id);
-                }
-            }
-        });
-    }
-
-    const fetchModelConfig = async () => {
-        ModelConfigService.getModelList(1, 10).then((res) => {
-            if (res.code === 200 && res.data?.records) {
-                setModelList(res.data.records);
-                if (res.data.records.length > 0) {
-                    setSelectedModelId(res.data.records[0].model_id);
-                }
-            }
-        });
-    }
-
     const handleStartTracking = () => {
         const device = deviceList.find(d => d.device_id === selectedDeviceId);
         if (!device) {
             setStatus('error');
-            notification.error('Please select a device.', 'Error');
+            notification.error(t('detection.common.pleaseSelectDevice'), t('detection.common.error'));
             return;
         }
 
@@ -297,23 +301,28 @@ export default function TrackWorkbench() {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <WorkbenchHeader
-                title="Object Tracking"
+                title={t('detection.workspace.tasks.tracking.title')}
                 backButton="/detection"
                 sessionInfo={{
-                    id: 'Tracking Task',
-                    input: 'Camera Stream',
+                    id: t('detection.track.trackingTask'),
+                    input: t('detection.predict.cameraStream'),
                     resolution: '1920x1080',
+                }}
+                labels={{
+                    session: t('detection.common.session'),
+                    input: t('detection.common.input'),
+                    resolution: t('detection.common.resolution'),
                 }}
                 leftContent={
                     <div className="flex items-center gap-4">
                         <div
                             className={`flex items-center gap-2 ${isProcessing ? 'pointer-events-none opacity-50' : ''}`}>
-                            <span className="text-sm text-gray-600">Model:</span>
+                            <span className="text-sm text-gray-600">{t('detection.common.model')}:</span>
                             <Dropdown
                                 trigger={
                                     <DropdownButton variant="default" className="justify-between min-w-[120px]">
                                         <span className="text-sm">
-                                            {modelList.find(m => m.model_id === selectedModelId)?.model_name || 'Select Model'}
+                                            {modelList.find(m => m.model_id === selectedModelId)?.model_name || t('detection.common.selectModel')}
                                         </span>
                                     </DropdownButton>
                                 }
@@ -327,12 +336,12 @@ export default function TrackWorkbench() {
                         {deviceList.length > 0 && (
                             <div
                                 className={`flex items-center gap-2 ${isProcessing ? 'pointer-events-none opacity-50' : ''}`}>
-                                <span className="text-sm text-gray-600">Device:</span>
+                                <span className="text-sm text-gray-600">{t('detection.common.device')}:</span>
                                 <Dropdown
                                     trigger={
                                         <DropdownButton variant="default" className="justify-between min-w-[120px]">
                                             <span className="text-sm">
-                                                {deviceList.find(d => d.device_id === selectedDeviceId)?.device_name || 'Select Device'}
+                                                {deviceList.find(d => d.device_id === selectedDeviceId)?.device_name || t('detection.common.selectDevice')}
                                             </span>
                                         </DropdownButton>
                                     }
@@ -345,7 +354,7 @@ export default function TrackWorkbench() {
                             </div>
                         )}
                         <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600">Confidence:</span>
+                            <span className="text-sm text-gray-600">{t('detection.common.confidence')}:</span>
                             <input
                                 type="range"
                                 min="0"
@@ -371,7 +380,7 @@ export default function TrackWorkbench() {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <TaskInfoBadge
-                            taskName="Tracking Task"
+                            taskName={t('detection.track.trackingTask')}
                             status={status}
                         />
                     </div>
@@ -386,7 +395,7 @@ export default function TrackWorkbench() {
                             >
                                 <Zap size={14} className="text-amber-400"/>
                                 <span className="text-sm font-medium text-white">
-                                    {wsDetections.length} tracks
+                                    {wsDetections.length} {t('detection.common.tracks')}
                                 </span>
                             </motion.div>
                         )}
@@ -395,11 +404,11 @@ export default function TrackWorkbench() {
             </div>
 
             <div className="flex-1 grid grid-cols-2 gap-0 overflow-hidden">
-                <InputPanel title="Input">
+                <InputPanel title={t('detection.common.input')}>
                     <div className="flex flex-col gap-4 overflow-auto">
                         <div className="p-4 bg-gray-100 rounded-lg border border-gray-200">
                             <p className="text-sm text-gray-500 text-center">
-                                "Tracking uses camera stream from device list"
+                                {t('detection.track.useDeviceListForTracking')}
                             </p>
                         </div>
 
@@ -417,22 +426,22 @@ export default function TrackWorkbench() {
                             {wsStatus === 'connected' ? (
                                 <>
                                     <Wifi size={14} className="text-green-500"/>
-                                    <span className="text-green-600">Connected</span>
+                                    <span className="text-green-600">{t('detection.common.connection.connected')}</span>
                                 </>
                             ) : wsStatus === 'connecting' ? (
                                 <>
                                     <Loader2 size={14} className="text-amber-500 animate-spin"/>
-                                    <span className="text-amber-600">Connecting...</span>
+                                    <span className="text-amber-600">{t('detection.common.connection.connecting')}</span>
                                 </>
                             ) : wsStatus === 'error' ? (
                                 <>
                                     <WifiOff size={14} className="text-red-500"/>
-                                    <span className="text-red-600">Connection Failed</span>
+                                    <span className="text-red-600">{t('detection.common.connection.failed')}</span>
                                 </>
                             ) : (
                                 <>
                                     <WifiOff size={14} className="text-gray-400"/>
-                                    <span className="text-gray-500">Disconnected</span>
+                                    <span className="text-gray-500">{t('detection.common.connection.disconnected')}</span>
                                 </>
                             )}
                         </div>
@@ -441,21 +450,21 @@ export default function TrackWorkbench() {
                         <div className="aspect-video flex items-center justify-center bg-gray-900 rounded-lg">
                             <div className="text-center">
                                 <Camera className="mx-auto text-gray-600 mb-2" size={32}/>
-                                <p className="text-gray-500 text-sm">Camera Stream Input</p>
+                                <p className="text-gray-500 text-sm">{t('detection.track.cameraStreamInput')}</p>
                             </div>
                         </div>
                     </div>
                 </InputPanel>
 
-                <OutputPanel title="Output">
+                <OutputPanel title={t('detection.common.output')}>
                     <div className="h-full flex flex-col gap-4">
                         {/* WebSocket 实时跟踪帧 */}
                         {wsFrame ? (
                             <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
-                                <img src={wsFrame} alt="Tracking Result" className="w-full h-full object-contain"/>
+                                <img src={wsFrame} alt={t('detection.track.trackingResult')} className="w-full h-full object-contain"/>
                                 {status === 'running' && wsDetections.length > 0 && (
                                     <div className="absolute top-2 right-2 px-2 py-1 bg-black/50 rounded">
-                                        <span className="text-sm text-white">{wsDetections.length} Tracks</span>
+                                        <span className="text-sm text-white">{wsDetections.length} {t('detection.common.tracks')}</span>
                                     </div>
                                 )}
                             </div>
@@ -463,7 +472,7 @@ export default function TrackWorkbench() {
                             <div className="aspect-video flex items-center justify-center bg-gray-900 rounded-lg">
                                 <div className="text-center">
                                     <Camera className="mx-auto text-gray-600 mb-2" size={32}/>
-                                    <p className="text-gray-500 text-sm">Wait for tracking output</p>
+                                    <p className="text-gray-500 text-sm">{t('detection.track.waitForTrackingOutput')}</p>
                                 </div>
                             </div>
                         )}
@@ -491,7 +500,7 @@ export default function TrackWorkbench() {
                 >
                     {isProcessing ? <Loader2 size={18} className="animate-spin"/> : status === 'running' ?
                         <Square size={18}/> : <Play size={18}/>}
-                    {status === 'running' ? 'Stop Tracking' : isProcessing ? 'Processing...' : 'Start Tracking'}
+                    {status === 'running' ? t('detection.track.stopTracking') : isProcessing ? t('detection.common.processing') : t('detection.track.startTracking')}
                 </motion.button>
             </ControlBar>
         </div>
