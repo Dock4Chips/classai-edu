@@ -31,6 +31,7 @@ import { Carousel } from '@/components/ui/carousel';
 import { Results } from '@/lib/api';
 import { ClassIndexBanner } from '@/lib/service/class_index_banner';
 import { apiClient } from '@/lib/api';
+import { DashboardMetricsData, DashboardService } from '@/lib/service/dashboard';
 import Cookies from 'js-cookie';
 
 interface DetectionResult {
@@ -98,11 +99,6 @@ export default function HomePage() {
   const [behaviorTypes, setBehaviorTypes] = useState(defaultBehaviorTypes);
   const [accuracy, setAccuracy] = useState(79.6);
 
-  useEffect(() => {
-    fetchData();
-    loadMetrics();
-  }, []);
-
   const fetchData = () => {
     ClassIndexBanner.getBanners().then((results) => {
       if (results.code === 200 && results.data) {
@@ -123,44 +119,50 @@ export default function HomePage() {
   };
 
   const loadMetrics = () => {
-    Promise.all([
-      fetch('/metrics/results.json'),
-      fetch('/metrics/confusion_matrix.json')
-    ]).then(([resultsRes, matrixRes]) => {
-      return Promise.all([
-        resultsRes.json(),
-        matrixRes.json()
-      ]);
-    }).then(([resultsData, matrixData]) => {
-      if (resultsData) {
-        const finalPrecision = resultsData['metrics/precision(B)'][resultsData['metrics/precision(B)'].length - 1];
-        const finalRecall = resultsData['metrics/recall(B)'][resultsData['metrics/recall(B)'].length - 1];
-        const epochs = resultsData.epoch?.length || 0;
+    DashboardService.get_metrics()
+      .then((response) => {
+        if (response?.code !== 200 || !response?.data) {
+          return;
+        }
+        const metricsData = response.data as DashboardMetricsData;
+        const resultsData = metricsData.results as ResultsData | undefined;
+        const matrixData = metricsData['confusion-matrix'] as ConfusionMatrixData | undefined;
 
-        const avgAccuracy = ((finalPrecision + finalRecall) / 2 * 100).toFixed(1);
-        setAccuracy(parseFloat(avgAccuracy));
+        if (resultsData) {
+          const finalPrecision = resultsData['metrics/precision(B)'][resultsData['metrics/precision(B)'].length - 1];
+          const finalRecall = resultsData['metrics/recall(B)'][resultsData['metrics/recall(B)'].length - 1];
+          const epochs = resultsData.epoch?.length || 0;
 
-        setStats([
-          { icon: Target, value: `${avgAccuracy}%`, label: 'Accuracy' },
-          { icon: Zap, value: '<50ms', label: 'Latency' },
-          { icon: BarChart3, value: '6', label: 'Behaviors' },
-          { icon: TrendingUp, value: `${epochs}`, label: 'Epochs' },
-        ]);
-      }
+          const avgAccuracy = ((finalPrecision + finalRecall) / 2 * 100).toFixed(1);
+          setAccuracy(parseFloat(avgAccuracy));
 
-      if (matrixData && matrixData.normalized) {
-        // Calculate per-class accuracy from confusion matrix diagonal
-        const newBehaviorTypes = matrixData.normalized.slice(0, 6).map((row: number[], i: number) => ({
-          name: CLASS_NAMES[i],
-          color: CLASS_COLORS[i],
-          count: Math.round(row[i] * 100), // Diagonal element is the accuracy for this class
-        }));
-        setBehaviorTypes(newBehaviorTypes);
-      }
-    }).catch((error) => {
-      console.error('Failed to load metrics:', error);
-    });
+          setStats([
+            { icon: Target, value: `${avgAccuracy}%`, label: 'Accuracy' },
+            { icon: Zap, value: '<50ms', label: 'Latency' },
+            { icon: BarChart3, value: '6', label: 'Behaviors' },
+            { icon: TrendingUp, value: `${epochs}`, label: 'Epochs' },
+          ]);
+        }
+
+        if (matrixData && matrixData.normalized) {
+          // Calculate per-class accuracy from confusion matrix diagonal
+          const newBehaviorTypes = matrixData.normalized.slice(0, 6).map((row: number[], i: number) => ({
+            name: CLASS_NAMES[i],
+            color: CLASS_COLORS[i],
+            count: Math.round(row[i] * 100), // Diagonal element is the accuracy for this class
+          }));
+          setBehaviorTypes(newBehaviorTypes);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load metrics:', error);
+      });
   };
+
+  useEffect(() => {
+    fetchData();
+    loadMetrics();
+  }, []);
 
   const checkAuthAndRedirect = (path: string) => {
     try {

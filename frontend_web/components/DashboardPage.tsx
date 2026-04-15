@@ -26,6 +26,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
+import { DashboardService, DashboardMetricsData } from '@/lib/service/dashboard';
 
 // Training metrics types
 interface ResultsData {
@@ -73,31 +74,27 @@ export default function DashboardPage() {
     { icon: BarChart3, label: t('dashboard.viewReports'), desc: t('dashboard.detailedInsights'), color: 'from-amber-500 to-orange-500' }
   ];
 
+  function loadTrainingMetrics() {
+    DashboardService.get_metrics()
+      .then((response) => {
+        if (response?.code === 200 && response?.data) {
+          const metricsData = response.data as DashboardMetricsData;
+          setResults((metricsData.results as ResultsData) || null);
+          setBoxCurves((metricsData['box-curves'] as BoxCurvesData) || null);
+          setConfusionMatrix((metricsData['confusion-matrix'] as ConfusionMatrixData) || null);
+        }
+      })
+      .catch((error) => {
+        console.error('Failed to load training metrics:', error);
+      })
+      .finally(() => {
+        setMetricsLoading(false);
+      });
+  }
+
   useEffect(() => {
     void loadTrainingMetrics()
   }, []);
-
-  const loadTrainingMetrics = () => {
-    Promise.all([
-      fetch('/metrics/results.json'),
-      fetch('/metrics/box_curves.json'),
-      fetch('/metrics/confusion_matrix.json')
-    ]).then(([resultsRes, curvesRes, matrixRes]) => {
-      return Promise.all([
-        resultsRes.json(),
-        curvesRes.json(),
-        matrixRes.json()
-      ]);
-    }).then(([resultsData, curvesData, matrixData]) => {
-      setResults(resultsData);
-      setBoxCurves(curvesData);
-      setConfusionMatrix(matrixData);
-    }).catch((error) => {
-      console.error('Failed to load training metrics:', error);
-    }).finally(() => {
-      setMetricsLoading(false);
-    });
-  };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
