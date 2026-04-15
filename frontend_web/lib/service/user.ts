@@ -30,10 +30,11 @@ export class UserService {
     /**
      * 修改密码
      */
-    static async updatePassword(oldPassword: string, newPassword: string): Promise<Results> {
+    static async updatePassword(oldPassword: string, newPassword: string, confirmPassword: string): Promise<Results> {
         return await apiClient.post<Results>('/api/sys/user/password', {
             old_password: oldPassword,
-            new_password: newPassword
+            new_password: newPassword,
+            confirm_password: confirmPassword
         });
     }
 }

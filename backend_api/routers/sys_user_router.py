@@ -1,5 +1,5 @@
-import hashlib
 from fastapi import APIRouter, Depends, Query, UploadFile, File, Body
+from passlib.context import CryptContext
 from auth.authorization import Authorization
 from models.exceptions import ServiceException
 from models.result import Res
@@ -13,6 +13,7 @@ pro_sys_user_router = APIRouter(
     prefix='/api/sys/user',
     dependencies=[Depends(Authorization.val_token)]
 )
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 @pro_sys_user_router.get('/list')
@@ -86,14 +87,17 @@ async def update_password(data: UserPasswordUpdateSchema = Body(...)):
     user_list = get_user_by_id(user_id)
     if not user_list:
         raise ServiceException(msg="用户不存在")
-    old_pwd_md5 = hashlib.md5(data.old_password.encode("utf-8")).hexdigest()
-    if user_list[0]["password"] != old_pwd_md5:
+    if data.new_password != data.confirm_password:
+        raise ServiceException(msg="两次输入的新密码不一致")
+    if not pwd_context.verify(data.old_password, user_list[0]["password"]):
         raise ServiceException(msg="原密码错误")
-    new_pwd_md5 = hashlib.md5(data.new_password.encode("utf-8")).hexdigest()
-    if new_pwd_md5 == old_pwd_md5:
+    if data.new_password == data.old_password:
         raise ServiceException(msg="新密码不能与原密码相同")
-    update_user(user_id, {"password": new_pwd_md5})
+    update_user(user_id, {"password": pwd_context.hash(data.new_password)})
     return Res.ok("修改成功")
 
 
+if __name__ == '__main__':
+    code =  pwd_context.hash('123456')
+    print(code)
 

@@ -31,6 +31,7 @@ class UserUpdateSchema(BaseModel):
 class UserPasswordUpdateSchema(BaseModel):
     old_password: str = Field(..., min_length=6)
     new_password: str = Field(..., min_length=6)
+    confirm_password: str = Field(..., min_length=6)
     class Config:
         extra = 'forbid'
 

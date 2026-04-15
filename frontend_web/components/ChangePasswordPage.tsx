@@ -42,7 +42,8 @@ export default function ChangePasswordPage() {
     setLoading(true);
     UserService.updatePassword(
       formData.old_password,
-      formData.new_password
+      formData.new_password,
+      formData.confirm_password
     ).then((result) => {
       if (result.code === 200) {
         notification.success(result.data);

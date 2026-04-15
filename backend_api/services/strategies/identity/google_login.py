@@ -9,6 +9,10 @@ from sentry_sdk.integrations import httpx
 from master_tools.logger_tool import log
 from repository.sys_user_repository import get_user_by_username, create_user
 from tools.login_tool import record_login
+import secrets
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def google_login(data: dict, request: Request):
@@ -51,7 +55,7 @@ async def callback_google(code: str, request: Request):
         if not user:
             data = {
                 'user_name': user_info.get('email'),
-                'password': hashlib.md5('123456'.encode('utf-8')).hexdigest(),
+                'password': pwd_context.hash(secrets.token_urlsafe(32)),
                 'email': user_info.get('email'),
                 'nick_name': user_info.get('name'),
                 'avatar': user_info.get('picture'),

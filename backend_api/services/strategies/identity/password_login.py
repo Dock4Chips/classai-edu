@@ -6,6 +6,9 @@ from models.exceptions import ServiceException
 from repository.identity_repository import get_user_by_username
 from repository.sys_login_log_repository import create_login_log
 from tools.login_tool import record_login
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def password_login(data: Dict, request=None):
@@ -35,8 +38,7 @@ def password_login(data: Dict, request=None):
 
     user = user_identity[0]
 
-    pwd_md5 = hashlib.md5(password.encode("utf-8")).hexdigest()
-    if user["password"] != pwd_md5:
+    if not pwd_context.verify(password, user["password"]):
         raise ServiceException(msg="密码错误")
 
     user_id = user["user_id"]

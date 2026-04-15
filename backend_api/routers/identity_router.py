@@ -20,6 +20,10 @@ from services.strategies.identity.github_login import callback_github
 from services.strategies.identity.google_login import callback_google
 from services.strategies.identity.login_registry import LOGIN_STRATEGY_MAP
 from tools.security_tool import SecurityTool
+from passlib.context import CryptContext
+
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 pub_identity_router = APIRouter(
     prefix='/api/strategies/identity',
@@ -33,16 +37,15 @@ pro_identity_router = APIRouter(
 _image = ImageCaptcha()
 MAX_CAPTCHA_PER_MIN = 5
 
-
 @pub_identity_router.get('/captcha')
 async def get_captcha(request: Request):
-    # ip = request.client.host
-    # redis_key = f"captcha_rate:{ip}"
-    # req_count = redis_client.incr(redis_key)
-    # if req_count == 1:
-    #     redis_client.expire(redis_key, 60)
-    # if req_count > MAX_CAPTCHA_PER_MIN:
-    #     raise ServiceException(msg="请求过于频繁，请稍后再试")
+    ip = request.client.host
+    redis_key = f"captcha_rate:{ip}"
+    req_count = redis_client.incr(redis_key)
+    if req_count == 1:
+        redis_client.expire(redis_key, 60)
+    if req_count > MAX_CAPTCHA_PER_MIN:
+        raise ServiceException(msg="请求过于频繁，请稍后再试")
     code = ''.join(choice(string.ascii_uppercase + string.digits) for _ in range(4))
     data_io = _image.generate(code)
     base64_image = (
@@ -75,10 +78,9 @@ async def identity_register(data: Dict[str, Any] = Body(...)):
     existing_user = get_user_by_username(data.get('user_name'))
     if existing_user:
         raise ServiceException(msg="用户已存在")
-    pwd_md5 = hashlib.md5(data.get('password').encode('utf-8')).hexdigest()
     new_user = create_user({
         'user_name': data.get('user_name'),
-        'password': pwd_md5,
+        'password': pwd_context.hash(data.get('password')),
         'role_id': 2  # 默认角色
     })
 

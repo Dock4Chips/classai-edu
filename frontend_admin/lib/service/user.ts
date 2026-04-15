@@ -27,14 +27,14 @@ export class UserService {
     /**
      * 新增用户
      */
-    static async createUser(data: Record<string, any>): Promise<Results> {
+    static async createUser(data: Record<string, unknown>): Promise<Results> {
         return await apiClient.post<Results>('/api/sys/user', data);
     }
 
     /**
      * 修改用户
      */
-    static async updateUser(userId: number, data: Record<string, any>): Promise<Results> {
+    static async updateUser(userId: number, data: Record<string, unknown>): Promise<Results> {
         return await apiClient.put<Results>(`/api/sys/user/${userId}`, data);
     }
 
@@ -61,10 +61,11 @@ export class UserService {
     /**
      * 修改密码
      */
-    static async updatePassword(oldPassword: string, newPassword: string): Promise<Results> {
+    static async updatePassword(oldPassword: string, newPassword: string, confirmPassword: string): Promise<Results> {
         return await apiClient.post<Results>('/api/sys/user/password', {
             old_password: oldPassword,
-            new_password: newPassword
+            new_password: newPassword,
+            confirm_password: confirmPassword
         });
     }
 }
