@@ -231,7 +231,7 @@ export default function HomePage() {
                 Smart Classroom
                 <br />
                 <GradientText
-                  className="text-5xl lg:text-6xl"
+                  className="text-5xl lg:text-6xl whitespace-nowrap"
                   colors={['#3b82f6', '#8b5cf6']}
                   animationSpeed={10}
                 >
