@@ -1,4 +1,4 @@
-path: ./active
+path: active
 
 train: train/images
 val: val/images
