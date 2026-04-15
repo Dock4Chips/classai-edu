@@ -2,25 +2,23 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Phone, Save, Camera, Loader2, UserCircle } from 'lucide-react';
+import { User, Mail, Save, Camera, Loader2 } from 'lucide-react';
 import Navigation from './Navigation';
 import { IdentityService } from '@/lib/service/identity';
 import { UserService } from '@/lib/service/user';
 import { Results } from '@/lib/api';
 import { notification } from '@/utils/notification';
 import { Select } from '@/components/ui/select';
+import { useTranslation } from 'react-i18next';
 
 export default function ProfilePage() {
+  const { t } = useTranslation();
   const [userInfo, setUserInfo] = useState<Results>();
   const [originalUserInfo, setOriginalUserInfo] = useState<Results>();
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    void fetchUserInfo();
-  }, []);
 
   const fetchUserInfo = async () => {
     setLoading(true);
@@ -32,6 +30,12 @@ export default function ProfilePage() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    queueMicrotask(() => {
+      void fetchUserInfo();
+    });
+  }, []);
+
   const handleSave = async () => {
     if (!userInfo?.user_id) return;
 
@@ -42,20 +46,20 @@ export default function ProfilePage() {
       return currentValue !== originalValue;
     });
 
-    const data: any = {};
+    const data: Record<string, unknown> = {};
     changedFields.forEach((key) => {
       data[key] = userInfo[key];
     });
 
     if (Object.keys(data).length === 0) {
-      notification.info('No changes to save');
+      notification.info(t('profile.noChangesToSave'));
       return;
     }
 
     setSaving(true);
     const results = await UserService.updateUser(userInfo.user_id, data);
     if (results.code === 200) {
-      notification.success('Profile updated successfully');
+      notification.success(t('profile.profileUpdatedSuccessfully'));
       setOriginalUserInfo({ ...userInfo });
       setSaving(false);
       return;
@@ -111,8 +115,8 @@ export default function ProfilePage() {
           className="space-y-6"
         >
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Profile</h1>
-            <p className="text-gray-500">Manage your personal information</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('profile.title')}</h1>
+            <p className="text-gray-500">{t('profile.subtitle')}</p>
           </div>
 
           <motion.div
@@ -163,7 +167,7 @@ export default function ProfilePage() {
             <div className="space-y-5">
               <div className="grid grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Username</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.username')}</label>
                   <input
                     type="text"
                     value={userInfo?.user_name || ''}
@@ -173,60 +177,60 @@ export default function ProfilePage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Nickname</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.nickname')}</label>
                   <input
                     type="text"
                     value={userInfo?.nick_name || ''}
                     onChange={(e) => setUserInfo((prev) => ({ ...prev, nick_name: e.target.value }))}
-                    placeholder="Enter nickname"
+                    placeholder={t('profile.enterNickname')}
                     className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.email')}</label>
                 <input
                   type="email"
                   value={userInfo?.email || ''}
                   onChange={(e) => setUserInfo((prev) => ({ ...prev, email: e.target.value }))}
-                  placeholder="Enter email"
+                  placeholder={t('profile.enterEmail')}
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.phoneNumber')}</label>
                 <input
                   type="text"
                   value={userInfo?.phonenumber || ''}
                   onChange={(e) => setUserInfo((prev) => ({ ...prev, phonenumber: e.target.value }))}
-                  placeholder="Enter phone number"
+                  placeholder={t('profile.enterPhoneNumber')}
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.gender')}</label>
                 <Select
                   value={userInfo?.sex ?? ''}
                   onChange={(value) => setUserInfo((prev) => ({ ...prev, sex: String(value) }))}
                   options={[
-                    { value: '0', label: 'Male' },
-                    { value: '1', label: 'Female' },
-                    { value: '2', label: 'Unknown' },
+                    { value: '0', label: t('profile.genderMale') },
+                    { value: '1', label: t('profile.genderFemale') },
+                    { value: '2', label: t('profile.genderUnknown') },
                   ]}
-                  placeholder="Select gender"
+                  placeholder={t('profile.selectGender')}
                   size="lg"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('profile.bio')}</label>
                 <textarea
                   value={userInfo?.remark || ''}
                   onChange={(e) => setUserInfo((prev) => ({ ...prev, remark: e.target.value }))}
-                  placeholder="Tell us about yourself"
+                  placeholder={t('profile.tellUsAboutYourself')}
                   rows={4}
                   className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all resize-none"
                 />
@@ -242,7 +246,7 @@ export default function ProfilePage() {
                 className="px-6 py-3 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 <Save size={18} />
-                {saving ? 'Saving...' : 'Save Changes'}
+                {saving ? t('profile.saving') : t('profile.saveChanges')}
               </motion.button>
             </div>
           </motion.div>

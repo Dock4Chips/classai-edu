@@ -24,3 +24,17 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Remove focus outline on chart click (Recharts internal focusable nodes) */
+.recharts-wrapper:focus,
+.recharts-wrapper:focus-visible,
+.recharts-surface:focus,
+.recharts-surface:focus-visible,
+.recharts-sector:focus,
+.recharts-sector:focus-visible,
+.recharts-rectangle:focus,
+.recharts-rectangle:focus-visible,
+.recharts-dot:focus,
+.recharts-dot:focus-visible {
+  outline: none !important;
+}

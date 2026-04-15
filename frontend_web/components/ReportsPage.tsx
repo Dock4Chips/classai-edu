@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Navigation from './Navigation';
 import { ReportService } from '@/lib/service/report';
+import { useTranslation } from 'react-i18next';
 import {
   FileText,
   Download,
@@ -25,10 +26,10 @@ import {
 const reportsData = [
   {
     id: 'onnx',
-    title: 'Model Export - ONNX Format',
+    titleKey: 'reports.modelExportOnnx',
     type: 'model',
     date: '2025-12-23',
-    period: 'ONNX',
+    periodKey: 'reports.periodOnnx',
     status: 'completed',
     size: 'model.onnx',
     downloadType: 'model' as const,
@@ -36,10 +37,10 @@ const reportsData = [
   },
   {
     id: 'coreml',
-    title: 'Model Export - CoreML Format',
+    titleKey: 'reports.modelExportCoreml',
     type: 'model',
     date: '2025-12-23',
-    period: 'CoreML',
+    periodKey: 'reports.periodCoreml',
     status: 'completed',
     size: 'model.mlmodel',
     downloadType: 'model' as const,
@@ -47,10 +48,10 @@ const reportsData = [
   },
   {
     id: 'torchscript',
-    title: 'Model Export - TorchScript Format',
+    titleKey: 'reports.modelExportTorchscript',
     type: 'model',
     date: '2025-12-23',
-    period: 'TorchScript',
+    periodKey: 'reports.periodTorchscript',
     status: 'completed',
     size: 'model.torchscript',
     downloadType: 'model' as const,
@@ -58,10 +59,10 @@ const reportsData = [
   },
   {
     id: 'box-curves',
-    title: 'Metrics - Box Curves Data',
+    titleKey: 'reports.metricsBoxCurves',
     type: 'metrics',
     date: '2025-12-23',
-    period: 'Box Curves',
+    periodKey: 'reports.periodBoxCurves',
     status: 'completed',
     size: 'box_curves.json',
     downloadType: 'metrics' as const,
@@ -69,10 +70,10 @@ const reportsData = [
   },
   {
     id: 'confusion-matrix',
-    title: 'Metrics - Confusion Matrix',
+    titleKey: 'reports.metricsConfusionMatrix',
     type: 'metrics',
     date: '2025-12-23',
-    period: 'Confusion Matrix',
+    periodKey: 'reports.periodConfusionMatrix',
     status: 'completed',
     size: 'confusion_matrix.json',
     downloadType: 'metrics' as const,
@@ -80,10 +81,10 @@ const reportsData = [
   },
   {
     id: 'results',
-    title: 'Metrics - Training Results',
+    titleKey: 'reports.metricsTrainingResults',
     type: 'metrics',
     date: '2025-12-23',
-    period: 'Results',
+    periodKey: 'reports.periodResults',
     status: 'completed',
     size: 'results.json',
     downloadType: 'metrics' as const,
@@ -92,7 +93,7 @@ const reportsData = [
 ];
 
 // JSON Preview Modal
-const JsonPreviewModal = ({ isOpen, onClose, title, data }: { isOpen: boolean; onClose: () => void; title: string; data: any }) => {
+const JsonPreviewModal = ({ isOpen, onClose, title, data, closeText }: { isOpen: boolean; onClose: () => void; title: string; data: unknown; closeText: string }) => {
   if (!isOpen) return null;
 
   return (
@@ -126,7 +127,7 @@ const JsonPreviewModal = ({ isOpen, onClose, title, data }: { isOpen: boolean; o
             onClick={onClose}
             className="w-full px-6 py-3 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all"
           >
-            Close
+            {closeText}
           </button>
         </div>
       </motion.div>
@@ -135,9 +136,10 @@ const JsonPreviewModal = ({ isOpen, onClose, title, data }: { isOpen: boolean; o
 };
 
 export default function ReportsPage() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'model' | 'metrics'>('all');
-  const [previewModal, setPreviewModal] = useState<{ isOpen: boolean; title: string; data: any }>({
+  const [previewModal, setPreviewModal] = useState<{ isOpen: boolean; title: string; data: unknown }>({
     isOpen: false,
     title: '',
     data: null
@@ -146,9 +148,15 @@ export default function ReportsPage() {
 
   const filteredReports = reportsData.filter(report =>
     (filterType === 'all' || report.type === filterType) &&
-    (report.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-     report.period.toLowerCase().includes(searchQuery.toLowerCase()))
+    (t(report.titleKey).toLowerCase().includes(searchQuery.toLowerCase()) ||
+     t(report.periodKey).toLowerCase().includes(searchQuery.toLowerCase()))
   );
+
+  const filterLabelMap = {
+    all: t('reports.filterAll'),
+    model: t('reports.filterModel'),
+    metrics: t('reports.filterMetrics')
+  } as const;
 
   const getTypeIcon = (id: string) => {
     switch (id) {
@@ -199,7 +207,7 @@ export default function ReportsPage() {
       .then((data) => {
         setPreviewModal({
           isOpen: true,
-          title: report.title,
+          title: t(report.titleKey),
           data
         });
       })
@@ -216,6 +224,7 @@ export default function ReportsPage() {
         onClose={() => setPreviewModal({ isOpen: false, title: '', data: null })}
         title={previewModal.title}
         data={previewModal.data}
+        closeText={t('reports.close')}
       />
 
       <main className="max-w-7xl mx-auto px-6 pt-28 pb-12">
@@ -226,8 +235,8 @@ export default function ReportsPage() {
           className="mb-8"
         >
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Reports</h1>
-            <p className="text-gray-500">View and generate analysis reports</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('reports.title')}</h1>
+            <p className="text-gray-500">{t('reports.subtitle')}</p>
           </div>
         </motion.div>
 
@@ -242,7 +251,7 @@ export default function ReportsPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
             <input
               type="text"
-              placeholder="Search reports..."
+              placeholder={t('reports.search')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-11 pl-12 pr-4 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all"
@@ -269,7 +278,7 @@ export default function ReportsPage() {
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                {type}
+                {filterLabelMap[type]}
               </button>
             ))}
           </motion.div>
@@ -312,13 +321,13 @@ export default function ReportsPage() {
                 </div>
 
                 <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
-                  {report.title}
+                  {t(report.titleKey)}
                 </h3>
 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Calendar size={14} />
-                    {report.period}
+                    {t(report.periodKey)}
                   </div>
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <Clock size={14} />
@@ -332,7 +341,7 @@ export default function ReportsPage() {
                     <button
                       onClick={() => handleDownload(report)}
                       className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                      title="Download"
+                      title={t('reports.download')}
                     >
                       <Download size={18} className="text-gray-600" />
                     </button>
@@ -340,7 +349,7 @@ export default function ReportsPage() {
                       <button
                         onClick={() => handlePreview(report)}
                         className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                        title="View"
+                        title={t('reports.view')}
                       >
                         <Eye size={18} className="text-gray-600" />
                       </button>
@@ -362,8 +371,8 @@ export default function ReportsPage() {
             <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <FileText size={40} className="text-gray-400" />
             </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No reports found</h3>
-            <p className="text-gray-500">Try adjusting your filters or generate a new report</p>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">{t('reports.noReportsFound')}</h3>
+            <p className="text-gray-500">{t('reports.noReportsHint')}</p>
           </motion.div>
         )}
       </main>

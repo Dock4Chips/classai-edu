@@ -23,10 +23,12 @@ import {apiClient} from '@/lib/api';
 import {Dropdown, DropdownButton} from '@/components/ui/dropdown';
 import {Modal} from '@/components/ui/modal';
 import {LanguageSwitcher} from '@/components/LanguageSwitcher';
+import {useTranslation} from 'react-i18next';
 
-const navItems = ['Dashboard', 'Projects', 'Detection', 'Reports'];
+const navItems = ['dashboard', 'projects', 'detection', 'reports'] as const;
 
 export default function Navigation() {
+    const {t} = useTranslation();
     const pathname = usePathname();
     const router = useRouter();
     const [userInfo, setUserInfo] = useState<any>(null);
@@ -43,11 +45,6 @@ export default function Navigation() {
     const [pageSize] = useState(10);
     const [total, setTotal] = useState(0);
     const [loadingNotices, setLoadingNotices] = useState(false);
-
-    useEffect(() => {
-        fetchUserInfo();
-        fetchNotices();
-    }, []);
 
     const fetchUserInfo = () => {
         IdentityService.getCurrentUser().then((result) => {
@@ -89,6 +86,11 @@ export default function Navigation() {
         });
     };
 
+    useEffect(() => {
+        fetchUserInfo();
+        fetchNotices();
+    }, []);
+
     const handleOpenNoticeList = () => {
         setNoticeListModalOpen(true);
         setNotificationOpen(false);
@@ -129,10 +131,12 @@ export default function Navigation() {
 
     const getActivePage = () => {
         const path = pathname.replace('/', '');
-        if (path.startsWith('detection')) return 'Detection';
-        if (path.startsWith('predict')) return 'Predict';
-        if (path.startsWith('track')) return 'Track';
-        return path.charAt(0).toUpperCase() + path.slice(1) || 'Dashboard';
+        if (path.startsWith('detection')) return 'detection';
+        if (path.startsWith('predict')) return 'detection';
+        if (path.startsWith('track')) return 'detection';
+        if (path.startsWith('projects')) return 'projects';
+        if (path.startsWith('reports')) return 'reports';
+        return 'dashboard';
     };
 
     const activePage = getActivePage();
@@ -164,18 +168,18 @@ export default function Navigation() {
                     <div className="hidden md:flex items-center gap-1">
                         {navItems.map((item) => {
                             const isActive = item === activePage;
-                            const href = `/${item.toLowerCase()}`;
+                            const href = `/${item}`;
                             return (
                                 <Link
                                     key={item}
                                     href={href}
-                                    className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                                    className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
                                         isActive
                                             ? 'bg-black text-white'
                                             : 'text-gray-600 hover:bg-gray-100'
                                     }`}
                                 >
-                                    {item}
+                                    {t(`navigation.nav.${item}`)}
                                 </Link>
                             );
                         })}
@@ -188,7 +192,7 @@ export default function Navigation() {
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16}/>
                             <input
                                 type="text"
-                                placeholder="Search..."
+                                placeholder={t('navigation.search')}
                                 className="w-48 h-10 pl-10 pr-4 bg-gray-100 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 transition-all"
                             />
                         </div>
@@ -227,7 +231,7 @@ export default function Navigation() {
                                                         {notice.notice_title}
                                                     </p>
                                                     <p className="text-xs text-gray-500 truncate mt-0.5">
-                                                        {notice.notice_type === '1' ? 'Notice' : 'Announcement'}
+                                                        {notice.notice_type === '1' ? t('navigation.notice.type.notice') : t('navigation.notice.type.announcement')}
                                                     </p>
                                                 </div>
                                             </div>
@@ -240,7 +244,7 @@ export default function Navigation() {
                                 }] : []),
                                 {
                                     key: 'view_all',
-                                    label: 'View All Notices',
+                                    label: t('navigation.notice.viewAllNotices'),
                                     icon: <FileText className="w-4 h-4"/>,
                                     onClick: handleOpenNoticeList,
                                 },
@@ -252,6 +256,7 @@ export default function Navigation() {
 
                         {/* User Profile */}
                         <Dropdown
+                            align="right"
                             trigger={
                                 <DropdownButton variant="ghost"
                                                 className="!px-2 !py-2 !rounded-xl hover:!bg-gray-100/80">
@@ -304,13 +309,13 @@ export default function Navigation() {
                                 },
                                 {
                                     key: 'profile',
-                                    label: 'Profile',
+                                    label: t('navigation.profile.profile'),
                                     icon: <UserCircle className="w-4 h-4"/>,
                                     onClick: () => router.push('/profile'),
                                 },
                                 {
                                     key: 'change_password',
-                                    label: 'Change Password',
+                                    label: t('navigation.profile.changePassword'),
                                     icon: <KeyRound className="w-4 h-4"/>,
                                     onClick: () => router.push('/change-password'),
                                 },
@@ -320,7 +325,7 @@ export default function Navigation() {
                                 },
                                 {
                                     key: 'logout',
-                                    label: 'Logout',
+                                    label: t('navigation.profile.logout'),
                                     icon: <LogOut className="w-4 h-4"/>,
                                     danger: true,
                                     onClick: handleLogout,
@@ -332,29 +337,29 @@ export default function Navigation() {
             </div>
 
             {/* Notice Detail Modal */}
-            <Modal isOpen={noticeModalOpen} onClose={() => setNoticeModalOpen(false)} title="Notice Details">
+            <Modal isOpen={noticeModalOpen} onClose={() => setNoticeModalOpen(false)} title={t('navigation.notice.noticeDetails')}>
                 {viewingNotice && (
                     <div className="space-y-4">
                         <div>
-                            <label className="text-sm font-medium text-gray-500">Title</label>
+                            <label className="text-sm font-medium text-gray-500">{t('navigation.notice.title')}</label>
                             <p className="text-lg font-semibold text-gray-900 mt-1">{viewingNotice.notice_title}</p>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="text-sm font-medium text-gray-500">Type</label>
+                                <label className="text-sm font-medium text-gray-500">{t('navigation.notice.typeLabel')}</label>
                                 <p className="text-gray-900 mt-1">
-                                    {viewingNotice.notice_type === '1' ? 'Notice' : 'Announcement'}
+                                    {viewingNotice.notice_type === '1' ? t('navigation.notice.type.notice') : t('navigation.notice.type.announcement')}
                                 </p>
                             </div>
                         </div>
                         <div>
-                            <label className="text-sm font-medium text-gray-500">Content</label>
+                            <label className="text-sm font-medium text-gray-500">{t('navigation.notice.content')}</label>
                             <div className="mt-2 p-4 bg-gray-50 rounded-lg">
                                 <p className="text-gray-900 whitespace-pre-wrap">{viewingNotice.notice_content}</p>
                             </div>
                         </div>
                         <div>
-                            <label className="text-sm font-medium text-gray-500">Created At</label>
+                            <label className="text-sm font-medium text-gray-500">{t('navigation.notice.createdAt')}</label>
                             <p className="text-gray-900 mt-1">
                                 {viewingNotice.create_time ? new Date(viewingNotice.create_time).toLocaleString() : '-'}
                             </p>
@@ -364,14 +369,14 @@ export default function Navigation() {
             </Modal>
 
             {/* Notice List Modal */}
-            <Modal isOpen={noticeListModalOpen} onClose={() => setNoticeListModalOpen(false)} title="All Notices" size="lg">
+            <Modal isOpen={noticeListModalOpen} onClose={() => setNoticeListModalOpen(false)} title={t('navigation.notice.allNotices')} size="lg">
                 <div className="space-y-4">
                     {/* Notice List */}
                     <div className="space-y-2 max-h-[50vh] overflow-y-auto">
                         {loadingNotices ? (
-                            <div className="text-center py-8 text-gray-500">Loading...</div>
+                            <div className="text-center py-8 text-gray-500">{t('navigation.loading')}</div>
                         ) : allNotices.length === 0 ? (
-                            <div className="text-center py-8 text-gray-500">No notices found</div>
+                            <div className="text-center py-8 text-gray-500">{t('navigation.notice.noNoticesFound')}</div>
                         ) : (
                             allNotices.map((notice) => (
                                 <motion.div
@@ -397,9 +402,9 @@ export default function Navigation() {
                                                     {notice.notice_title}
                                                 </p>
                                                 {notice.notice_type === '1' ? (
-                                                    <span className="px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full flex-shrink-0">Notice</span>
+                                                    <span className="px-2 py-0.5 text-xs bg-blue-100 text-blue-700 rounded-full flex-shrink-0">{t('navigation.notice.type.notice')}</span>
                                                 ) : (
-                                                    <span className="px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full flex-shrink-0">Announcement</span>
+                                                    <span className="px-2 py-0.5 text-xs bg-purple-100 text-purple-700 rounded-full flex-shrink-0">{t('navigation.notice.type.announcement')}</span>
                                                 )}
                                             </div>
                                             <p className="text-xs text-gray-400">
@@ -416,7 +421,7 @@ export default function Navigation() {
                     {allNotices.length > 0 && (
                         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
                             <span className="text-sm text-gray-500">
-                                Total: {total || allNotices.length} notices
+                                {t('navigation.notice.totalNotices', { total: total || allNotices.length })}
                             </span>
                             <div className="flex items-center gap-2">
                                 <motion.button
@@ -429,7 +434,10 @@ export default function Navigation() {
                                     <ChevronLeft className="w-4 h-4" />
                                 </motion.button>
                                 <span className="text-sm text-gray-700 px-3">
-                                    Page {currentPage} of {Math.max(1, Math.ceil((total || allNotices.length) / pageSize))}
+                                    {t('navigation.notice.pageOf', {
+                                        page: currentPage,
+                                        pages: Math.max(1, Math.ceil((total || allNotices.length) / pageSize))
+                                    })}
                                 </span>
                                 <motion.button
                                     whileHover={{ scale: 1.05 }}

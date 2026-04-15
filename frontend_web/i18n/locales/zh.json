@@ -1,9 +1,9 @@
 {
   "dashboard": {
-    "aiPoweredAnalysisReady": "AI 驱动分析已就绪",
+    "aiPoweredAnalysisReady": "YOLO 检测已就绪",
     "transformYourClassroom": "改变你的课堂",
-    "withAISIntelligence": "用 AI 智能",
-    "analyzeStudentBehavior": "通过我们先进的 AI 实时分析学生行为。获取即时洞察，改善学习成果。",
+    "withAISIntelligence": "基于 YOLO 视觉检测",
+    "analyzeStudentBehavior": "通过 YOLO 目标检测实时分析学生行为，获取即时洞察并改善学习成果。",
     "startNewDetection": "开始新检测",
     "watchDemo": "观看演示",
     "quickActions": "快捷操作",
@@ -46,6 +46,37 @@
     "staff": "教职工",
     "usingMobile": "使用手机"
   },
+  "navigation": {
+    "search": "搜索...",
+    "loading": "加载中...",
+    "nav": {
+      "dashboard": "仪表盘",
+      "projects": "项目",
+      "detection": "检测",
+      "reports": "报告"
+    },
+    "profile": {
+      "profile": "个人资料",
+      "changePassword": "修改密码",
+      "logout": "退出登录"
+    },
+    "notice": {
+      "viewAllNotices": "查看全部通知",
+      "noticeDetails": "通知详情",
+      "allNotices": "全部通知",
+      "noNoticesFound": "暂无通知",
+      "title": "标题",
+      "typeLabel": "类型",
+      "content": "内容",
+      "createdAt": "创建时间",
+      "totalNotices": "共 {{total}} 条通知",
+      "pageOf": "第 {{page}} / {{pages}} 页",
+      "type": {
+        "notice": "通知",
+        "announcement": "公告"
+      }
+    }
+  },
   "reports": {
     "title": "报表中心",
     "subtitle": "查看和生成分析报告",
@@ -61,9 +92,61 @@
     "metricsBoxCurves": "指标 - 边界框曲线数据",
     "metricsConfusionMatrix": "指标 - 混淆矩阵",
     "metricsTrainingResults": "指标 - 训练结果",
+    "periodOnnx": "ONNX",
+    "periodCoreml": "CoreML",
+    "periodTorchscript": "TorchScript",
+    "periodBoxCurves": "边界框曲线",
+    "periodConfusionMatrix": "混淆矩阵",
+    "periodResults": "结果",
     "download": "下载",
     "view": "查看",
     "close": "关闭"
+  },
+  "profile": {
+    "title": "个人资料",
+    "subtitle": "管理您的个人信息",
+    "noChangesToSave": "没有可保存的更改",
+    "profileUpdatedSuccessfully": "个人资料更新成功",
+    "username": "用户名",
+    "nickname": "昵称",
+    "enterNickname": "请输入昵称",
+    "email": "邮箱",
+    "enterEmail": "请输入邮箱",
+    "phoneNumber": "手机号",
+    "enterPhoneNumber": "请输入手机号",
+    "gender": "性别",
+    "genderMale": "男",
+    "genderFemale": "女",
+    "genderUnknown": "未知",
+    "selectGender": "请选择性别",
+    "bio": "简介",
+    "tellUsAboutYourself": "介绍一下你自己",
+    "saving": "保存中...",
+    "saveChanges": "保存更改"
+  },
+  "changePassword": {
+    "title": "修改密码",
+    "subtitle": "更新您的密码以确保账户安全",
+    "pleaseFillAllFields": "请填写所有字段",
+    "passwordsDoNotMatch": "两次密码不一致",
+    "failedToUpdatePassword": "修改密码失败",
+    "currentPassword": "当前密码",
+    "enterCurrentPassword": "请输入当前密码",
+    "newPassword": "新密码",
+    "enterNewPassword": "请输入新密码",
+    "confirmNewPassword": "确认新密码",
+    "confirmYourNewPassword": "请确认新密码",
+    "passwordStrength": "密码强度",
+    "strong": "强",
+    "medium": "中",
+    "weak": "弱",
+    "passwordsMatch": "两次密码一致",
+    "passwordRequirements": "密码要求：",
+    "requirementMinLength": "至少 6 个字符",
+    "requirementCase": "建议同时包含大小写字母",
+    "requirementNumberSpecial": "建议包含数字和特殊字符",
+    "changingPassword": "密码修改中...",
+    "changePassword": "修改密码"
   },
   "projects": {
     "title": "项目管理",
@@ -87,8 +170,182 @@
     "noProjectsHint": "尝试调整筛选条件或搜索查询",
     "loadingProjects": "加载项目中...",
     "pageOf": "共 {total} 项",
+    "pageInfo": "第 {page} / {pages} 页（共 {total} 项）",
     "switchToListView": "切换到列表视图",
     "switchToGridView": "切换到网格视图",
     "searchProjects": "搜索项目"
+  },
+  "detection": {
+    "common": {
+      "error": "错误",
+      "unknownError": "未知错误",
+      "pleaseLoginFirst": "请先登录。",
+      "pleaseSelectDevice": "请选择设备。",
+      "clickToUpload": "点击上传",
+      "orDragAndDrop": "或拖拽文件到这里",
+      "imageOrVideoFiles": "图片或视频文件",
+      "detections": "检测结果",
+      "tracks": "跟踪目标",
+      "objects": "个目标",
+      "noDetectionsYet": "暂无检测结果",
+      "noTracksYet": "暂无跟踪结果",
+      "id": "ID",
+      "frames": "帧",
+      "session": "会话",
+      "input": "输入",
+      "output": "输出",
+      "resolution": "分辨率",
+      "model": "模型",
+      "device": "设备",
+      "confidence": "置信度",
+      "selectModel": "选择模型",
+      "selectDevice": "选择设备",
+      "noTask": "无任务",
+      "noFileSelected": "未选择文件",
+      "noFileLoaded": "未加载文件",
+      "preview": "预览",
+      "processing": "处理中...",
+      "status": {
+        "idle": "空闲",
+        "ready": "就绪",
+        "processing": "处理中",
+        "completed": "已完成",
+        "failed": "失败"
+      },
+      "connection": {
+        "connected": "已连接",
+        "connecting": "连接中...",
+        "failed": "连接失败",
+        "disconnected": "已断开"
+      }
+    },
+    "workspace": {
+      "title": "检测工作台",
+      "subtitle": "选择任务开始处理数据",
+      "start": "开始",
+      "tasks": {
+        "detection": {
+          "title": "目标检测",
+          "description": "对图片/视频执行 YOLO 检测",
+          "features": {
+            "boundingBoxes": "边界框",
+            "classLabels": "类别标签",
+            "confidenceScore": "置信度分数"
+          }
+        },
+        "tracking": {
+          "title": "目标跟踪",
+          "description": "跨视频帧跟踪目标",
+          "features": {
+            "objectIds": "目标 ID",
+            "trajectories": "运动轨迹",
+            "timeline": "时间线"
+          }
+        }
+      }
+    },
+    "predict": {
+      "fileUpload": "文件上传",
+      "cameraStream": "摄像头流",
+      "camera": "摄像头",
+      "enterTaskName": "输入任务名称...",
+      "clickToSetTaskName": "点击设置任务名称",
+      "required": "非必填",
+      "selectFileToStart": "请选择文件开始检测",
+      "useDeviceListInCameraMode": "摄像头模式请使用设备列表进行检测",
+      "detectionResult": "检测结果",
+      "waitForOutput": "等待检测输出",
+      "startDetection": "开始检测",
+      "stopDetection": "停止检测"
+    },
+    "track": {
+      "trackingTask": "跟踪任务",
+      "objectTrackingTask": "目标跟踪任务",
+      "useDeviceListForTracking": "跟踪功能使用设备列表中的摄像头流",
+      "cameraStreamInput": "摄像头流输入",
+      "trackingResult": "跟踪结果",
+      "waitForTrackingOutput": "等待跟踪输出",
+      "startTracking": "开始跟踪",
+      "stopTracking": "停止跟踪"
+    },
+    "settings": {
+      "title": "设置",
+      "tabs": {
+        "models": "模型",
+        "devices": "设备"
+      },
+      "modelList": "模型列表",
+      "deviceList": "设备列表",
+      "addDevice": "新增设备",
+      "editDevice": "编辑设备",
+      "save": "保存",
+      "cancel": "取消",
+      "columns": {
+        "id": "ID",
+        "modelName": "模型名称",
+        "classes": "类别数",
+        "active": "启用",
+        "default": "默认",
+        "inferenceMs": "推理耗时 (ms)",
+        "sizeMb": "大小 (MB)",
+        "version": "版本",
+        "deviceName": "设备名称",
+        "deviceCode": "设备编码",
+        "type": "类型",
+        "connection": "连接方式",
+        "location": "位置",
+        "status": "状态",
+        "actions": "操作"
+      },
+      "actions": {
+        "edit": "编辑",
+        "delete": "删除"
+      },
+      "fields": {
+        "deviceName": "设备名称",
+        "enterDeviceName": "请输入设备名称",
+        "deviceCode": "设备编码",
+        "enterDeviceCode": "请输入设备编码",
+        "deviceType": "设备类型",
+        "connectionType": "连接类型",
+        "description": "描述",
+        "enterDescription": "请输入描述",
+        "rtspUrl": "RTSP 地址",
+        "httpUrl": "HTTP 地址",
+        "deviceIndex": "设备索引",
+        "usbCameraIndexDesc": "USB 摄像头索引（固定为 0）",
+        "selectType": "请选择类型",
+        "selectStatus": "请选择状态"
+      },
+      "options": {
+        "deviceType": {
+          "camera": "摄像头",
+          "drone": "无人机",
+          "ipCamera": "网络摄像头",
+          "usbCamera": "USB 摄像头"
+        },
+        "connectionType": {
+          "rtsp": "RTSP",
+          "http": "HTTP",
+          "usb": "USB",
+          "file": "文件"
+        },
+        "status": {
+          "online": "在线",
+          "offline": "离线",
+          "error": "错误",
+          "maintenance": "维护中"
+        }
+      },
+      "messages": {
+        "confirmDeleteDevice": "确定要删除该设备吗？",
+        "deletedSuccessfully": "删除成功",
+        "failedToDeleteDevice": "删除设备失败",
+        "createdSuccessfully": "创建成功",
+        "failedToCreateDevice": "创建设备失败",
+        "updatedSuccessfully": "更新成功",
+        "failedToUpdateDevice": "更新设备失败"
+      }
+    }
   }
 }

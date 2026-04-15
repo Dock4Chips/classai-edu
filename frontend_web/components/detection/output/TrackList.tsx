@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface TrackItem {
   id: number;
@@ -26,6 +27,7 @@ export function TrackList({
   highlightedId,
 }: TrackListProps) {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const { t } = useTranslation();
 
   // Sort tracks
   const sortedTracks = [...tracks].sort((a, b) => {
@@ -50,8 +52,10 @@ export function TrackList({
     <div className="space-y-2">
       {/* Header */}
       <div className="flex items-center justify-between px-2 py-2">
-        <h3 className="text-sm font-semibold text-gray-700">Tracks</h3>
-        <span className="text-xs text-gray-500">{tracks.length} objects</span>
+        <h3 className="text-sm font-semibold text-gray-700">{t('detection.common.tracks')}</h3>
+        <span className="text-xs text-gray-500">
+          {tracks.length} {t('detection.common.objects')}
+        </span>
       </div>
 
       {/* List */}
@@ -89,7 +93,7 @@ export function TrackList({
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-medium text-gray-700">
-                        ID {track.id}
+                        {t('detection.common.id')} {track.id}
                       </span>
                       <span className="text-xs text-gray-500 truncate">
                         {track.label}
@@ -97,7 +101,7 @@ export function TrackList({
                     </div>
                     <div className="flex items-center gap-3 mt-0.5">
                       <span className="text-xs text-gray-500">
-                        Frames: {track.startFrame} - {track.endFrame}
+                        {t('detection.common.frames')}: {track.startFrame} - {track.endFrame}
                       </span>
                       <span className="text-xs text-gray-500">
                         {formatDuration(track.duration)}
@@ -124,7 +128,7 @@ export function TrackList({
         {/* Empty State */}
         {sortedTracks.length === 0 && (
           <div className="px-3 py-8 text-center">
-            <p className="text-sm text-gray-500">No tracks yet</p>
+            <p className="text-sm text-gray-500">{t('detection.common.noTracksYet')}</p>
           </div>
         )}
       </div>

@@ -1,7 +1,7 @@
 'use client';
 
 import {useState, useEffect} from 'react';
-import {Package, Router, Plus, Pencil, Trash2, MoreVertical, Wifi, WifiOff, AlertCircle, Wrench, Check, X, BrainCircuit, Star, Camera, Video, Usb} from 'lucide-react';
+import {Router, Plus, Pencil, Trash2, MoreVertical, Wifi, WifiOff, AlertCircle, Wrench, Check, X, BrainCircuit, Star, Camera, Video, Usb} from 'lucide-react';
 import {Modal} from '@/components/ui/modal';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {Table, Column} from '@/components/ui/table';
@@ -12,6 +12,7 @@ import {confirm} from '@/utils/confirm';
 import {ModelConfigService} from '@/lib/service/model_config';
 import {DeviceService} from '@/lib/service/device';
 import {Results} from '@/lib/api';
+import {useTranslation} from 'react-i18next';
 
 interface SettingsModalProps {
     isOpen: boolean;
@@ -20,6 +21,7 @@ interface SettingsModalProps {
 }
 
 export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsModalProps) {
+    const {t} = useTranslation();
     const [tab, setTab] = useState<'model' | 'device'>('model');
 
     // Model 数据
@@ -42,164 +44,6 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
         pageSize: 10,
         total: 0,
     });
-
-    // 当 Modal 打开或 tab 切换时刷新数据
-    useEffect(() => {
-        if (isOpen) {
-            if (tab === 'model') {
-                void fetchModels();
-            } else {
-                void fetchDevices();
-            }
-        }
-    }, [isOpen, tab]);
-
-    // 监听 tab 切换
-    useEffect(() => {
-        if (isOpen) {
-            if (tab === 'model') {
-                setModelQueryParams(prev => ({...prev, current: 1}));
-            } else {
-                setDeviceQueryParams(prev => ({...prev, current: 1}));
-            }
-        }
-    }, [tab, isOpen]);
-
-    // 设备类型选项
-    const deviceTypeOptions = [
-        {value: '0', label: 'Camera'},
-        {value: '1', label: 'Drone'},
-        {value: '2', label: 'IP Camera'},
-        {value: '3', label: 'USB Camera'},
-    ];
-
-    // 连接类型选项
-    const connectionTypeOptions = [
-        {value: '0', label: 'RTSP'},
-        {value: '1', label: 'HTTP'},
-        {value: '2', label: 'USB'},
-    ];
-
-    // 设备状态选项
-    const statusOptions = [
-        {value: '0', label: 'Online'},
-        {value: '1', label: 'Offline'},
-        {value: '2', label: 'Error'},
-        {value: '3', label: 'Maintenance'},
-    ];
-
-    // Device 基础表单字段
-    const baseDeviceFields: FormFieldConfig[] = [
-        {key: 'device_name', label: 'Device Name', type: 'text', colSpan: 1, placeholder: 'Enter device name', required: true},
-        {key: 'device_code', label: 'Device Code', type: 'text', colSpan: 1, placeholder: 'Enter device code'},
-        {
-            key: 'device_type',
-            label: 'Device Type',
-            type: 'select',
-            options: deviceTypeOptions,
-            colSpan: 1,
-            placeholder: 'Select type',
-            required: true,
-        },
-        {
-            key: 'connection_type',
-            label: 'Connection Type',
-            type: 'select',
-            options: connectionTypeOptions,
-            colSpan: 1,
-            placeholder: 'Select type',
-        },
-        {key: 'description', label: 'Description', type: 'textarea', rows: 3, colSpan: 2, placeholder: 'Enter description'},
-    ];
-
-    const rtspField: FormFieldConfig = {
-        key: 'rtsp_url',
-        label: 'RTSP URL',
-        type: 'text',
-        colSpan: 2,
-        placeholder: 'rtsp://...',
-    };
-
-    const httpField: FormFieldConfig = {
-        key: 'http_url',
-        label: 'HTTP URL',
-        type: 'text',
-        colSpan: 2,
-        placeholder: 'http://...',
-    };
-
-    const deviceIndexField: FormFieldConfig = {
-        key: 'device_index',
-        label: 'Device Index',
-        type: 'number',
-        colSpan: 2,
-        placeholder: '0',
-        disabled: true,
-        description: 'USB camera index (fixed at 0)',
-    };
-
-    const getDynamicDeviceFields = (connectionType: string | null, isEdit: boolean): FormFieldConfig[] => {
-        const fields: FormFieldConfig[] = [];
-        if (connectionType === '0') {
-            fields.push(rtspField);
-        } else if (connectionType === '1') {
-            fields.push(httpField);
-        } else if (connectionType === '2') {
-            fields.push(deviceIndexField);
-        }
-        if (isEdit) {
-            fields.push({
-                key: 'status',
-                label: 'Status',
-                type: 'select',
-                options: statusOptions,
-                colSpan: 2,
-                placeholder: 'Select status',
-            });
-        }
-        return fields;
-    };
-
-    const getUpdateDeviceFields = (): FormFieldConfig[] => {
-        return [...baseDeviceFields, ...getDynamicDeviceFields(updateDeviceForm.connection_type, true)];
-    };
-
-    const getAddDeviceFields = (): FormFieldConfig[] => {
-        return [...baseDeviceFields, ...getDynamicDeviceFields(addDeviceForm.connection_type, false)];
-    };
-
-    const getEmptyForm = (fields: readonly { key: string }[]) =>
-        Object.fromEntries(fields.map(f => [f.key])) as Results;
-
-    const allDeviceFieldKeys: FormFieldConfig[] = [
-        ...baseDeviceFields,
-        rtspField,
-        httpField,
-        deviceIndexField,
-        {key: 'status', label: 'Status', type: 'select', colSpan: 2, options: statusOptions, placeholder: 'Select status'},
-    ];
-
-    const [addDeviceForm, setAddDeviceForm] = useState<Results>(() => getEmptyForm(allDeviceFieldKeys));
-    const [updateDeviceForm, setUpdateDeviceForm] = useState<Results>(() => getEmptyForm(allDeviceFieldKeys));
-
-    const currentDeviceForm = isDeviceEditMode ? updateDeviceForm : addDeviceForm;
-    const currentDeviceFields = isDeviceEditMode ? getUpdateDeviceFields() : getAddDeviceFields();
-    const setCurrentDeviceForm = isDeviceEditMode ? setUpdateDeviceForm : setAddDeviceForm;
-
-    // 监听连接类型变化
-    useEffect(() => {
-        const form = isDeviceEditMode ? updateDeviceForm : addDeviceForm;
-        const setForm = isDeviceEditMode ? setUpdateDeviceForm : setAddDeviceForm;
-        const connectionType = form.connection_type;
-
-        if (connectionType === '0') {
-            setForm(prev => ({...prev, http_url: null, device_index: '0'}));
-        } else if (connectionType === '1') {
-            setForm(prev => ({...prev, rtsp_url: null, device_index: '0'}));
-        } else if (connectionType === '2') {
-            setForm(prev => ({...prev, rtsp_url: null, http_url: null, device_index: '0'}));
-        }
-    }, [isDeviceEditMode ? updateDeviceForm.connection_type : addDeviceForm.connection_type, isDeviceEditMode]);
 
     const fetchModels = () => {
         setModelsLoading(true);
@@ -235,21 +79,179 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
         });
     };
 
+    // 当 Modal 打开或 tab 切换时刷新数据
+    useEffect(() => {
+        if (isOpen) {
+            if (tab === 'model') {
+                void fetchModels();
+            } else {
+                void fetchDevices();
+            }
+        }
+    }, [isOpen, tab]);
+
+    // 监听 tab 切换
+    useEffect(() => {
+        if (isOpen) {
+            if (tab === 'model') {
+                setModelQueryParams(prev => ({...prev, current: 1}));
+            } else {
+                setDeviceQueryParams(prev => ({...prev, current: 1}));
+            }
+        }
+    }, [tab, isOpen]);
+
+    // 设备类型选项
+    const deviceTypeOptions = [
+        {value: '0', label: t('detection.settings.options.deviceType.camera')},
+        {value: '1', label: t('detection.settings.options.deviceType.drone')},
+        {value: '2', label: t('detection.settings.options.deviceType.ipCamera')},
+        {value: '3', label: t('detection.settings.options.deviceType.usbCamera')},
+    ];
+
+    // 连接类型选项
+    const connectionTypeOptions = [
+        {value: '0', label: t('detection.settings.options.connectionType.rtsp')},
+        {value: '1', label: t('detection.settings.options.connectionType.http')},
+        {value: '2', label: t('detection.settings.options.connectionType.usb')},
+    ];
+
+    // 设备状态选项
+    const statusOptions = [
+        {value: '0', label: t('detection.settings.options.status.online')},
+        {value: '1', label: t('detection.settings.options.status.offline')},
+        {value: '2', label: t('detection.settings.options.status.error')},
+        {value: '3', label: t('detection.settings.options.status.maintenance')},
+    ];
+
+    // Device 基础表单字段
+    const baseDeviceFields: FormFieldConfig[] = [
+        {key: 'device_name', label: t('detection.settings.fields.deviceName'), type: 'text', colSpan: 1, placeholder: t('detection.settings.fields.enterDeviceName'), required: true},
+        {key: 'device_code', label: t('detection.settings.fields.deviceCode'), type: 'text', colSpan: 1, placeholder: t('detection.settings.fields.enterDeviceCode')},
+        {
+            key: 'device_type',
+            label: t('detection.settings.fields.deviceType'),
+            type: 'select',
+            options: deviceTypeOptions,
+            colSpan: 1,
+            placeholder: t('detection.settings.fields.selectType'),
+            required: true,
+        },
+        {
+            key: 'connection_type',
+            label: t('detection.settings.fields.connectionType'),
+            type: 'select',
+            options: connectionTypeOptions,
+            colSpan: 1,
+            placeholder: t('detection.settings.fields.selectType'),
+        },
+        {key: 'description', label: t('detection.settings.fields.description'), type: 'textarea', rows: 3, colSpan: 2, placeholder: t('detection.settings.fields.enterDescription')},
+    ];
+
+    const rtspField: FormFieldConfig = {
+        key: 'rtsp_url',
+        label: t('detection.settings.fields.rtspUrl'),
+        type: 'text',
+        colSpan: 2,
+        placeholder: 'rtsp://...',
+    };
+
+    const httpField: FormFieldConfig = {
+        key: 'http_url',
+        label: t('detection.settings.fields.httpUrl'),
+        type: 'text',
+        colSpan: 2,
+        placeholder: 'http://...',
+    };
+
+    const deviceIndexField: FormFieldConfig = {
+        key: 'device_index',
+        label: t('detection.settings.fields.deviceIndex'),
+        type: 'number',
+        colSpan: 2,
+        placeholder: '0',
+        disabled: true,
+        description: t('detection.settings.fields.usbCameraIndexDesc'),
+    };
+
+    const getDynamicDeviceFields = (connectionType: string | null, isEdit: boolean): FormFieldConfig[] => {
+        const fields: FormFieldConfig[] = [];
+        if (connectionType === '0') {
+            fields.push(rtspField);
+        } else if (connectionType === '1') {
+            fields.push(httpField);
+        } else if (connectionType === '2') {
+            fields.push(deviceIndexField);
+        }
+        if (isEdit) {
+            fields.push({
+                key: 'status',
+                label: t('detection.settings.columns.status'),
+                type: 'select',
+                options: statusOptions,
+                colSpan: 2,
+                placeholder: t('detection.settings.fields.selectStatus'),
+            });
+        }
+        return fields;
+    };
+
+    const getUpdateDeviceFields = (): FormFieldConfig[] => {
+        return [...baseDeviceFields, ...getDynamicDeviceFields(updateDeviceForm.connection_type, true)];
+    };
+
+    const getAddDeviceFields = (): FormFieldConfig[] => {
+        return [...baseDeviceFields, ...getDynamicDeviceFields(addDeviceForm.connection_type, false)];
+    };
+
+    const getEmptyForm = (fields: readonly { key: string }[]) =>
+        Object.fromEntries(fields.map(f => [f.key])) as Results;
+
+    const allDeviceFieldKeys: FormFieldConfig[] = [
+        ...baseDeviceFields,
+        rtspField,
+        httpField,
+        deviceIndexField,
+        {key: 'status', label: t('detection.settings.columns.status'), type: 'select', colSpan: 2, options: statusOptions, placeholder: t('detection.settings.fields.selectStatus')},
+    ];
+
+    const [addDeviceForm, setAddDeviceForm] = useState<Results>(() => getEmptyForm(allDeviceFieldKeys));
+    const [updateDeviceForm, setUpdateDeviceForm] = useState<Results>(() => getEmptyForm(allDeviceFieldKeys));
+
+    const currentDeviceForm = isDeviceEditMode ? updateDeviceForm : addDeviceForm;
+    const currentDeviceFields = isDeviceEditMode ? getUpdateDeviceFields() : getAddDeviceFields();
+    const setCurrentDeviceForm = isDeviceEditMode ? setUpdateDeviceForm : setAddDeviceForm;
+
+    // 监听连接类型变化
+    useEffect(() => {
+        const form = isDeviceEditMode ? updateDeviceForm : addDeviceForm;
+        const setForm = isDeviceEditMode ? setUpdateDeviceForm : setAddDeviceForm;
+        const connectionType = form.connection_type;
+
+        if (connectionType === '0') {
+            setForm(prev => ({...prev, http_url: null, device_index: '0'}));
+        } else if (connectionType === '1') {
+            setForm(prev => ({...prev, rtsp_url: null, device_index: '0'}));
+        } else if (connectionType === '2') {
+            setForm(prev => ({...prev, rtsp_url: null, http_url: null, device_index: '0'}));
+        }
+    }, [isDeviceEditMode ? updateDeviceForm.connection_type : addDeviceForm.connection_type, isDeviceEditMode]);
+
     const handleDeleteDevice = (deviceId: number) => {
-        confirm.danger('Are you sure you want to delete this device?').then((confirmed) => {
+        confirm.danger(t('detection.settings.messages.confirmDeleteDevice')).then((confirmed) => {
             if (!confirmed) return;
 
             setDevicesLoading(true);
             return DeviceService.deleteDevice(deviceId);
         }).then((results) => {
             if (results?.code === 200) {
-                notification.success('Deleted successfully');
+                notification.success(t('detection.settings.messages.deletedSuccessfully'));
                 fetchDevices();
                 onRefresh?.();
             }
         }).catch((error) => {
             console.error('Failed to delete device:', error);
-            notification.error('Failed to delete device');
+            notification.error(t('detection.settings.messages.failedToDeleteDevice'));
         }).finally(() => {
             setDevicesLoading(false);
         });
@@ -294,7 +296,7 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
         setDevicesLoading(true);
         DeviceService.createDevice(data).then((results) => {
             if (results.code === 200) {
-                notification.success('Created successfully');
+                notification.success(t('detection.settings.messages.createdSuccessfully'));
                 setDeviceModalOpen(false);
                 fetchDevices();
                 onRefresh?.();
@@ -303,7 +305,7 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
             notification.error(results.msg);
         }).catch((error) => {
             console.error('Failed to create device:', error);
-            notification.error('Failed to create device');
+            notification.error(t('detection.settings.messages.failedToCreateDevice'));
         }).finally(() => {
             setDevicesLoading(false);
         });
@@ -329,7 +331,7 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
         setDevicesLoading(true);
         DeviceService.updateDevice(updateDeviceForm.device_id, data).then((results) => {
             if (results.code === 200) {
-                notification.success('Updated successfully');
+                notification.success(t('detection.settings.messages.updatedSuccessfully'));
                 setDeviceModalOpen(false);
                 fetchDevices();
                 onRefresh?.();
@@ -338,7 +340,7 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
             notification.error(results.msg);
         }).catch((error) => {
             console.error('Failed to update device:', error);
-            notification.error('Failed to update device');
+            notification.error(t('detection.settings.messages.failedToUpdateDevice'));
         }).finally(() => {
             setDevicesLoading(false);
         });
@@ -346,10 +348,10 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
 
     const getDeviceTypeBadge = (type: number) => {
         const configs = [
-            {label: 'Camera', variant: 'default' as const, icon: <Camera className="w-3 h-3"/>, bg: 'bg-slate-100', text: 'text-slate-700'},
-            {label: 'Drone', variant: 'purple' as const, icon: <Router className="w-3 h-3"/>, bg: 'bg-purple-100', text: 'text-purple-700'},
-            {label: 'IP Camera', variant: 'info' as const, icon: <Video className="w-3 h-3"/>, bg: 'bg-blue-100', text: 'text-blue-700'},
-            {label: 'USB Camera', variant: 'gradient' as const, icon: <Usb className="w-3 h-3"/>, bg: 'bg-green-100', text: 'text-green-700'},
+            {label: t('detection.settings.options.deviceType.camera'), variant: 'default' as const, icon: <Camera className="w-3 h-3"/>, bg: 'bg-slate-100', text: 'text-slate-700'},
+            {label: t('detection.settings.options.deviceType.drone'), variant: 'purple' as const, icon: <Router className="w-3 h-3"/>, bg: 'bg-purple-100', text: 'text-purple-700'},
+            {label: t('detection.settings.options.deviceType.ipCamera'), variant: 'info' as const, icon: <Video className="w-3 h-3"/>, bg: 'bg-blue-100', text: 'text-blue-700'},
+            {label: t('detection.settings.options.deviceType.usbCamera'), variant: 'gradient' as const, icon: <Usb className="w-3 h-3"/>, bg: 'bg-green-100', text: 'text-green-700'},
         ];
         const c = configs[type] || configs[0];
         return (
@@ -362,10 +364,10 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
 
     const getStatusBadge = (status: number) => {
         const configs = [
-            {label: 'Online', variant: 'success' as const, icon: <Wifi className="w-3 h-3"/>},
-            {label: 'Offline', variant: 'warning' as const, icon: <WifiOff className="w-3 h-3"/>},
-            {label: 'Error', variant: 'error' as const, icon: <AlertCircle className="w-3 h-3"/>},
-            {label: 'Maintenance', variant: 'default' as const, icon: <Wrench className="w-3 h-3"/>},
+            {label: t('detection.settings.options.status.online'), variant: 'success' as const, icon: <Wifi className="w-3 h-3"/>},
+            {label: t('detection.settings.options.status.offline'), variant: 'warning' as const, icon: <WifiOff className="w-3 h-3"/>},
+            {label: t('detection.settings.options.status.error'), variant: 'error' as const, icon: <AlertCircle className="w-3 h-3"/>},
+            {label: t('detection.settings.options.status.maintenance'), variant: 'default' as const, icon: <Wrench className="w-3 h-3"/>},
         ];
         const c = configs[status] || configs[1];
         return (
@@ -380,14 +382,14 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
     const modelColumns: Column<any>[] = [
         {
             key: 'model_id',
-            title: 'ID',
+            title: t('detection.settings.columns.id'),
             render: v => <span className="text-gray-500 font-mono">#{v}</span>,
         },
-        {key: 'model_name', title: 'Model Name'},
-        {key: 'num_classes', title: 'Classes', render: v => v ?? '-'},
+        {key: 'model_name', title: t('detection.settings.columns.modelName')},
+        {key: 'num_classes', title: t('detection.settings.columns.classes'), render: v => v ?? '-'},
         {
             key: 'is_active',
-            title: 'Active',
+            title: t('detection.settings.columns.active'),
             render: v => (
                 <Badge variant={v === '1' || v === 1 ? 'success' : 'default'}>
                     {v === '1' || v === 1 ? <Check className="w-3 h-3"/> : <X className="w-3 h-3"/>}
@@ -396,49 +398,54 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
         },
         {
             key: 'is_default',
-            title: 'Default',
+            title: t('detection.settings.columns.default'),
             render: v => (
                 <span className={v === '1' || v === 1 ? 'text-yellow-600' : 'text-gray-400'}>
                     {v === '1' || v === 1 ? <Star className="w-4 h-4 fill-yellow-500"/> : '-'}
                 </span>
             ),
         },
-        {key: 'inference_time_ms', title: 'Inference (ms)', render: v => v ? `${v}ms` : '-'},
-        {key: 'model_size_mb', title: 'Size (MB)', render: v => v ? `${v} MB` : '-'},
-        {key: 'model_version', title: 'Version', render: v => v || <span className="text-gray-400">-</span>},
+        {key: 'inference_time_ms', title: t('detection.settings.columns.inferenceMs'), render: v => v ? `${v}ms` : '-'},
+        {key: 'model_size_mb', title: t('detection.settings.columns.sizeMb'), render: v => v ? `${v} MB` : '-'},
+        {key: 'model_version', title: t('detection.settings.columns.version'), render: v => v || <span className="text-gray-400">-</span>},
     ];
 
     // Device 列的配置
     const deviceColumns: Column<any>[] = [
         {
             key: 'device_id',
-            title: 'ID',
+            title: t('detection.settings.columns.id'),
             render: v => <span className="text-gray-500 font-mono">#{v}</span>,
         },
-        {key: 'device_name', title: 'Device Name'},
-        {key: 'device_code', title: 'Device Code', render: v => v || <span className="text-gray-400">-</span>},
+        {key: 'device_name', title: t('detection.settings.columns.deviceName')},
+        {key: 'device_code', title: t('detection.settings.columns.deviceCode'), render: v => v || <span className="text-gray-400">-</span>},
         {
             key: 'device_type',
-            title: 'Type',
+            title: t('detection.settings.columns.type'),
             render: v => getDeviceTypeBadge(v),
         },
         {
             key: 'connection_type',
-            title: 'Connection',
+            title: t('detection.settings.columns.connection'),
             render: v => {
-                const labels = ['RTSP', 'HTTP', 'USB', 'File'];
+                const labels = [
+                    t('detection.settings.options.connectionType.rtsp'),
+                    t('detection.settings.options.connectionType.http'),
+                    t('detection.settings.options.connectionType.usb'),
+                    t('detection.settings.options.connectionType.file')
+                ];
                 return <span className="text-gray-600">{labels[v] || '-'}</span>;
             },
         },
-        {key: 'location', title: 'Location', render: v => v || <span className="text-gray-400">-</span>},
+        {key: 'location', title: t('detection.settings.columns.location'), render: v => v || <span className="text-gray-400">-</span>},
         {
             key: 'status',
-            title: 'Status',
+            title: t('detection.settings.columns.status'),
             render: v => getStatusBadge(v),
         },
         {
             key: 'actions',
-            title: 'Actions',
+            title: t('detection.settings.columns.actions'),
             render: (_, record) => (
                 <Dropdown
                     trigger={
@@ -449,13 +456,13 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
                     items={[
                         {
                             key: 'edit',
-                            label: 'Edit',
+                            label: t('detection.settings.actions.edit'),
                             icon: <Pencil className="w-4 h-4"/>,
                             onClick: () => handleEditDevice(record),
                         },
                         {
                             key: 'delete',
-                            label: 'Delete',
+                            label: t('detection.settings.actions.delete'),
                             icon: <Trash2 className="w-4 h-4"/>,
                             danger: true,
                             onClick: () => handleDeleteDevice(record.device_id),
@@ -467,7 +474,7 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
     ];
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Settings" size="xl">
+        <Modal isOpen={isOpen} onClose={onClose} title={t('detection.settings.title')} size="xl">
             <div className="flex gap-6 h-[600px]">
                 {/* 左侧导航 */}
                 <div className="w-48 border-r border-gray-200 pr-4">
@@ -481,7 +488,7 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
                             }`}
                         >
                             <BrainCircuit size={18} />
-                            <span>Models</span>
+                            <span>{t('detection.settings.tabs.models')}</span>
                         </button>
                         <button
                             onClick={() => setTab('device')}
@@ -492,7 +499,7 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
                             }`}
                         >
                             <Router size={18} />
-                            <span>Devices</span>
+                            <span>{t('detection.settings.tabs.devices')}</span>
                         </button>
                     </div>
                 </div>
@@ -502,7 +509,7 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
                     {tab === 'model' ? (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-xl font-semibold">Model List</h2>
+                                <h2 className="text-xl font-semibold">{t('detection.settings.modelList')}</h2>
                             </div>
                             <Table
                                 columns={modelColumns}
@@ -520,13 +527,13 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
                     ) : (
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-xl font-semibold">Device List</h2>
+                                <h2 className="text-xl font-semibold">{t('detection.settings.deviceList')}</h2>
                                 <button
                                     onClick={handleAddDevice}
                                     className="px-4 py-2 bg-black text-white rounded-lg flex items-center gap-2"
                                 >
                                     <Plus size={16} />
-                                    Add Device
+                                    {t('detection.settings.addDevice')}
                                 </button>
                             </div>
                             <Table
@@ -550,7 +557,7 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
             <Modal
                 isOpen={deviceModalOpen}
                 onClose={() => setDeviceModalOpen(false)}
-                title={isDeviceEditMode ? 'Edit Device' : 'Add Device'}
+                title={isDeviceEditMode ? t('detection.settings.editDevice') : t('detection.settings.addDevice')}
                 size="lg"
             >
                 <div className="grid grid-cols-2 gap-4">
@@ -574,13 +581,13 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
                         onClick={() => setDeviceModalOpen(false)}
                         className="px-4 py-2 rounded-xl text-gray-600 hover:bg-gray-100"
                     >
-                        Cancel
+                        {t('detection.settings.cancel')}
                     </button>
                     <button
                         onClick={isDeviceEditMode ? handleSaveUpdateDevice : handleSaveAddDevice}
                         className="bg-black text-white px-5 py-2 rounded-xl"
                     >
-                        Save
+                        {t('detection.settings.save')}
                     </button>
                 </div>
             </Modal>

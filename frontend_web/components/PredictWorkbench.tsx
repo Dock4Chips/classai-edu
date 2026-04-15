@@ -36,6 +36,7 @@ import {Results} from "@/lib/api";
 import {useWebSocket} from '@/hooks/useWebSocket';
 import Cookies from 'js-cookie';
 import {notification} from "@/utils/notification";
+import {useTranslation} from 'react-i18next';
 
 type Mode = 'file' | 'camera';
 
@@ -52,40 +53,41 @@ interface DetectionResult {
 }
 
 function StatusIndicator({status}: { status: SessionStatus }) {
+    const {t} = useTranslation();
     const statusConfig = {
         idle: {
             bg: 'bg-gray-100',
             dot: 'bg-gray-500',
             text: 'text-gray-600',
-            label: 'Idle',
+            label: t('detection.common.status.idle'),
             pulse: false
         },
         ready: {
             bg: 'bg-blue-50',
             dot: 'bg-blue-500',
             text: 'text-blue-600',
-            label: 'Ready',
+            label: t('detection.common.status.ready'),
             pulse: true
         },
         running: {
             bg: 'bg-blue-50',
             dot: 'bg-blue-500',
             text: 'text-amber-600',
-            label: 'Processing',
+            label: t('detection.common.status.processing'),
             pulse: true
         },
         completed: {
             bg: 'bg-emerald-50',
             dot: 'bg-emerald-500',
             text: 'text-emerald-600',
-            label: 'Completed',
+            label: t('detection.common.status.completed'),
             pulse: false
         },
         error: {
             bg: 'bg-rose-50',
             dot: 'bg-rose-500',
             text: 'text-rose-600',
-            label: 'Failed',
+            label: t('detection.common.status.failed'),
             pulse: false
         },
     };
@@ -126,6 +128,7 @@ function TaskInfoBadge({
     onTaskNameChange: (name: string) => void;
     disabled?: boolean;
 }) {
+    const {t} = useTranslation();
     const [isEditing, setIsEditing] = useState(false);
     const [editValue, setEditValue] = useState(taskName);
 
@@ -154,7 +157,7 @@ function TaskInfoBadge({
                         className="flex-1 min-w-[150px] bg-transparent text-sm font-semibold text-gray-800 outline-none border-b border-gray-400"
                         autoFocus
                         disabled={disabled}
-                        placeholder="Enter task name..."
+                        placeholder={t('detection.predict.enterTaskName')}
                     />
                 ) : (
                     <button
@@ -162,11 +165,11 @@ function TaskInfoBadge({
                         className={`flex-1 text-left text-sm font-semibold disabled:opacity-50 ${needsName ? 'text-gray-500' : 'text-gray-700'}`}
                         disabled={disabled}
                     >
-                        {taskName || 'Click to set task name'}
+                        {taskName || t('detection.predict.clickToSetTaskName')}
                     </button>
                 )}
                 {needsName && (
-                    <span className="text-xs text-gray-500 font-medium">Required</span>
+                    <span className="text-xs text-gray-500 font-medium">{t('detection.predict.required')}</span>
                 )}
             </div>
 
@@ -187,6 +190,7 @@ function TaskInfoBadge({
 }
 
 export default function PredictWorkbench() {
+    const {t} = useTranslation();
     const [mode, setMode] = useState<Mode>('file');
     const [status, setStatus] = useState<SessionStatus>('idle');
     const [confidence, setConfidence] = useState(0.4);
@@ -218,8 +222,8 @@ export default function PredictWorkbench() {
     // 设置 Modal 状态
     const [settingsOpen, setSettingsOpen] = useState(false);
     const modeTabs = [
-        {id: 'file' as const, label: 'File Upload', icon: <Upload size={16}/>},
-        {id: 'camera' as const, label: 'Camera Stream', icon: <Camera size={16}/>},
+        {id: 'file' as const, label: t('detection.predict.fileUpload'), icon: <Upload size={16}/>},
+        {id: 'camera' as const, label: t('detection.predict.cameraStream'), icon: <Camera size={16}/>},
     ];
 
     const getWsBaseURL = () => {
@@ -233,7 +237,7 @@ export default function PredictWorkbench() {
 
     const getWsUrl = () => {
         const token = Cookies.get('AUTH_TOKEN');
-        if (!token) return notification.error('Please login first.', 'Error');
+        if (!token) return notification.error(t('detection.common.pleaseLoginFirst'), t('detection.common.error'));
         return `${getWsBaseURL()}/api/stream/ws?token=${token}`;
     };
 
@@ -251,14 +255,14 @@ export default function PredictWorkbench() {
         };
 
         if (msg.type === 'error' || msg.type === 'unknown action') {
-            notification.error(msg.message || 'Unknown error', 'Error');
+            notification.error(msg.message || t('detection.common.unknownError'), t('detection.common.error'));
             return;
         }
 
         if (msg.detections) {
             setWsDetections(msg.detections);
         }
-    }, []);
+    }, [t]);
 
     // 处理二进制帧
     const handleWsBinary = useCallback((blob: Blob) => {
@@ -279,6 +283,28 @@ export default function PredictWorkbench() {
         autoConnect: false,
     });
 
+    function fetchDevice() {
+        DeviceService.getDeviceList(1, 100).then((res) => {
+            if (res.code === 200 && res.data?.records) {
+                setDeviceList(res.data.records);
+                if (res.data.records.length > 0) {
+                    setSelectedDeviceId(res.data.records[0].device_id);
+                }
+            }
+        });
+    }
+
+    function fetchModelConfig() {
+        ModelConfigService.getModelList(1, 10).then((res) => {
+            if (res.code === 200 && res.data?.records) {
+                setModelList(res.data.records);
+                if (res.data.records.length > 0) {
+                    setSelectedModelId(res.data.records[0].model_id);
+                }
+            }
+        });
+    }
+
     useEffect(() => {
         void fetchModelConfig()
     }, []);
@@ -293,8 +319,6 @@ export default function PredictWorkbench() {
                 wsConnect().catch(console.error);
             }
         } else {
-            setDeviceList([]);
-            setSelectedDeviceId(undefined);
             // File 模式下断开 WebSocket
             if (wsConnectedRef.current) {
                 wsConnectedRef.current = false;
@@ -302,29 +326,6 @@ export default function PredictWorkbench() {
             }
         }
     }, [mode]);
-
-    const fetchDevice = async () => {
-        DeviceService.getDeviceList(1, 100).then((res) => {
-            if (res.code === 200 && res.data?.records) {
-                setDeviceList(res.data.records);
-                if (res.data.records.length > 0) {
-                    setSelectedDeviceId(res.data.records[0].device_id);
-                }
-            }
-        });
-    }
-
-    const fetchModelConfig = async () => {
-        ModelConfigService.getModelList(1, 10).then((res) => {
-            if (res.code === 200 && res.data?.records) {
-                setModelList(res.data.records);
-                if (res.data.records.length > 0) {
-                    setSelectedModelId(res.data.records[0].model_id);
-                }
-            }
-        });
-    }
-
 
     const handleFileSelect = useCallback((file: File) => {
         setSelectedFiles([file]);
@@ -351,7 +352,7 @@ export default function PredictWorkbench() {
             const device = deviceList.find(d => d.device_id === selectedDeviceId);
             if (!device) {
                 setStatus('error');
-                notification.error('Please select a device.', 'Error');
+                notification.error(t('detection.common.pleaseSelectDevice'), t('detection.common.error'));
                 return;
             }
 
@@ -431,6 +432,10 @@ export default function PredictWorkbench() {
     const handleModeChange = (modeId: string) => {
         setMode(modeId as Mode);
         handleClearSelection();
+        if (modeId !== 'camera') {
+            setDeviceList([]);
+            setSelectedDeviceId(undefined);
+        }
     };
 
     const handleDetectionClick = (id: number) => {
@@ -457,23 +462,28 @@ export default function PredictWorkbench() {
     return (
         <div className="min-h-screen bg-gray-50 flex flex-col">
             <WorkbenchHeader
-                title="Object Detection"
+                title={t('detection.workspace.tasks.detection.title')}
                 backButton="/detection"
                 sessionInfo={{
-                    id: taskName || 'No Task',
-                    input: selectedFileName || (mode === 'file' ? 'No file selected' : 'Camera'),
+                    id: taskName || t('detection.common.noTask'),
+                    input: selectedFileName || (mode === 'file' ? t('detection.common.noFileSelected') : t('detection.predict.camera')),
                     resolution: '1920x1080',
+                }}
+                labels={{
+                    session: t('detection.common.session'),
+                    input: t('detection.common.input'),
+                    resolution: t('detection.common.resolution'),
                 }}
                 leftContent={
                     <div className="flex items-center gap-4">
                         <div
                             className={`flex items-center gap-2 ${isProcessing ? 'pointer-events-none opacity-50' : ''}`}>
-                            <span className="text-sm text-gray-600">Model:</span>
+                            <span className="text-sm text-gray-600">{t('detection.common.model')}:</span>
                             <Dropdown
                                 trigger={
                                     <DropdownButton variant="default" className="justify-between min-w-[120px]">
                                         <span className="text-sm">
-                                            {modelList.find(m => m.model_id === selectedModelId)?.model_name || 'Select Model'}
+                                            {modelList.find(m => m.model_id === selectedModelId)?.model_name || t('detection.common.selectModel')}
                                         </span>
                                     </DropdownButton>
                                 }
@@ -487,12 +497,12 @@ export default function PredictWorkbench() {
                         {mode === 'camera' && deviceList.length > 0 && (
                             <div
                                 className={`flex items-center gap-2 ${isProcessing ? 'pointer-events-none opacity-50' : ''}`}>
-                                <span className="text-sm text-gray-600">Device:</span>
+                                <span className="text-sm text-gray-600">{t('detection.common.device')}:</span>
                                 <Dropdown
                                     trigger={
                                         <DropdownButton variant="default" className="justify-between min-w-[120px]">
                                             <span className="text-sm">
-                                                {deviceList.find(d => d.device_id === selectedDeviceId)?.device_name || 'Select Device'}
+                                                {deviceList.find(d => d.device_id === selectedDeviceId)?.device_name || t('detection.common.selectDevice')}
                                             </span>
                                         </DropdownButton>
                                     }
@@ -505,7 +515,7 @@ export default function PredictWorkbench() {
                             </div>
                         )}
                         <div className="flex items-center gap-2">
-                            <span className="text-sm text-gray-600">Confidence:</span>
+                            <span className="text-sm text-gray-600">{t('detection.common.confidence')}:</span>
                             <input
                                 type="range"
                                 min="0"
@@ -556,7 +566,7 @@ export default function PredictWorkbench() {
                             >
                                 <Zap size={14} className="text-amber-400"/>
                                 <span className="text-sm font-medium text-white">
-                                    {results[0].dets?.length || 0} detections
+                                    {results[0].dets?.length || 0} {t('detection.common.detections')}
                                 </span>
                             </motion.div>
                         )}
@@ -565,7 +575,7 @@ export default function PredictWorkbench() {
             </div>
 
             <div className="flex-1 grid grid-cols-2 gap-0 overflow-hidden">
-                <InputPanel title="Input">
+                <InputPanel title={t('detection.common.input')}>
                     <div className="flex flex-col gap-4 overflow-auto">
                         {mode === 'file' ? (
                             <div className="space-y-4">
@@ -592,7 +602,7 @@ export default function PredictWorkbench() {
 
                                 {status === 'idle' && !selectedFileName && (
                                     <p className="text-sm text-gray-400 text-center py-2">
-                                        Select a file to start detection
+                                        {t('detection.predict.selectFileToStart')}
                                     </p>
                                 )}
                             </div>
@@ -601,7 +611,7 @@ export default function PredictWorkbench() {
                             <div className="space-y-4">
                                 <div className="p-4 bg-gray-100 rounded-lg border border-gray-200">
                                     <p className="text-sm text-gray-500 text-center">
-                                        "Please use the device list for detection in Camera mode"
+                                        {t('detection.predict.useDeviceListInCameraMode')}
                                     </p>
                                 </div>
                                 <div className="pointer-events-none opacity-50">
@@ -621,22 +631,22 @@ export default function PredictWorkbench() {
                                     {wsStatus === 'connected' ? (
                                         <>
                                             <Wifi size={14} className="text-green-500"/>
-                                            <span className="text-green-600">Connected</span>
+                                            <span className="text-green-600">{t('detection.common.connection.connected')}</span>
                                         </>
                                     ) : wsStatus === 'connecting' ? (
                                         <>
                                             <Loader2 size={14} className="text-amber-500 animate-spin"/>
-                                            <span className="text-amber-600">Connecting...</span>
+                                            <span className="text-amber-600">{t('detection.common.connection.connecting')}</span>
                                         </>
                                     ) : wsStatus === 'error' ? (
                                         <>
                                             <WifiOff size={14} className="text-red-500"/>
-                                            <span className="text-red-600">Connection Failed</span>
+                                            <span className="text-red-600">{t('detection.common.connection.failed')}</span>
                                         </>
                                     ) : (
                                         <>
                                             <WifiOff size={14} className="text-gray-400"/>
-                                            <span className="text-gray-500">Disconnected</span>
+                                            <span className="text-gray-500">{t('detection.common.connection.disconnected')}</span>
                                         </>
                                     )}
                                 </div>
@@ -654,7 +664,7 @@ export default function PredictWorkbench() {
                                 ) : (
                                     <img
                                         src={previewUrl}
-                                        alt="Preview"
+                                        alt={t('detection.common.preview')}
                                         className="w-full h-full object-contain"
                                     />
                                 )}
@@ -663,22 +673,22 @@ export default function PredictWorkbench() {
                             <div className="aspect-video flex items-center justify-center bg-gray-900 rounded-lg">
                                 <div className="text-center">
                                     <Image className="mx-auto text-gray-600 mb-2" size={32}/>
-                                    <p className="text-gray-500 text-sm">No file loaded</p>
+                                    <p className="text-gray-500 text-sm">{t('detection.common.noFileLoaded')}</p>
                                 </div>
                             </div>
                         )}
                     </div>
                 </InputPanel>
 
-                <OutputPanel title="Output">
+                <OutputPanel title={t('detection.common.output')}>
                     <div className="h-full flex flex-col gap-4">
                         {/* Camera 模式：WebSocket 实时检测帧 */}
                         {mode === 'camera' && wsFrame ? (
                             <div className="relative bg-black rounded-lg overflow-hidden aspect-video">
-                                <img src={wsFrame} alt="Detection Result" className="w-full h-full object-contain"/>
+                                <img src={wsFrame} alt={t('detection.predict.detectionResult')} className="w-full h-full object-contain"/>
                                 {status === 'running' && wsDetections.length > 0 && (
                                     <div className="absolute top-2 right-2 px-2 py-1 bg-black/50 rounded">
-                                        <span className="text-sm text-white">{wsDetections.length} Object</span>
+                                        <span className="text-sm text-white">{wsDetections.length} {t('detection.common.objects')}</span>
                                     </div>
                                 )}
                             </div>
@@ -688,7 +698,7 @@ export default function PredictWorkbench() {
                                     <video src={results[0].image_url} controls className="w-full h-full object-contain"
                                            crossOrigin="anonymous"/>
                                 ) : (
-                                    <img src={results[0].image_url} alt="Detection Result"
+                                    <img src={results[0].image_url} alt={t('detection.predict.detectionResult')}
                                          className="w-full h-full object-contain"/>
                                 )}
                             </div>
@@ -697,7 +707,7 @@ export default function PredictWorkbench() {
                             <div className="aspect-video flex items-center justify-center bg-gray-900 rounded-lg">
                                 <div className="text-center">
                                     <Image className="mx-auto text-gray-600 mb-2" size={32}/>
-                                    <p className="text-gray-500 text-sm">Wait for the detection output</p>
+                                    <p className="text-gray-500 text-sm">{t('detection.predict.waitForOutput')}</p>
                                 </div>
                             </div>
                         )}
@@ -740,7 +750,7 @@ export default function PredictWorkbench() {
                 >
                     {isProcessing ? <Loader2 size={18} className="animate-spin"/> : status === 'running' ?
                         <Square size={18}/> : <Play size={18}/>}
-                    {status === 'running' ? 'Stop Detection' : isProcessing ? 'Processing...' : 'Start Detection'}
+                    {status === 'running' ? t('detection.predict.stopDetection') : isProcessing ? t('detection.common.processing') : t('detection.predict.startDetection')}
                 </motion.button>
             </ControlBar>
 

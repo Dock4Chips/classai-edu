@@ -25,6 +25,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
+import { useTranslation } from 'react-i18next';
 
 // Training metrics types
 interface ResultsData {
@@ -59,18 +60,18 @@ interface ConfusionMatrixData {
 const CLASS_NAMES = ['Learning to Copy', 'Looking Around', 'Sharing Answers', 'Sleeping', 'Staff', 'Using Mobile'];
 const CLASS_COLORS = ['#ef4444', '#f59e0b', '#8b5cf6', '#3b82f6', '#6b7280', '#ec4899'];
 
-const quickActions = [
-  { icon: ImageIcon, label: 'Upload Image', desc: 'Analyze photos', color: 'from-blue-500 to-cyan-500' },
-  { icon: Video, label: 'Upload Video', desc: 'Process footage', color: 'from-violet-500 to-purple-500' },
-  { icon: Camera, label: 'Live Camera', desc: 'Real-time analysis', color: 'from-emerald-500 to-teal-500' },
-  { icon: BarChart3, label: 'View Reports', desc: 'Detailed insights', color: 'from-amber-500 to-orange-500' }
-];
-
 export default function DashboardPage() {
+  const { t } = useTranslation();
   const [results, setResults] = useState<ResultsData | null>(null);
   const [boxCurves, setBoxCurves] = useState<BoxCurvesData | null>(null);
   const [confusionMatrix, setConfusionMatrix] = useState<ConfusionMatrixData | null>(null);
   const [metricsLoading, setMetricsLoading] = useState(true);
+  const quickActions = [
+    { icon: ImageIcon, label: t('dashboard.uploadImage'), desc: t('dashboard.analyzePhotos'), color: 'from-blue-500 to-cyan-500' },
+    { icon: Video, label: t('dashboard.uploadVideo'), desc: t('dashboard.processFootage'), color: 'from-violet-500 to-purple-500' },
+    { icon: Camera, label: t('dashboard.liveCamera'), desc: t('dashboard.realTimeAnalysis'), color: 'from-emerald-500 to-teal-500' },
+    { icon: BarChart3, label: t('dashboard.viewReports'), desc: t('dashboard.detailedInsights'), color: 'from-amber-500 to-orange-500' }
+  ];
 
   useEffect(() => {
     void loadTrainingMetrics()
@@ -157,7 +158,7 @@ export default function DashboardPage() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200 shadow-sm mb-6"
               >
                 <Sparkles className="text-purple-500" size={18} />
-                <span className="text-sm text-gray-700 font-medium">AI-Powered Analysis Ready</span>
+                <span className="text-sm text-gray-700 font-medium">{t('dashboard.aiPoweredAnalysisReady')}</span>
               </motion.div>
 
               <motion.h1
@@ -166,10 +167,10 @@ export default function DashboardPage() {
                 transition={{ delay: 0.3 }}
                 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4 leading-tight"
               >
-                Transform Your Classroom
+                {t('dashboard.transformYourClassroom')}
                 <br />
                 <span className="relative inline-block">
-                  with AI Intelligence
+                  {t('dashboard.withAISIntelligence')}
                   <svg className="absolute -bottom-2 left-0 w-full" height="12" viewBox="0 0 300 12" fill="none">
                     <path d="M2 8C100 2 200 2 298 8" stroke="rgba(139, 92, 246, 0.3)" strokeWidth="4" strokeLinecap="round"/>
                   </svg>
@@ -182,7 +183,7 @@ export default function DashboardPage() {
                 transition={{ delay: 0.4 }}
                 className="text-lg text-gray-600 mb-8 max-w-lg"
               >
-                Analyze student behavior in real-time with our advanced AI. Get instant insights and improve learning outcomes.
+                {t('dashboard.analyzeStudentBehavior')}
               </motion.p>
 
               <motion.div
@@ -194,14 +195,14 @@ export default function DashboardPage() {
                 <Link href="/detection">
                   <button className="group px-6 py-3.5 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 transition-all shadow-lg flex items-center gap-2">
                     <Plus size={20} />
-                    start new detection
+                    {t('dashboard.startNewDetection')}
                     <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                   </button>
                 </Link>
                 <Link href="#">
                   <button className="px-6 py-3.5 bg-white text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-all border border-gray-200 shadow-sm flex items-center gap-2">
                     <Play size={18} />
-                    Watch Demo
+                    {t('dashboard.watchDemo')}
                   </button>
                 </Link>
               </motion.div>
@@ -209,9 +210,9 @@ export default function DashboardPage() {
 
             <div className="absolute bottom-8 right-8 hidden lg:flex gap-4">
               {!metricsLoading && results && [
-                { value: `${((results['metrics/precision(B)'][results['metrics/precision(B)'].length - 1] + results['metrics/recall(B)'][results['metrics/recall(B)'].length - 1]) / 2 * 100).toFixed(1)}%`, label: 'Avg Score' },
-                { value: `${results.epoch.length}`, label: 'Epochs' },
-                { value: `${(results['metrics/mAP50(B)'][results['metrics/mAP50(B)'].length - 1] * 100).toFixed(1)}%`, label: 'mAP@0.5' }
+                { value: `${((results['metrics/precision(B)'][results['metrics/precision(B)'].length - 1] + results['metrics/recall(B)'][results['metrics/recall(B)'].length - 1]) / 2 * 100).toFixed(1)}%`, label: t('dashboard.avgScore') },
+                { value: `${results.epoch.length}`, label: t('dashboard.epochs') },
+                { value: `${(results['metrics/mAP50(B)'][results['metrics/mAP50(B)'].length - 1] * 100).toFixed(1)}%`, label: t('dashboard.map50') }
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -237,10 +238,10 @@ export default function DashboardPage() {
         >
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Quick Actions</h2>
-              <p className="text-gray-500">Start a new analysis or view insights</p>
+              <h2 className="text-2xl font-bold text-gray-900">{t('dashboard.quickActions')}</h2>
+              <p className="text-gray-500">{t('dashboard.startANewAnalysis')}</p>
             </div>
-            <button className="text-sm text-violet-600 hover:text-violet-700 font-medium">View all →</button>
+            <button className="text-sm text-violet-600 hover:text-violet-700 font-medium">{t('dashboard.viewAll')}</button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -291,25 +292,25 @@ export default function DashboardPage() {
             >
               {[
                 {
-                  label: 'Precision',
+                  label: t('dashboard.precision'),
                   value: results['metrics/precision(B)'][results['metrics/precision(B)'].length - 1] * 100,
                   color: '#8b5cf6',
                   gradient: ['from-violet-500', 'to-purple-600']
                 },
                 {
-                  label: 'Recall',
+                  label: t('dashboard.recall'),
                   value: results['metrics/recall(B)'][results['metrics/recall(B)'].length - 1] * 100,
                   color: '#06b6d4',
                   gradient: ['from-blue-500', 'to-cyan-600']
                 },
                 {
-                  label: 'mAP@0.5',
+                  label: t('dashboard.map50'),
                   value: results['metrics/mAP50(B)'][results['metrics/mAP50(B)'].length - 1] * 100,
                   color: '#10b981',
                   gradient: ['from-emerald-500', 'to-teal-600']
                 },
                 {
-                  label: 'mAP@0.5:0.95',
+                  label: t('dashboard.map50_95'),
                   value: results['metrics/mAP50-95(B)'][results['metrics/mAP50-95(B)'].length - 1] * 100,
                   color: '#f59e0b',
                   gradient: ['from-amber-500', 'to-orange-600']
@@ -383,25 +384,25 @@ export default function DashboardPage() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">Training Progress</h3>
-                    <p className="text-sm text-gray-500">All metrics over epochs</p>
+                    <h3 className="text-lg font-bold text-gray-900">{t('dashboard.trainingProgress')}</h3>
+                    <p className="text-sm text-gray-500">{t('dashboard.allMetricsOverEpochs')}</p>
                   </div>
                   <div className="flex gap-3 text-xs flex-wrap">
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-violet-500" />
-                      <span className="text-gray-600">Precision</span>
+                      <span className="text-gray-600">{t('dashboard.precision')}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-cyan-500" />
-                      <span className="text-gray-600">Recall</span>
+                      <span className="text-gray-600">{t('dashboard.recall')}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                      <span className="text-gray-600">mAP@0.5</span>
+                      <span className="text-gray-600">{t('dashboard.map50')}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-amber-500" />
-                      <span className="text-gray-600">mAP@0.5:0.95</span>
+                      <span className="text-gray-600">{t('dashboard.map50_95')}</span>
                     </div>
                   </div>
                 </div>
@@ -499,25 +500,25 @@ export default function DashboardPage() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">Loss Curves</h3>
-                    <p className="text-sm text-gray-500">Training & Validation loss over epochs</p>
+                    <h3 className="text-lg font-bold text-gray-900">{t('dashboard.lossCurves')}</h3>
+                    <p className="text-sm text-gray-500">{t('dashboard.trainingValidationLossOverEpochs')}</p>
                   </div>
                   <div className="flex gap-3 text-xs flex-wrap">
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-rose-500" />
-                      <span className="text-gray-600">Train Box Loss</span>
+                      <span className="text-gray-600">{t('dashboard.trainBoxLoss')}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-orange-500" />
-                      <span className="text-gray-600">Val Box Loss</span>
+                      <span className="text-gray-600">{t('dashboard.valBoxLoss')}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-blue-500" />
-                      <span className="text-gray-600">Train Cls Loss</span>
+                      <span className="text-gray-600">{t('dashboard.trainClsLoss')}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                      <span className="text-gray-600">Val Cls Loss</span>
+                      <span className="text-gray-600">{t('dashboard.valClsLoss')}</span>
                     </div>
                   </div>
                 </div>
@@ -631,21 +632,21 @@ export default function DashboardPage() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">Precision-Recall Curve</h3>
-                    <p className="text-sm text-gray-500">PR curve across confidence thresholds</p>
+                    <h3 className="text-lg font-bold text-gray-900">{t('dashboard.precisionRecallCurve')}</h3>
+                    <p className="text-sm text-gray-500">{t('dashboard.prCurveAcrossConfidenceThresholds')}</p>
                   </div>
                   <div className="flex gap-3 text-xs flex-wrap">
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-rose-500" />
-                      <span className="text-gray-600">Precision</span>
+                      <span className="text-gray-600">{t('dashboard.precision')}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-indigo-500" />
-                      <span className="text-gray-600">Recall</span>
+                      <span className="text-gray-600">{t('dashboard.recall')}</span>
                     </div>
                     <div className="flex items-center gap-1">
                       <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                      <span className="text-gray-600">F1 Score</span>
+                      <span className="text-gray-600">{t('dashboard.f1Score')}</span>
                     </div>
                   </div>
                 </div>
@@ -742,15 +743,15 @@ export default function DashboardPage() {
               >
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">Confusion Matrix</h3>
-                    <p className="text-sm text-gray-500">Normalized prediction accuracy</p>
+                    <h3 className="text-lg font-bold text-gray-900">{t('dashboard.confusionMatrix')}</h3>
+                    <p className="text-sm text-gray-500">{t('dashboard.normalizedPredictionAccuracy')}</p>
                   </div>
                 </div>
                 <div>
                   <table className="w-full text-xs">
                     <thead>
                       <tr className="border-b border-gray-200">
-                        <th className="pb-3 pr-2 text-left font-semibold text-gray-600">Predicted →</th>
+                        <th className="pb-3 pr-2 text-left font-semibold text-gray-600">{t('dashboard.predicted')}</th>
                         {CLASS_NAMES.map((name) => (
                           <th key={name} className="pb-3 px-1 text-center font-semibold text-gray-600" style={{ writingMode: 'vertical-rl', textOrientation: 'mixed' }}>
                             {name}
@@ -834,8 +835,8 @@ export default function DashboardPage() {
             >
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">Per-Class Performance</h3>
-                  <p className="text-sm text-gray-500">Final accuracy by behavior class</p>
+                  <h3 className="text-lg font-bold text-gray-900">{t('dashboard.perClassPerformance')}</h3>
+                  <p className="text-sm text-gray-500">{t('dashboard.finalAccuracyByBehaviorClass')}</p>
                 </div>
               </div>
 

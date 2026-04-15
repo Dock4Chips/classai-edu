@@ -6,8 +6,10 @@ import { Eye, EyeOff, Lock, Shield } from 'lucide-react';
 import Navigation from './Navigation';
 import { UserService } from '@/lib/service/user';
 import { notification } from '@/utils/notification';
+import { useTranslation } from 'react-i18next';
 
 export default function ChangePasswordPage() {
+  const { t } = useTranslation();
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -28,12 +30,12 @@ export default function ChangePasswordPage() {
 
   const handleSubmit = () => {
     if (!formData.old_password || !formData.new_password || !formData.confirm_password) {
-      notification.error('Please fill in all fields');
+      notification.error(t('changePassword.pleaseFillAllFields'));
       return;
     }
 
     if (formData.new_password !== formData.confirm_password) {
-      setError('Passwords do not match');
+      setError(t('changePassword.passwordsDoNotMatch'));
       return;
     }
 
@@ -55,7 +57,7 @@ export default function ChangePasswordPage() {
       notification.error(result.msg);
     }).catch((error) => {
       console.error('Failed to update password:', error);
-      notification.error('Failed to update password');
+      notification.error(t('changePassword.failedToUpdatePassword'));
     }).finally(() => {
       setLoading(false);
     });
@@ -71,8 +73,8 @@ export default function ChangePasswordPage() {
           className="space-y-6"
         >
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Change Password</h1>
-            <p className="text-gray-500">Update your password to keep your account secure</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('changePassword.title')}</h1>
+            <p className="text-gray-500">{t('changePassword.subtitle')}</p>
           </div>
 
           <motion.div
@@ -83,14 +85,14 @@ export default function ChangePasswordPage() {
           >
             <div className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('changePassword.currentPassword')}</label>
                 <div className="relative">
                   <input
                     type={showOldPassword ? 'text' : 'password'}
                     value={formData.old_password}
                     onChange={(e) => handleChange('old_password', e.target.value)}
                     className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all pr-12"
-                    placeholder="Enter your current password"
+                    placeholder={t('changePassword.enterCurrentPassword')}
                   />
                   <button
                     type="button"
@@ -105,7 +107,7 @@ export default function ChangePasswordPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <Lock size={16} />
-                  New Password
+                  {t('changePassword.newPassword')}
                 </label>
                 <div className="relative">
                   <input
@@ -113,7 +115,7 @@ export default function ChangePasswordPage() {
                     value={formData.new_password}
                     onChange={(e) => handleChange('new_password', e.target.value)}
                     className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all pr-12"
-                    placeholder="Enter your new password"
+                    placeholder={t('changePassword.enterNewPassword')}
                   />
                   <button
                     type="button"
@@ -133,7 +135,7 @@ export default function ChangePasswordPage() {
                       formData.new_password.length >= 8 ? 'text-green-600' :
                       formData.new_password.length >= 6 ? 'text-yellow-600' : 'text-red-600'
                     }`}>
-                      Password strength: {formData.new_password.length >= 8 ? 'Strong' : formData.new_password.length >= 6 ? 'Medium' : 'Weak'}
+                      {t('changePassword.passwordStrength')}: {formData.new_password.length >= 8 ? t('changePassword.strong') : formData.new_password.length >= 6 ? t('changePassword.medium') : t('changePassword.weak')}
                     </span>
                   </div>
                 )}
@@ -142,7 +144,7 @@ export default function ChangePasswordPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
                   <Shield size={16} />
-                  Confirm New Password
+                  {t('changePassword.confirmNewPassword')}
                 </label>
                 <div className="relative">
                   <input
@@ -150,7 +152,7 @@ export default function ChangePasswordPage() {
                     value={formData.confirm_password}
                     onChange={(e) => handleChange('confirm_password', e.target.value)}
                     className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all pr-12"
-                    placeholder="Confirm your new password"
+                    placeholder={t('changePassword.confirmYourNewPassword')}
                   />
                   <button
                     type="button"
@@ -164,16 +166,16 @@ export default function ChangePasswordPage() {
                   <p className="text-red-500 text-sm mt-2">{error}</p>
                 )}
                 {formData.confirm_password && !error && formData.new_password === formData.confirm_password && (
-                  <p className="text-green-600 text-sm mt-2">Passwords match</p>
+                  <p className="text-green-600 text-sm mt-2">{t('changePassword.passwordsMatch')}</p>
                 )}
               </div>
 
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-                <h3 className="text-sm font-semibold text-blue-900 mb-2">Password Requirements:</h3>
+                <h3 className="text-sm font-semibold text-blue-900 mb-2">{t('changePassword.passwordRequirements')}</h3>
                 <ul className="text-sm text-blue-700 space-y-1">
-                  <li>• At least 6 characters long</li>
-                  <li>• Contains both uppercase and lowercase letters is recommended</li>
-                  <li>• Contains numbers and special characters is recommended</li>
+                  <li>• {t('changePassword.requirementMinLength')}</li>
+                  <li>• {t('changePassword.requirementCase')}</li>
+                  <li>• {t('changePassword.requirementNumberSpecial')}</li>
                 </ul>
               </div>
 
@@ -186,7 +188,7 @@ export default function ChangePasswordPage() {
                   className="px-6 py-3 bg-black text-white rounded-xl font-semibold hover:bg-gray-800 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   <Shield size={18} />
-                  {loading ? 'Changing Password...' : 'Change Password'}
+                  {loading ? t('changePassword.changingPassword') : t('changePassword.changePassword')}
                 </motion.button>
               </div>
             </div>
