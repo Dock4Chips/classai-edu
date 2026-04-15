@@ -1,3 +1,5 @@
+import os.path
+
 from ultralytics import YOLO
 from master_tools.logger_tool import log
 
@@ -50,4 +52,8 @@ def train_model():
 
 
 if __name__ == '__main__':
+    # log.info(os.path.exists("datasets/dataset.yaml"))
+    # log.info(os.path.exists("datasets/active/val/images"))
+    # log.info(os.path.abspath("datasets/active/val/images"))
+
     train_model()
