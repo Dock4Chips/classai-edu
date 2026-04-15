@@ -9,6 +9,7 @@ from master_tools.minio_tools import Bucket
 
 env_path = Path(__file__).parent.parent / ".env"
 load_dotenv(dotenv_path=env_path)
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 # 连接 Redis
 REDIS_HOST = os.getenv("REDIS_HOST")
@@ -68,6 +69,18 @@ GITHUB_REDIRECT_URI = os.getenv("GITHUB_REDIRECT_URI")
 GITHUB_AUTHORIZATION_URL = os.getenv("GITHUB_AUTHORIZATION_URL")
 GITHUB_TOKEN_URL = os.getenv("GITHUB_TOKEN_URL")
 GITHUB_USER_INFO_URL = os.getenv("GITHUB_USER_INFO_URL")
+
+DASHBOARD_METRICS_DIR = os.getenv(
+    "DASHBOARD_METRICS_DIR",
+    str(PROJECT_ROOT / "yolo_edu" / "scripts" / "metrics")
+)
+REPORT_MODEL_EXPORT_BASE_PATH = os.getenv(
+    "REPORT_MODEL_EXPORT_BASE_PATH",
+    str(PROJECT_ROOT / "yolo_edu" / "dodge_project" / "classai_model" / "weights")
+)
+REPORT_METRICS_DIR = os.getenv("REPORT_METRICS_DIR", DASHBOARD_METRICS_DIR)
+DASHBOARD_METRICS_CACHE_TTL_SECONDS = int(os.getenv("DASHBOARD_METRICS_CACHE_TTL_SECONDS", "60"))
+DASHBOARD_METRICS_REDIS_PREFIX = os.getenv("DASHBOARD_METRICS_REDIS_PREFIX", "dashboard:metrics")
 
 
 db = DBTools(mysql_client)
