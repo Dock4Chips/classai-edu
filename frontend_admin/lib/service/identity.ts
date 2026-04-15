@@ -1,5 +1,5 @@
 import {apiClient, Results} from '../api'
-import {LoginType} from '../../enums/login_type'
+import {LoginType} from '@/enums/login_type'
 
 export class IdentityService {
 
