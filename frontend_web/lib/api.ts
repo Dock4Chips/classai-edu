@@ -2,37 +2,27 @@ import axios, { type AxiosInstance, type AxiosResponse, type AxiosError } from '
 import type { InternalAxiosRequestConfig } from 'axios';
 
 import Cookies from 'js-cookie';
-import {notification} from "@/utils/notification"; // 用于管理 token
+import { notification } from "@/utils/notification";
 
 export class ApiClient {
-    private baseURL: string;
     private instance: AxiosInstance;
 
     constructor(baseURL: string) {
-        this.baseURL = baseURL;
-
         this.instance = axios.create({
-            baseURL: this.baseURL,
+            baseURL,
             headers: {
                 'Content-Type': 'application/json',
             },
             withCredentials: false,
         });
 
-        // 请求拦截器
+        // 请求拦截器：只负责加 token
         this.instance.interceptors.request.use(
             (config: InternalAxiosRequestConfig) => {
-                const publicEndpoints = ['/api/strategies/identity/captcha', '/api/strategies/identity/login', '/api/strategies/identity/register','/api/class/index/banner'];
-                const isPublic = publicEndpoints.some(
-                    (endpoint) => config.url && config.url.includes(endpoint)
-                );
 
-                if (!isPublic) {
-                    const token = Cookies.get('AUTH_TOKEN');
-                    if (!token) {
-                        notification.error('未登录或 token 不存在，请先登录');
-                        return Promise.reject(new Error('未登录或 token 不存在，禁止请求'));
-                    }
+                const token = Cookies.get('AUTH_TOKEN');
+
+                if (token) {
                     config.headers = config.headers || {};
                     (config.headers as Record<string, string>).Authorization = `Bearer ${token}`;
                 }
@@ -42,32 +32,33 @@ export class ApiClient {
             (error: AxiosError) => Promise.reject(error)
         );
 
-        // 响应拦截器
+        // 响应拦截器：统一处理错误
         this.instance.interceptors.response.use(
             (response: AxiosResponse) => response.data,
             (error: AxiosError) => {
-                notification.error(error.message);
-                console.error('API 请求失败:', error.message);
+                if (error.response?.status === 401) {
+                    notification.error('Please login first');
+                } else {
+                    notification.error(error.message || 'Request failed');
+                }
                 return Promise.reject(error);
             }
         );
     }
 
-    // 设置 token（登录成功时调用）
+    // 登录成功设置 token
     setToken(token: string): void {
-        Cookies.set('AUTH_TOKEN', token, {
-            expires: 3,
-        });
+        Cookies.set('AUTH_TOKEN', token, { expires: 3 });
         localStorage.setItem('is_logged_in', 'true');
     }
 
-    // 清除 token（退出登录时调用）
+    // 退出登录清除 token
     clearToken(): void {
         Cookies.remove('AUTH_TOKEN');
         localStorage.removeItem('is_logged_in');
     }
 
-    // 获取 token (已登陆或校验登陆信息)
+    // 获取 token
     getToken(): string {
         const token = Cookies.get('AUTH_TOKEN');
         if (!token) {
@@ -95,14 +86,13 @@ export class ApiClient {
     delete<T>(endpoint: string): Promise<T> {
         return this.instance.delete(endpoint);
     }
-
 }
 
 export interface Results {
     [key: string]: any;
 }
 
-// ✅ 创建 API 实例
+// 创建实例
 export const apiClient = new ApiClient(
     process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:7869'
 );
