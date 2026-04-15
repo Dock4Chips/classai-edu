@@ -27,6 +27,7 @@ import {
 } from 'recharts';
 import { useTranslation } from 'react-i18next';
 import { DashboardService, DashboardMetricsData } from '@/lib/service/dashboard';
+import { SubtleParticles } from '@/components/ui/subtle-particles';
 
 // Training metrics types
 interface ResultsData {
@@ -129,10 +130,14 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen bg-white relative">
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <SubtleParticles />
+      </div>
+
       <Navigation />
 
-      <main className="max-w-7xl mx-auto px-6 pt-28 pb-12">
+      <main className="relative z-10 max-w-7xl mx-auto px-6 pt-28 pb-12">
         {/* Hero Section */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
@@ -140,10 +145,10 @@ export default function DashboardPage() {
           transition={{ duration: 0.8 }}
           className="relative mb-12 overflow-hidden rounded-3xl"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-gray-100">
-            <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-200/30 rounded-full blur-3xl" />
-            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-200/30 rounded-full blur-3xl" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-pink-200/20 rounded-full blur-3xl" />
+          <div className="absolute inset-0">
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-cyan-200/20 rounded-full blur-3xl" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-indigo-200/15 rounded-full blur-3xl" />
           </div>
 
           <div className="relative px-10 py-16">
