@@ -61,7 +61,7 @@ const SETTINGS_CONFIG_META: Record<SettingsKey, {
   },
   emailNotifications: {
     configKey: 'notify.email.enabled',
-    configName: '邮件通知',
+    configName: '系统通知',
     configType: 'boolean',
     groupName: 'notify',
   },

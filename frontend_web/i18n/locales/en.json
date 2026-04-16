@@ -65,6 +65,7 @@
       "noticeDetails": "Notice Details",
       "allNotices": "All Notices",
       "noNoticesFound": "No notices found",
+      "disabledTip": "System notifications are disabled",
       "title": "Title",
       "typeLabel": "Type",
       "content": "Content",

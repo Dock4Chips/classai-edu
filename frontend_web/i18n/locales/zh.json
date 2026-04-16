@@ -65,6 +65,7 @@
       "noticeDetails": "通知详情",
       "allNotices": "全部通知",
       "noNoticesFound": "暂无通知",
+      "disabledTip": "系统通知已关闭",
       "title": "标题",
       "typeLabel": "类型",
       "content": "内容",

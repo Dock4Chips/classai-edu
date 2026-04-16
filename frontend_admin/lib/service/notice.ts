@@ -57,4 +57,11 @@ export class NoticeService {
     static async getUnreadCount(): Promise<Results> {
         return await apiClient.get<Results>('/api/sys/notice/unread/count');
     }
+
+    /**
+     * 获取系统通知开关状态
+     */
+    static async getNoticeEnabled(): Promise<Results> {
+        return await apiClient.get<Results>('/api/sys/notice/enabled');
+    }
 }
