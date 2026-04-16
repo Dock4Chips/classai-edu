@@ -23,7 +23,7 @@ export function LanguageSwitcher() {
 
   if (!mounted) {
     return (
-      <div className="w-10 h-10 rounded-xl bg-gray-100 animate-pulse" />
+      <div className="w-8 h-10 rounded-xl bg-gray-100 animate-pulse" />
     );
   }
 
@@ -34,7 +34,7 @@ export function LanguageSwitcher() {
       whileHover={{ scale: 1.08, y: -1 }}
       whileTap={{ scale: 0.9 }}
       transition={{ duration: 0.16 }}
-      className={`relative h-10 w-10 rounded-xl border border-gray-200 bg-white text-gray-600 shadow-sm transition-colors hover:border-gray-300 hover:text-gray-900 ${switching ? 'border-gray-300' : ''}`}
+      className={`relative h-10 w-8 rounded-xl border border-gray-200 bg-white text-gray-600 shadow-sm transition-colors hover:border-gray-300 hover:text-gray-900 ${switching ? 'border-gray-300' : ''}`}
       aria-label={language === 'zh' ? 'Switch to English' : 'Switch to Chinese'}
       title={language === 'zh' ? 'Switch to English' : '切换到中文'}
     >

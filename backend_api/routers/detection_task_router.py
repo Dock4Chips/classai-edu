@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends, Body, UploadFile,File
+from fastapi import APIRouter, Depends, UploadFile,File
 
 from auth.authorization import Authorization
 from enums.detection_type import DetectionTaskType
