@@ -356,7 +356,7 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                         key: 'notice_disabled',
                                         content: (
                                             <div className="px-3 py-2.5 text-sm text-gray-500">
-                                                {t('adminLayout.noticeDisabledTip')}
+                                                {t('notice.noticeDisabledTip')}
                                             </div>
                                         ),
                                     }] : notices.slice(0, 5).map(notice => ({
