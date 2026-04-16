@@ -1,6 +1,6 @@
 'use client';
 
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {useRouter, usePathname} from 'next/navigation';
 import {motion, AnimatePresence} from 'framer-motion';
 import {
@@ -26,6 +26,7 @@ import {notification} from "@/utils/notification";
 import {apiClient} from "@/lib/api";
 import {usePermissions} from "@/lib/contexts/PermissionsContext";
 import {useTranslation} from 'react-i18next';
+import {SystemService} from "@/lib/service/system";
 
 interface MenuItem {
     key: string;
@@ -114,7 +115,22 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
     const pathname = usePathname();
     const {t} = useTranslation();
     const [expandedMenu, setExpandedMenu] = useState<string | null>(null);
+    const [systemName, setSystemName] = useState('ClassEdu');
+    const [systemUrl, setSystemUrl] = useState('');
+    const [systemLogoUrl, setSystemLogoUrl] = useState('');
     const {allowedMenuKeys, loading: menuLoading} = usePermissions();
+
+    useEffect(() => {
+        SystemService.getPublicSystemBasic().then((res) => {
+            if (res?.code === 200 && res?.data) {
+                setSystemName(res.data.system_name || 'ClassEdu');
+                setSystemUrl(res.data.system_url || '');
+                setSystemLogoUrl(res.data.system_logo_url || '');
+            }
+        }).catch(() => {
+            // fallback to defaults
+        });
+    }, []);
 
     // 过滤菜单项（只显示用户有权限的菜单）
     const filterMenuItems = (items: MenuItem[]): MenuItem[] => {
@@ -204,29 +220,50 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
                         ) : (
                             <>
                                 <div className="relative">
-                                    <motion.div
-                                        className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shadow-lg"
-                                        animate={{
-                                            boxShadow: [
-                                                '0 10px 40px -10px rgba(0, 0, 0, 0.3)',
-                                                '0 10px 40px -10px rgba(0, 0, 0, 0.4)',
-                                                '0 10px 40px -10px rgba(0, 0, 0, 0.3)',
-                                            ],
-                                        }}
-                                        transition={{duration: 2, repeat: Infinity}}
-                                    >
-                                        <BrainCircuit className="text-white" size={22} />
-                                    </motion.div>
-                                    <motion.div
-                                        className="absolute -inset-1 bg-black rounded-xl opacity-20 blur-lg"
-                                        animate={{scale: [1, 1.1, 1]}}
-                                        transition={{duration: 2, repeat: Infinity}}
-                                    />
+                                    {systemLogoUrl ? (
+                                        <img
+                                            src={systemLogoUrl}
+                                            alt="logo"
+                                            className="w-10 h-10 rounded-xl object-cover shadow-lg border border-gray-200"
+                                        />
+                                    ) : (
+                                        <>
+                                            <motion.div
+                                                className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shadow-lg"
+                                                animate={{
+                                                    boxShadow: [
+                                                        '0 10px 40px -10px rgba(0, 0, 0, 0.3)',
+                                                        '0 10px 40px -10px rgba(0, 0, 0, 0.4)',
+                                                        '0 10px 40px -10px rgba(0, 0, 0, 0.3)',
+                                                    ],
+                                                }}
+                                                transition={{duration: 2, repeat: Infinity}}
+                                            >
+                                                <BrainCircuit className="text-white" size={22} />
+                                            </motion.div>
+                                            <motion.div
+                                                className="absolute -inset-1 bg-black rounded-xl opacity-20 blur-lg"
+                                                animate={{scale: [1, 1.1, 1]}}
+                                                transition={{duration: 2, repeat: Infinity}}
+                                            />
+                                        </>
+                                    )}
                                 </div>
                                 <div>
-                                    <span className="text-xl font-bold text-black">
-                                        ClassAI
-                                    </span>
+                                    {systemUrl ? (
+                                        <a
+                                            href={systemUrl}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-xl font-bold text-black hover:text-gray-700 transition-colors"
+                                        >
+                                            {systemName}
+                                        </a>
+                                    ) : (
+                                        <span className="text-xl font-bold text-black">
+                                            {systemName}
+                                        </span>
+                                    )}
                                 </div>
                             </>
                         )}

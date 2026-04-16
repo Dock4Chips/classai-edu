@@ -20,6 +20,7 @@ import {usePathname, useRouter} from 'next/navigation';
 import {IdentityService} from '@/lib/service/identity';
 import {NoticeService} from '@/lib/service/notice';
 import {apiClient} from '@/lib/api';
+import {PublicSystemBasic, SystemService} from '@/lib/service/system';
 import {Dropdown, DropdownButton} from '@/components/ui/dropdown';
 import {Modal} from '@/components/ui/modal';
 import {LanguageSwitcher} from '@/components/LanguageSwitcher';
@@ -45,6 +46,11 @@ export default function Navigation() {
     const [pageSize] = useState(10);
     const [total, setTotal] = useState(0);
     const [loadingNotices, setLoadingNotices] = useState(false);
+    const [systemBasic, setSystemBasic] = useState<PublicSystemBasic>({
+        system_name: 'ClassEdu',
+        system_url: '',
+        system_logo_url: '',
+    });
 
     const fetchUserInfo = () => {
         IdentityService.getCurrentUser().then((result) => {
@@ -89,6 +95,17 @@ export default function Navigation() {
     useEffect(() => {
         fetchUserInfo();
         fetchNotices();
+        SystemService.getPublicSystemBasic().then((result) => {
+            if (result?.code === 200 && result?.data) {
+                setSystemBasic({
+                    system_name: result.data.system_name || 'ClassEdu',
+                    system_url: result.data.system_url || '',
+                    system_logo_url: result.data.system_logo_url || '',
+                });
+            }
+        }).catch(() => {
+            // fallback to defaults
+        });
     }, []);
 
     const handleOpenNoticeList = () => {
@@ -155,12 +172,20 @@ export default function Navigation() {
                     <Link href="/">
                         <motion.div
                             whileHover={{scale: 1.05, rotate: 5}}
-                            className="flex items-center gap-3"
+                            className="flex items-center gap-3 max-w-[220px] pr-2"
                         >
-                            <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shadow-lg">
-                                <BrainCircuit className="text-white" size={22}/>
-                            </div>
-                            <span className="text-xl font-bold text-black">ClassAI</span>
+                            {systemBasic.system_logo_url ? (
+                                <img
+                                    src={systemBasic.system_logo_url}
+                                    alt="logo"
+                                    className="w-10 h-10 rounded-xl object-cover shadow-lg border border-gray-200 flex-shrink-0"
+                                />
+                            ) : (
+                                <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shadow-lg flex-shrink-0">
+                                    <BrainCircuit className="text-white" size={22}/>
+                                </div>
+                            )}
+                            <span className="text-xl font-bold text-black whitespace-nowrap truncate">{systemBasic.system_name || 'ClassEdu'}</span>
                         </motion.div>
                     </Link>
 

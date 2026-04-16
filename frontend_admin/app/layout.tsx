@@ -6,10 +6,11 @@ import { PermissionsProvider } from "@/lib/contexts/PermissionsContext";
 import { I18nProvider } from "@/contexts/I18nProvider";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ClientOnly } from "@/components/ClientOnly";
+import { SystemTitleSync } from "@/components/SystemTitleSync";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: "ClassAI Admin",
+  title: "ClassEdu Admin",
   description: "ClassAI Education Platform Admin",
 };
 
@@ -25,6 +26,7 @@ export default function RootLayout({
           <I18nProvider>
             <LanguageProvider>
               <PermissionsProvider>
+                <SystemTitleSync />
                 {children}
                 <NotificationContainer />
                 <ConfirmContainer />

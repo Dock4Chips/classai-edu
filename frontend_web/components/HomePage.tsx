@@ -33,7 +33,7 @@ import { Results } from '@/lib/api';
 import { ClassIndexBanner } from '@/lib/service/class_index_banner';
 import { apiClient } from '@/lib/api';
 import { DashboardMetricsData, DashboardService } from '@/lib/service/dashboard';
-import Cookies from 'js-cookie';
+import { PublicSystemBasic, SystemService } from '@/lib/service/system';
 
 interface DetectionResult {
   id: number;
@@ -117,6 +117,10 @@ export default function HomePage() {
   const [behaviorTypes, setBehaviorTypes] = useState<Array<{ name: string; color: string; count: number }>>([]);
   const [accuracy, setAccuracy] = useState<number | null>(null);
   const [overviewMetrics, setOverviewMetrics] = useState<OverviewMetricsData | null>(null);
+  const [systemBasic, setSystemBasic] = useState<PublicSystemBasic>({
+    system_name: 'ClassEdu',
+    system_url: '',
+  });
 
   const fetchData = () => {
     ClassIndexBanner.getBanners().then((results) => {
@@ -189,9 +193,23 @@ export default function HomePage() {
       });
   };
 
+  const loadSystemBasic = () => {
+    SystemService.getPublicSystemBasic().then((response) => {
+      if (response?.code === 200 && response?.data) {
+        setSystemBasic({
+          system_name: response.data.system_name || 'ClassEdu',
+          system_url: response.data.system_url || '',
+        });
+      }
+    }).catch(() => {
+      // fallback to defaults
+    });
+  };
+
   useEffect(() => {
     fetchData();
     loadMetrics();
+    loadSystemBasic();
   }, []);
 
   const checkAuthAndRedirect = (path: string) => {
@@ -258,7 +276,7 @@ export default function HomePage() {
                 transition={{ delay: 0.1, duration: 0.6 }}
                 className="text-5xl lg:text-6xl font-bold text-gray-900 leading-tight"
               >
-                Smart Classroom
+                {systemBasic.system_name || 'ClassEdu'}
                 <br />
                 <GradientText
                   className="text-5xl lg:text-6xl whitespace-nowrap"

@@ -8,7 +8,7 @@ from .sys_user_router import pro_sys_user_router
 from .sys_monitor_router import pro_sys_monitor_router
 from .sys_role_router import pro_sys_role_router
 from .sys_notice_router import pro_sys_notice_router, pub_sys_notice_router
-from .sys_config_router import pro_sys_config_router
+from .sys_config_router import pro_sys_config_router, pub_sys_config_router
 from .dashboard_show_router import pro_dashboard_router, pub_dashboard_router
 from .model_config_router import pro_model_config_router
 from .model_class_router import pro_model_class_router
@@ -29,6 +29,7 @@ routers = [
     pro_sys_role_router,
     pub_sys_notice_router,
     pro_sys_notice_router,
+    pub_sys_config_router,
     pro_sys_config_router,
     pro_dashboard_router,
     pub_dashboard_router,
