@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import re
 import string
 import uuid
 from random import choice
@@ -15,7 +16,11 @@ from master_tools.logger_tool import log
 from models.exceptions import ServiceException
 from models.result import Res
 from repository.identity_repository import get_user_by_username, create_user, get_user_by_user_id
+from repository.sys_notice_read_repository import create_notice_read
+from repository.sys_notice_repository import create_notice
 from repository.sys_user_online_repository import update_online_user_by_user_id
+from repository.sys_user_repository import get_users_by_role_id, get_all_active_users
+from services.system_config_service import SystemConfigService
 from services.strategies.identity.github_login import callback_github
 from services.strategies.identity.google_login import callback_google
 from services.strategies.identity.login_registry import LOGIN_STRATEGY_MAP
@@ -36,6 +41,45 @@ pro_identity_router = APIRouter(
 
 _image = ImageCaptcha()
 MAX_CAPTCHA_PER_MIN = 5
+
+
+def _is_password_complex(password: str) -> bool:
+    if not isinstance(password, str) or len(password) < 8:
+        return False
+    has_upper = re.search(r"[A-Z]", password) is not None
+    has_lower = re.search(r"[a-z]", password) is not None
+    has_digit = re.search(r"\d", password) is not None
+    has_special = re.search(r"[^A-Za-z0-9]", password) is not None
+    return has_upper and has_lower and has_digit and has_special
+
+
+def _create_targeted_notice(notice_title: str, notice_content: str, target_user_ids: set[int]):
+    """
+    复用现有 notice 体系:
+    1) 创建一条通知
+    2) 给目标用户创建未读记录(is_read=0)
+    3) 给非目标用户创建已读记录(is_read=1)，避免影响未读计数
+    """
+    if not target_user_ids:
+        return
+
+    notice_id = create_notice({
+        "notice_title": notice_title,
+        "notice_type": "1",
+        "notice_content": notice_content,
+        "status": "0",
+        "created_by": 1,
+        "updated_by": 1,
+    })
+
+    users = get_all_active_users()
+    for user in users:
+        uid = int(user["user_id"])
+        create_notice_read({
+            "notice_id": notice_id,
+            "user_id": uid,
+            "is_read": 0 if uid in target_user_ids else 1,
+        })
 
 @pub_identity_router.get('/captcha')
 async def get_captcha(request: Request):
@@ -75,18 +119,48 @@ async def identity_login(request: Request,
 
 @pub_identity_router.post('/register')
 async def identity_register(data: Dict[str, Any] = Body(...)):
+    allow_registration = SystemConfigService.get_bool('auth.allow_registration', True)
+    if not allow_registration:
+        raise ServiceException(msg="当前系统已关闭注册")
+
+    password = data.get('password')
+    if not password:
+        raise ServiceException(msg="密码不能为空")
+    complexity_enabled = SystemConfigService.get_bool('security.password.complexity', True)
+    if complexity_enabled and not _is_password_complex(password):
+        raise ServiceException(msg="密码需至少8位，包含大小写字母、数字和特殊字符")
+
     existing_user = get_user_by_username(data.get('user_name'))
     if existing_user:
         raise ServiceException(msg="用户已存在")
     new_user = create_user({
         'user_name': data.get('user_name'),
-        'password': pwd_context.hash(data.get('password')),
+        'password': pwd_context.hash(password),
         'role_id': 2  # 默认角色
     })
 
     user_id = new_user['user_id']
     role_id = new_user['role_id']
     user_name = new_user['user_name']
+
+    # 给新用户发送欢迎通知
+    _create_targeted_notice(
+        notice_title="欢迎加入 ClassEdu",
+        notice_content=f"欢迎你，{user_name}。账号已注册成功，祝你使用愉快！",
+        target_user_ids={int(user_id)}
+    )
+
+    # 给管理员(role_id=1)和新用户发送“新用户注册”通知
+    admin_users = get_users_by_role_id(1)
+    target_ids = {int(user_id)}
+    for admin in admin_users:
+        target_ids.add(int(admin["user_id"]))
+    _create_targeted_notice(
+        notice_title="新用户注册通知",
+        notice_content=f"新用户 {user_name} 已完成注册。",
+        target_user_ids=target_ids
+    )
+
     token = Authorization.create_token(user_id=user_id, role_id=role_id, user_name=user_name)
 
     return Res.ok({

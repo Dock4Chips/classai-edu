@@ -1,33 +1,162 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Settings, Save, Sparkles, Shield, Bell, Globe, Lock, Mail, ToggleLeft, ToggleRight } from 'lucide-react';
-import { useState } from 'react';
+import { Settings, Save, Sparkles, Shield, Bell, Globe, Lock, Mail, Loader2 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { usePermissions } from '@/lib/contexts/PermissionsContext';
 import {useTranslation} from 'react-i18next';
+import { ConfigService } from '@/lib/service/config';
+import { notification } from '@/utils/notification';
+
+const defaultSettings = {
+  systemName: 'ClassAI Edu',
+  systemUrl: 'https://classai.edu',
+  passwordComplexity: true,
+  twoFactorAuth: false,
+  emailNotifications: true,
+  loginAlerts: true,
+  maintenanceMode: false,
+  allowRegistration: true,
+};
+
+type SettingsState = typeof defaultSettings;
+type SettingsKey = keyof SettingsState;
+
+const SETTINGS_CONFIG_META: Record<SettingsKey, {
+  configKey: string;
+  configName: string;
+  configType: 'string' | 'boolean';
+  groupName: string;
+}> = {
+  systemName: {
+    configKey: 'system.name',
+    configName: '系统名称',
+    configType: 'string',
+    groupName: 'system',
+  },
+  systemUrl: {
+    configKey: 'system.url',
+    configName: '系统网址',
+    configType: 'string',
+    groupName: 'system',
+  },
+  passwordComplexity: {
+    configKey: 'security.password.complexity',
+    configName: '密码复杂度',
+    configType: 'boolean',
+    groupName: 'security',
+  },
+  twoFactorAuth: {
+    configKey: 'security.two_factor_auth',
+    configName: '双重认证',
+    configType: 'boolean',
+    groupName: 'security',
+  },
+  emailNotifications: {
+    configKey: 'notify.email.enabled',
+    configName: '邮件通知',
+    configType: 'boolean',
+    groupName: 'notify',
+  },
+  loginAlerts: {
+    configKey: 'notify.login_alert.enabled',
+    configName: '登录警报',
+    configType: 'boolean',
+    groupName: 'notify',
+  },
+  maintenanceMode: {
+    configKey: 'system.maintenance_mode',
+    configName: '维护模式',
+    configType: 'boolean',
+    groupName: 'system',
+  },
+  allowRegistration: {
+    configKey: 'auth.allow_registration',
+    configName: '允许注册',
+    configType: 'boolean',
+    groupName: 'auth',
+  },
+};
 
 export default function SettingsPage() {
   const {t} = useTranslation();
   const { hasPermission } = usePermissions();
   const canEdit = hasPermission('settings:edit');
 
-  const [settings, setSettings] = useState({
-    systemName: 'ClassAI Edu',
-    systemUrl: 'https://classai.edu',
-    passwordComplexity: true,
-    twoFactorAuth: false,
-    emailNotifications: true,
-    loginAlerts: true,
-    maintenanceMode: false,
-    allowRegistration: true,
-  });
+  const [settings, setSettings] = useState<SettingsState>(defaultSettings);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const toggleSetting = (key: keyof typeof settings) => {
+  useEffect(() => {
+    setLoading(true);
+    const keys = Object.keys(SETTINGS_CONFIG_META) as SettingsKey[];
+    Promise.all(keys.map((key) => {
+      const meta = SETTINGS_CONFIG_META[key];
+      return ConfigService.getConfigByKey(meta.configKey)
+          .then((res) => ({ key, res }))
+          .catch(() => ({ key, res: null }));
+    })).then((results) => {
+      const merged: SettingsState = { ...defaultSettings };
+      results.forEach(({ key, res }) => {
+        if (!res || res.code !== 200 || !res.data) {
+          return;
+        }
+        const rawValue = res.data.config_value;
+        if (SETTINGS_CONFIG_META[key].configType === 'boolean') {
+          merged[key] = String(rawValue).toLowerCase() === 'true';
+          return;
+        }
+        merged[key] = String(rawValue ?? '');
+      });
+      setSettings(merged);
+    }).finally(() => {
+      setLoading(false);
+    });
+  }, []);
+
+  const toggleSetting = (key: SettingsKey) => {
+    if (!canEdit || saving) return;
     setSettings(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const updateSetting = (key: keyof typeof settings, value: string) => {
+  const updateSetting = (key: SettingsKey, value: string) => {
+    if (!canEdit || saving) return;
     setSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const saveSettings = () => {
+    if (!canEdit || saving) return;
+    setSaving(true);
+    const keys = Object.keys(SETTINGS_CONFIG_META) as SettingsKey[];
+    Promise.all(keys.map((key) => {
+      const meta = SETTINGS_CONFIG_META[key];
+      const currentValue = settings[key];
+      const configValue = meta.configType === 'boolean'
+          ? String(Boolean(currentValue))
+          : String(currentValue ?? '');
+
+      return ConfigService.getConfigByKey(meta.configKey).then((res) => {
+        if (res.code === 200 && res.data?.config_id) {
+          return ConfigService.updateConfig(res.data.config_id, {
+            config_value: configValue
+          });
+        }
+        return ConfigService.createConfig({
+          config_name: meta.configName,
+          config_key: meta.configKey,
+          config_value: configValue,
+          config_type: meta.configType,
+          group_name: meta.groupName,
+          is_system: 0,
+        });
+      });
+    })).then(() => {
+      notification.success(t('common.updatedSuccessfully'));
+    }).catch((error) => {
+      notification.error(error?.message);
+    }).finally(() => {
+      setSaving(false);
+    });
   };
 
   return (
@@ -74,7 +203,7 @@ export default function SettingsPage() {
                 type="text"
                 value={settings.systemName}
                 onChange={(e) => canEdit && updateSetting('systemName', e.target.value)}
-                disabled={!canEdit}
+                disabled={!canEdit || saving || loading}
                 readOnly={!canEdit}
                 className={`w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-black focus:bg-white focus:ring-2 focus:ring-black/5 transition-all outline-none text-sm ${!canEdit ? 'cursor-not-allowed opacity-60' : ''}`}
               />
@@ -85,7 +214,7 @@ export default function SettingsPage() {
                 type="url"
                 value={settings.systemUrl}
                 onChange={(e) => canEdit && updateSetting('systemUrl', e.target.value)}
-                disabled={!canEdit}
+                disabled={!canEdit || saving || loading}
                 readOnly={!canEdit}
                 className={`w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-black focus:bg-white focus:ring-2 focus:ring-black/5 transition-all outline-none text-sm ${!canEdit ? 'cursor-not-allowed opacity-60' : ''}`}
               />
@@ -125,6 +254,7 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => toggleSetting('passwordComplexity')}
+                disabled={!canEdit || saving || loading}
                 className="relative w-14 h-8 bg-gray-200 rounded-full transition-colors duration-200"
                 style={{
                   backgroundColor: settings.passwordComplexity ? '#000' : '#e5e7eb'
@@ -150,6 +280,7 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => toggleSetting('twoFactorAuth')}
+                disabled={!canEdit || saving || loading}
                 className="relative w-14 h-8 bg-gray-200 rounded-full transition-colors duration-200"
                 style={{
                   backgroundColor: settings.twoFactorAuth ? '#000' : '#e5e7eb'
@@ -197,6 +328,7 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => toggleSetting('emailNotifications')}
+                disabled={!canEdit || saving || loading}
                 className="relative w-14 h-8 bg-gray-200 rounded-full transition-colors duration-200"
                 style={{
                   backgroundColor: settings.emailNotifications ? '#000' : '#e5e7eb'
@@ -222,6 +354,7 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => toggleSetting('loginAlerts')}
+                disabled={!canEdit || saving || loading}
                 className="relative w-14 h-8 bg-gray-200 rounded-full transition-colors duration-200"
                 style={{
                   backgroundColor: settings.loginAlerts ? '#000' : '#e5e7eb'
@@ -269,6 +402,7 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => toggleSetting('maintenanceMode')}
+                disabled={!canEdit || saving || loading}
                 className="relative w-14 h-8 bg-gray-200 rounded-full transition-colors duration-200"
                 style={{
                   backgroundColor: settings.maintenanceMode ? '#000' : '#e5e7eb'
@@ -294,6 +428,7 @@ export default function SettingsPage() {
               </div>
               <button
                 onClick={() => toggleSetting('allowRegistration')}
+                disabled={!canEdit || saving || loading}
                 className="relative w-14 h-8 bg-gray-200 rounded-full transition-colors duration-200"
                 style={{
                   backgroundColor: settings.allowRegistration ? '#000' : '#e5e7eb'
@@ -321,9 +456,11 @@ export default function SettingsPage() {
           <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
+            onClick={saveSettings}
+            disabled={saving || loading}
             className="px-6 py-3 bg-black text-white rounded-xl shadow-lg hover:shadow-xl flex items-center gap-2 font-semibold transition-all"
           >
-            <Save className="w-4 h-4" />
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             <span>{t('settings.saveChanges')}</span>
           </motion.button>
         </motion.div>

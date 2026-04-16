@@ -1,10 +1,12 @@
 from fastapi import APIRouter, Depends, Query, UploadFile, File, Body
+import re
 from passlib.context import CryptContext
 from auth.authorization import Authorization
 from models.exceptions import ServiceException
 from models.result import Res
 from repository.sys_user_repository import get_user_by_id, page_list_user, update_user, delete_user, create_user, \
     get_user_by_username
+from services.system_config_service import SystemConfigService
 from schema.sys_user_schema import UserListQuerySchema, UserCreateSchema, UserUpdateSchema, UserPasswordUpdateSchema
 from tools.file_tool import upload_file_to_minio
 from tools.security_tool import SecurityTool
@@ -14,6 +16,16 @@ pro_sys_user_router = APIRouter(
     dependencies=[Depends(Authorization.val_token)]
 )
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+
+def _is_password_complex(password: str) -> bool:
+    if not isinstance(password, str) or len(password) < 8:
+        return False
+    has_upper = re.search(r"[A-Z]", password) is not None
+    has_lower = re.search(r"[a-z]", password) is not None
+    has_digit = re.search(r"\d", password) is not None
+    has_special = re.search(r"[^A-Za-z0-9]", password) is not None
+    return has_upper and has_lower and has_digit and has_special
 
 
 @pro_sys_user_router.get('/list')
@@ -89,6 +101,9 @@ async def update_password(data: UserPasswordUpdateSchema = Body(...)):
         raise ServiceException(msg="用户不存在")
     if data.new_password != data.confirm_password:
         raise ServiceException(msg="两次输入的新密码不一致")
+    complexity_enabled = SystemConfigService.get_bool('security.password.complexity', True)
+    if complexity_enabled and not _is_password_complex(data.new_password):
+        raise ServiceException(msg="新密码需至少8位，包含大小写字母、数字和特殊字符")
     if not pwd_context.verify(data.old_password, user_list[0]["password"]):
         raise ServiceException(msg="原密码错误")
     if data.new_password == data.old_password:
@@ -100,4 +115,3 @@ async def update_password(data: UserPasswordUpdateSchema = Body(...)):
 if __name__ == '__main__':
     code =  pwd_context.hash('123456')
     print(code)
-

@@ -16,6 +16,14 @@ def get_user_by_username(user_name: str):
     return db.query('SELECT * FROM sys_user WHERE user_name = :user_name AND is_deleted = 0',
                     {'user_name': user_name})
 
+def get_users_by_role_id(role_id: int):
+    return db.query('SELECT * FROM sys_user WHERE role_id = :role_id AND is_deleted = 0',
+                    {'role_id': role_id})
+
+
+def get_all_active_users():
+    return db.query('SELECT * FROM sys_user WHERE is_deleted = 0')
+
 
 def page_list_user(
         page: int = 1,

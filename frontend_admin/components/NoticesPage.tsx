@@ -380,7 +380,7 @@ export default function NoticesPage() {
               disabled={loading}
               className="bg-black text-white px-5 py-2.5 rounded-xl hover:bg-gray-800 transition-all font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? t('common.loading') : (isEditMode ? t('common.updated') : t('common.created'))}
+              {loading ? t('common.loading') : (isEditMode ? t('common.update') : t('common.create'))}
             </button>
           </div>
         </div>

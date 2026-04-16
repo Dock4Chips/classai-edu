@@ -22,6 +22,8 @@
     "success": "成功",
     "error": "错误",
     "warning": "警告",
+    "create": "创建",
+    "update": "更新",
     "created": "创建时间",
     "updated": "更新时间",
     "deleted": "删除时间",
