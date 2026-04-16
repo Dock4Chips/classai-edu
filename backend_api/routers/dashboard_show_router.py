@@ -1,4 +1,6 @@
 import json
+import os
+import asyncio
 from pathlib import Path
 from typing import Any
 
@@ -14,6 +16,7 @@ from config import (
 from models.exceptions import ServiceException
 from models.result import Res
 from repository.dashboard_repository import get_admin_dashboard_stats
+from yolo_edu.scripts.export_yolo_metrics import export_all_metrics
 
 pro_dashboard_router = APIRouter(
     prefix='/api/dashboard',
@@ -28,6 +31,7 @@ METRICS_FILE_MAP = {
     "results": "results.json",
     "box-curves": "box_curves.json",
     "confusion-matrix": "confusion_matrix.json",
+    "overview-metrics": "overview_metrics.json",
 }
 METRICS_CACHE_TTL_SECONDS = DASHBOARD_METRICS_CACHE_TTL_SECONDS
 METRICS_REDIS_PREFIX = DASHBOARD_METRICS_REDIS_PREFIX
@@ -104,6 +108,22 @@ async def admin_dashboard_stats():
     })
 
 
+@pro_dashboard_router.post('/web/metrics/refresh')
+async def refresh_web_metrics():
+    script_dir = Path(__file__).resolve().parents[2] / "yolo_edu" / "scripts"
+    old_cwd = os.getcwd()
+    try:
+        os.chdir(script_dir)
+        await asyncio.to_thread(export_all_metrics)
+        for key in redis_client.scan_iter(f"{METRICS_REDIS_PREFIX}:*"):
+            redis_client.delete(key)
+        return Res.ok("指标文件刷新成功")
+    except Exception as e:
+        raise ServiceException(msg=f"指标文件刷新失败: {e}")
+    finally:
+        os.chdir(old_cwd)
+
+
 @pub_dashboard_router.get('/web/metrics/{file_key}')
 async def get_web_metrics(file_key: str, request: Request):
     # 单文件：Redis 缓存 + ETag，降低高并发时磁盘/带宽开销
@@ -137,3 +157,4 @@ async def get_all_web_metrics(request: Request):
         data = {key: _load_metrics_json(key) for key in METRICS_FILE_MAP}
         _redis_set_json(cache_key, data)
     return JSONResponse(content=Res.ok(data), headers=headers)
+

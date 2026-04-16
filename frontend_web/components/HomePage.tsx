@@ -23,6 +23,7 @@ import {
   Eye,
   BrainCircuit,
 } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import { SpotlightCard } from '@/components/ui/spotlight-card';
 import { AnimatedContent } from '@/components/ui/animated-content';
 import { GradientText } from '@/components/ui/gradient-text';
@@ -44,6 +45,7 @@ interface DetectionResult {
 
 interface ResultsData {
   epoch: number[];
+  time?: number[];
   'metrics/precision(B)': number[];
   'metrics/recall(B)': number[];
   'metrics/mAP50(B)': number[];
@@ -51,6 +53,26 @@ interface ResultsData {
 
 interface ConfusionMatrixData {
   normalized: number[][];
+}
+
+interface HomeStat {
+  icon: LucideIcon;
+  value: string;
+  label: string;
+}
+
+interface OverviewMetricsData {
+  preprocess_ms?: number;
+  inference_ms?: number;
+  postprocess_ms?: number;
+  latency_ms?: number;
+  fps?: number;
+  precision?: number;
+  recall?: number;
+  map50?: number;
+  map50_95?: number;
+  f1_best?: number;
+  epochs?: number;
 }
 
 // Class names matching YOLO dataset
@@ -72,16 +94,6 @@ const CLASS_COLORS = [
   'bg-violet-500'
 ];
 
-// Behavior types (will be updated from confusion matrix data)
-const defaultBehaviorTypes = [
-  { name: 'Learning to Copy', color: 'bg-emerald-500', count: 79 },
-  { name: 'Looking Around', color: 'bg-amber-500', count: 74 },
-  { name: 'Sharing Answers', color: 'bg-rose-500', count: 92 },
-  { name: 'Sleeping', color: 'bg-blue-500', count: 98 },
-  { name: 'Staff', color: 'bg-gray-500', count: 51 },
-  { name: 'Using Mobile', color: 'bg-violet-500', count: 74 },
-];
-
 export default function HomePage() {
   const router = useRouter();
   const [detectionResults, setDetectionResults] = useState<DetectionResult[]>([
@@ -90,14 +102,10 @@ export default function HomePage() {
     { id: 3, status: 'loading', num_boxes: 0 },
   ]);
   const [currentResultIndex, setCurrentResultIndex] = useState(0);
-  const [stats, setStats] = useState([
-    { icon: Target, value: '79.6%', label: 'Accuracy' },
-    { icon: Zap, value: '<50ms', label: 'Latency' },
-    { icon: BarChart3, value: '6', label: 'Behaviors' },
-    { icon: TrendingUp, value: '0', label: 'Epochs' },
-  ]);
-  const [behaviorTypes, setBehaviorTypes] = useState(defaultBehaviorTypes);
-  const [accuracy, setAccuracy] = useState(79.6);
+  const [stats, setStats] = useState<HomeStat[]>([]);
+  const [behaviorTypes, setBehaviorTypes] = useState<Array<{ name: string; color: string; count: number }>>([]);
+  const [accuracy, setAccuracy] = useState<number | null>(null);
+  const [overviewMetrics, setOverviewMetrics] = useState<OverviewMetricsData | null>(null);
 
   const fetchData = () => {
     ClassIndexBanner.getBanners().then((results) => {
@@ -127,21 +135,33 @@ export default function HomePage() {
         const metricsData = response.data as DashboardMetricsData;
         const resultsData = metricsData.results as ResultsData | undefined;
         const matrixData = metricsData['confusion-matrix'] as ConfusionMatrixData | undefined;
+        const overviewData = metricsData['overview-metrics'] as OverviewMetricsData | undefined;
+        setOverviewMetrics(overviewData || null);
 
         if (resultsData) {
           const finalPrecision = resultsData['metrics/precision(B)'][resultsData['metrics/precision(B)'].length - 1];
           const finalRecall = resultsData['metrics/recall(B)'][resultsData['metrics/recall(B)'].length - 1];
           const epochs = resultsData.epoch?.length || 0;
+          const latestTime = resultsData.time?.[resultsData.time.length - 1];
+          const latencyText = typeof latestTime === 'number' && Number.isFinite(latestTime)
+            ? `${Math.round(latestTime * 1000)}ms`
+            : null;
+          const behaviorCount = matrixData?.normalized ? Math.min(matrixData.normalized.length, CLASS_NAMES.length) : 0;
 
           const avgAccuracy = ((finalPrecision + finalRecall) / 2 * 100).toFixed(1);
           setAccuracy(parseFloat(avgAccuracy));
 
-          setStats([
+          const nextStats: HomeStat[] = [
             { icon: Target, value: `${avgAccuracy}%`, label: 'Accuracy' },
-            { icon: Zap, value: '<50ms', label: 'Latency' },
-            { icon: BarChart3, value: '6', label: 'Behaviors' },
-            { icon: TrendingUp, value: `${epochs}`, label: 'Epochs' },
-          ]);
+          ];
+          if (latencyText) {
+            nextStats.push({ icon: Zap, value: latencyText, label: 'Latency' });
+          }
+          if (behaviorCount > 0) {
+            nextStats.push({ icon: BarChart3, value: `${behaviorCount}`, label: 'Behaviors' });
+          }
+          nextStats.push({ icon: TrendingUp, value: `${epochs}`, label: 'Epochs' });
+          setStats(nextStats);
         }
 
         if (matrixData && matrixData.normalized) {
@@ -245,8 +265,9 @@ export default function HomePage() {
                 transition={{ delay: 0.2, duration: 0.6 }}
                 className="text-lg text-gray-600 max-w-lg leading-relaxed"
               >
-                Real-time AI analysis of classroom behaviors with {accuracy}% accuracy.
-                Support for images, videos, live cameras, and drone feeds.
+                {accuracy !== null
+                  ? `Real-time AI analysis of classroom behaviors with ${accuracy}% accuracy. Support for images, videos, live cameras, and drone feeds.`
+                  : 'Real-time AI analysis of classroom behaviors. Support for images, videos, live cameras, and drone feeds.'}
               </motion.p>
 
               <motion.div
@@ -419,15 +440,21 @@ export default function HomePage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Detection Frequency</span>
-                    <span className="font-semibold text-gray-900">30 FPS</span>
+                    <span className="font-semibold text-gray-900">
+                      {typeof overviewMetrics?.fps === 'number' ? `${overviewMetrics.fps.toFixed(1)} FPS` : '--'}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Processing Time</span>
-                    <span className="font-semibold text-gray-900">&lt;50ms</span>
+                    <span className="font-semibold text-gray-900">
+                      {typeof overviewMetrics?.latency_ms === 'number' ? `${overviewMetrics.latency_ms.toFixed(1)}ms` : '--'}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Concurrent Students</span>
-                    <span className="font-semibold text-gray-900">50+</span>
+                    <span className="text-gray-600">Inference Time</span>
+                    <span className="font-semibold text-gray-900">
+                      {typeof overviewMetrics?.inference_ms === 'number' ? `${overviewMetrics.inference_ms.toFixed(1)}ms` : '--'}
+                    </span>
                   </div>
                 </div>
               </motion.div>
@@ -449,16 +476,22 @@ export default function HomePage() {
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Data Retention</span>
-                    <span className="font-semibold text-gray-900">90 Days</span>
+                    <span className="text-gray-600">Precision</span>
+                    <span className="font-semibold text-gray-900">
+                      {typeof overviewMetrics?.precision === 'number' ? `${(overviewMetrics.precision * 100).toFixed(1)}%` : '--'}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Export Options</span>
-                    <span className="font-semibold text-gray-900">CSV, JSON, PDF</span>
+                    <span className="text-gray-600">Recall</span>
+                    <span className="font-semibold text-gray-900">
+                      {typeof overviewMetrics?.recall === 'number' ? `${(overviewMetrics.recall * 100).toFixed(1)}%` : '--'}
+                    </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Report Generation</span>
-                    <span className="font-semibold text-gray-900">Automated</span>
+                    <span className="text-gray-600">mAP@0.5:0.95</span>
+                    <span className="font-semibold text-gray-900">
+                      {typeof overviewMetrics?.map50_95 === 'number' ? `${(overviewMetrics.map50_95 * 100).toFixed(1)}%` : '--'}
+                    </span>
                   </div>
                 </div>
               </motion.div>
@@ -569,7 +602,7 @@ export default function HomePage() {
               { icon: Shield, title: 'Privacy First', desc: 'Your data is encrypted and secure' },
               { icon: Clock, title: 'Time Saving', desc: 'Automated monitoring saves hours' },
               { icon: BarChart3, title: 'Detailed Reports', desc: 'Comprehensive behavior analytics' },
-              { icon: Sparkles, title: 'High Accuracy', desc: `${accuracy}% detection accuracy rate` },
+              { icon: Sparkles, title: 'High Accuracy', desc: accuracy !== null ? `${accuracy}% detection accuracy rate` : 'Detection accuracy based on model metrics' },
               { icon: CheckCircle2, title: 'Easy to Use', desc: 'Simple interface, powerful results' },
             ].map((feature, i) => (
               <AnimatedContent key={i} delay={i * 0.06}>
