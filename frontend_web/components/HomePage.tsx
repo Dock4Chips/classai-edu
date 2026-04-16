@@ -75,6 +75,17 @@ interface OverviewMetricsData {
   epochs?: number;
 }
 
+function formatDurationCompact(ms: number): string {
+  if (!Number.isFinite(ms) || ms < 0) return '--';
+  if (ms < 1000) return `${Math.round(ms)}ms`;
+  const seconds = ms / 1000;
+  if (seconds < 60) return `${seconds.toFixed(1)}s`;
+  const minutes = seconds / 60;
+  if (minutes < 60) return `${minutes.toFixed(1)}m`;
+  const hours = minutes / 60;
+  return `${hours.toFixed(1)}h`;
+}
+
 // Class names matching YOLO dataset
 const CLASS_NAMES = [
   'Learning to Copy',
@@ -142,9 +153,8 @@ export default function HomePage() {
           const finalPrecision = resultsData['metrics/precision(B)'][resultsData['metrics/precision(B)'].length - 1];
           const finalRecall = resultsData['metrics/recall(B)'][resultsData['metrics/recall(B)'].length - 1];
           const epochs = resultsData.epoch?.length || 0;
-          const latestTime = resultsData.time?.[resultsData.time.length - 1];
-          const latencyText = typeof latestTime === 'number' && Number.isFinite(latestTime)
-            ? `${Math.round(latestTime * 1000)}ms`
+          const latencyText = typeof overviewData?.latency_ms === 'number' && Number.isFinite(overviewData.latency_ms)
+            ? formatDurationCompact(overviewData.latency_ms)
             : null;
           const behaviorCount = matrixData?.normalized ? Math.min(matrixData.normalized.length, CLASS_NAMES.length) : 0;
 
@@ -199,7 +209,7 @@ export default function HomePage() {
     {
       icon: ImageIcon,
       title: 'Image Upload',
-      description: 'Analyze classroom photos with instant AI insights',
+      description: 'Analyze classroom photos with instant YOLO insights',
     },
     {
       icon: Video,
@@ -238,7 +248,7 @@ export default function HomePage() {
               >
                 <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 backdrop-blur-sm border border-gray-200 shadow-sm">
                   <Sparkles className="text-purple-500" size={18} />
-                  <span className="text-sm text-gray-700 font-medium">AI Classroom Monitoring</span>
+                  <span className="text-sm text-gray-700 font-medium">YOLO Classroom Monitoring</span>
                 </span>
               </motion.div>
 
@@ -266,8 +276,8 @@ export default function HomePage() {
                 className="text-lg text-gray-600 max-w-lg leading-relaxed"
               >
                 {accuracy !== null
-                  ? `Real-time AI analysis of classroom behaviors with ${accuracy}% accuracy. Support for images, videos, live cameras, and drone feeds.`
-                  : 'Real-time AI analysis of classroom behaviors. Support for images, videos, live cameras, and drone feeds.'}
+                  ? `Real-time YOLO-based analysis of classroom behaviors with ${accuracy}% accuracy. Support for images, videos, live cameras, and drone feeds.`
+                  : 'Real-time YOLO-based analysis of classroom behaviors. Support for images, videos, live cameras, and drone feeds.'}
               </motion.p>
 
               <motion.div
@@ -447,13 +457,13 @@ export default function HomePage() {
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Processing Time</span>
                     <span className="font-semibold text-gray-900">
-                      {typeof overviewMetrics?.latency_ms === 'number' ? `${overviewMetrics.latency_ms.toFixed(1)}ms` : '--'}
+                      {typeof overviewMetrics?.latency_ms === 'number' ? formatDurationCompact(overviewMetrics.latency_ms) : '--'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-gray-600">Inference Time</span>
                     <span className="font-semibold text-gray-900">
-                      {typeof overviewMetrics?.inference_ms === 'number' ? `${overviewMetrics.inference_ms.toFixed(1)}ms` : '--'}
+                      {typeof overviewMetrics?.inference_ms === 'number' ? formatDurationCompact(overviewMetrics.inference_ms) : '--'}
                     </span>
                   </div>
                 </div>
@@ -532,7 +542,7 @@ export default function HomePage() {
         <div className="max-w-5xl mx-auto">
           <AnimatedContent className="text-center mb-12">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
-              Powered by Advanced AI
+              Powered by Advanced YOLO
             </h2>
             <p className="text-gray-600">State-of-the-art computer vision technology</p>
           </AnimatedContent>
@@ -598,7 +608,7 @@ export default function HomePage() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { icon: Eye, title: 'Real-time Detection', desc: 'Instant AI analysis as it happens' },
+              { icon: Eye, title: 'Real-time Detection', desc: 'Instant YOLO analysis as it happens' },
               { icon: Shield, title: 'Privacy First', desc: 'Your data is encrypted and secure' },
               { icon: Clock, title: 'Time Saving', desc: 'Automated monitoring saves hours' },
               { icon: BarChart3, title: 'Detailed Reports', desc: 'Comprehensive behavior analytics' },
@@ -637,7 +647,7 @@ export default function HomePage() {
               Ready to transform your classroom?
             </h2>
             <p className="text-lg text-gray-400 mb-8">
-              Start detecting classroom behaviors with AI today
+              Start detecting classroom behaviors with YOLO today
             </p>
             <button
               onClick={() => checkAuthAndRedirect('/detection')}
