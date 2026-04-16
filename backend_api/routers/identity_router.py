@@ -142,23 +142,25 @@ async def identity_register(data: Dict[str, Any] = Body(...)):
     role_id = new_user['role_id']
     user_name = new_user['user_name']
 
-    # 给新用户发送欢迎通知
-    _create_targeted_notice(
-        notice_title="欢迎加入 ClassEdu",
-        notice_content=f"欢迎你，{user_name}。账号已注册成功，祝你使用愉快！",
-        target_user_ids={int(user_id)}
-    )
+    system_notice_enabled = SystemConfigService.get_bool('notify.email.enabled', True)
+    if system_notice_enabled:
+        # 给新用户发送欢迎通知
+        _create_targeted_notice(
+            notice_title="欢迎加入 ClassEdu",
+            notice_content=f"欢迎你，{user_name}。账号已注册成功，祝你使用愉快！",
+            target_user_ids={int(user_id)}
+        )
 
-    # 给管理员(role_id=1)和新用户发送“新用户注册”通知
-    admin_users = get_users_by_role_id(1)
-    target_ids = {int(user_id)}
-    for admin in admin_users:
-        target_ids.add(int(admin["user_id"]))
-    _create_targeted_notice(
-        notice_title="新用户注册通知",
-        notice_content=f"新用户 {user_name} 已完成注册。",
-        target_user_ids=target_ids
-    )
+        # 给管理员(role_id=1)和新用户发送“新用户注册”通知
+        admin_users = get_users_by_role_id(1)
+        target_ids = {int(user_id)}
+        for admin in admin_users:
+            target_ids.add(int(admin["user_id"]))
+        _create_targeted_notice(
+            notice_title="新用户注册通知",
+            notice_content=f"新用户 {user_name} 已完成注册。",
+            target_user_ids=target_ids
+        )
 
     token = Authorization.create_token(user_id=user_id, role_id=role_id, user_name=user_name)
 

@@ -46,6 +46,7 @@ export default function Navigation() {
     const [pageSize] = useState(10);
     const [total, setTotal] = useState(0);
     const [loadingNotices, setLoadingNotices] = useState(false);
+    const [systemNoticeEnabled, setSystemNoticeEnabled] = useState(true);
     const [systemBasic, setSystemBasic] = useState<PublicSystemBasic>({
         system_name: 'ClassEdu',
         system_url: '',
@@ -63,6 +64,11 @@ export default function Navigation() {
     };
 
     const fetchNotices = () => {
+        if (!systemNoticeEnabled) {
+            setNotices([]);
+            setUnreadCount(0);
+            return;
+        }
         NoticeService.getNoticeListWithReadStatus({ page: 1, page_size: 10 }).then((result) => {
             if (result?.data) {
                 const noticeList = result.data.records || result.data || [];
@@ -94,7 +100,18 @@ export default function Navigation() {
 
     useEffect(() => {
         fetchUserInfo();
-        fetchNotices();
+        NoticeService.getNoticeEnabled().then((result) => {
+            const enabled = Boolean(result?.data?.enabled);
+            setSystemNoticeEnabled(enabled);
+            if (enabled) {
+                fetchNotices();
+            } else {
+                setNotices([]);
+                setUnreadCount(0);
+            }
+        }).catch(() => {
+            fetchNotices();
+        });
         SystemService.getPublicSystemBasic().then((result) => {
             if (result?.code === 200 && result?.data) {
                 setSystemBasic({
@@ -240,8 +257,15 @@ export default function Navigation() {
                                 </motion.button>
                             }
                             align="right"
-                            items={[
-                                ...notices.slice(0, 5).map(notice => ({
+                                items={[
+                                ...(!systemNoticeEnabled ? [{
+                                    key: 'notice_disabled',
+                                    content: (
+                                        <div className="px-3 py-2.5 text-sm text-gray-500">
+                                            {t('navigation.notice.disabledTip')}
+                                        </div>
+                                    ),
+                                }] : notices.slice(0, 5).map(notice => ({
                                     key: notice.notice_id,
                                     content: (
                                         <div
@@ -262,17 +286,17 @@ export default function Navigation() {
                                             </div>
                                         </div>
                                     ),
-                                })),
-                                ...(notices.length > 0 ? [{
+                                }))),
+                                ...(systemNoticeEnabled && notices.length > 0 ? [{
                                     key: 'divider',
                                     divider: true,
                                 }] : []),
-                                {
+                                ...(systemNoticeEnabled ? [{
                                     key: 'view_all',
                                     label: t('navigation.notice.viewAllNotices'),
                                     icon: <FileText className="w-4 h-4"/>,
                                     onClick: handleOpenNoticeList,
-                                },
+                                }] : []),
                             ]}
                         />
 

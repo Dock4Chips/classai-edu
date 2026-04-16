@@ -78,11 +78,23 @@ export function AdminLayout({children}: AdminLayoutProps) {
     const [pageSize] = useState(10);
     const [total, setTotal] = useState(0);
     const [loadingNotices, setLoadingNotices] = useState(false);
+    const [systemNoticeEnabled, setSystemNoticeEnabled] = useState(true);
 
 
     useEffect(() => {
         fetchUserInfo();
-        fetchNotices();
+        NoticeService.getNoticeEnabled().then((res) => {
+            const enabled = Boolean(res?.data?.enabled);
+            setSystemNoticeEnabled(enabled);
+            if (enabled) {
+                fetchNotices();
+            } else {
+                setNotices([]);
+                setUnreadCount(0);
+            }
+        }).catch(() => {
+            fetchNotices();
+        });
     }, []);
 
 
@@ -101,6 +113,11 @@ export function AdminLayout({children}: AdminLayoutProps) {
 
 
     const fetchNotices = () => {
+        if (!systemNoticeEnabled) {
+            setNotices([]);
+            setUnreadCount(0);
+            return;
+        }
         NoticeService.getNoticeListWithReadStatus({
             page: 1,
             page_size: 10
@@ -335,7 +352,14 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                     </motion.button>
                                 }
                                 items={[
-                                    ...notices.slice(0, 5).map(notice => ({
+                                    ...(!systemNoticeEnabled ? [{
+                                        key: 'notice_disabled',
+                                        content: (
+                                            <div className="px-3 py-2.5 text-sm text-gray-500">
+                                                {t('adminLayout.noticeDisabledTip')}
+                                            </div>
+                                        ),
+                                    }] : notices.slice(0, 5).map(notice => ({
                                         key: notice.notice_id,
                                         content: (
                                             <div
@@ -357,17 +381,17 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                                 </div>
                                             </div>
                                         ),
-                                    })),
-                                    ...(notices.length > 0 ? [{
+                                    }))),
+                                    ...(systemNoticeEnabled && notices.length > 0 ? [{
                                         key: 'divider',
                                         divider: true,
                                     }] : []),
-                                    {
+                                    ...(systemNoticeEnabled ? [{
                                         key: 'view_all',
                                         label: t('adminLayout.viewAllNotices'),
                                         icon: <FileText className="w-4 h-4"/>,
                                         onClick: handleOpenNoticeList,
-                                    },
+                                    }] : []),
                                 ]}
                             />
 

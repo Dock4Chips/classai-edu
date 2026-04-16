@@ -20,6 +20,7 @@ from repository.sys_notice_read_repository import (
     update_notice_read,
     get_notices_with_read_status,
 )
+from services.system_config_service import SystemConfigService
 
 pro_sys_notice_router = APIRouter(
     prefix='/api/sys/notice',
@@ -27,6 +28,10 @@ pro_sys_notice_router = APIRouter(
 )
 
 pub_sys_notice_router = APIRouter(prefix='/api/sys/notice')
+
+
+def _system_notice_enabled() -> bool:
+    return SystemConfigService.get_bool('notify.email.enabled', True)
 
 
 @pub_sys_notice_router.get('/list')
@@ -48,6 +53,10 @@ async def list_notice_public(query: NoticeListQuerySchema = Depends()):
     )
     return Res.ok(result)
 
+
+@pro_sys_notice_router.get('/enabled')
+async def get_notice_enabled():
+    return Res.ok({'enabled': _system_notice_enabled()})
 
 @pub_sys_notice_router.get('/{notice_id}')
 async def get_notice_public(notice_id: int):
@@ -99,15 +108,26 @@ async def remove_notice(notice_id: int):
 @pro_sys_notice_router.get('/unread/count')
 async def get_unread_count():
     """获取当前用户未读通知数量"""
+    if not _system_notice_enabled():
+        return Res.ok({'count': 0})
     user_id = SecurityTool.get_user_id()
     count = get_unread_notice_count(user_id)
     return Res.ok({'count': count})
-
 
 @pro_sys_notice_router.get('/list/with-read-status')
 async def list_notices_with_read_status(page: int = Query(1, ge=1),
                                         page_size: int = Query(10, ge=1, le=100)):
     """获取通知列表（包含当前用户的阅读状态）"""
+    if not _system_notice_enabled():
+        return Res.ok({
+            "records": [],
+            "total": 0,
+            "size": page_size,
+            "current": page,
+            "pages": 0,
+            "hasNext": False,
+            "hasPrevious": False,
+        })
     user_id = SecurityTool.get_user_id()
     result = get_notices_with_read_status(user_id, page, page_size)
     return Res.ok(result)
