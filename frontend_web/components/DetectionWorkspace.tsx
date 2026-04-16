@@ -9,7 +9,7 @@ import Navigation from './Navigation';
 import { useTranslation } from 'react-i18next';
 
 export default function DetectionWorkspace() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const tasks = [
     {
       id: 'detection',
@@ -49,7 +49,7 @@ export default function DetectionWorkspace() {
         <div className="absolute inset-0 bg-gradient-to-br from-gray-50 via-white to-blue-50/30" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 pt-28 pb-12">
+      <div key={`detection-workspace-${i18n.language}`} className="relative max-w-7xl mx-auto px-6 pt-28 pb-12">
         {/* Header */}
         <AnimatedContent delay={0}>
           <div className="mb-8">

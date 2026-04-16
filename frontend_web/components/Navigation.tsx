@@ -173,7 +173,7 @@ export default function Navigation() {
                                 <Link
                                     key={item}
                                     href={href}
-                                    className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
+                                    className={`inline-flex h-10 w-[108px] items-center justify-center rounded-xl text-sm font-medium whitespace-nowrap transition-all ${
                                         isActive
                                             ? 'bg-black text-white'
                                             : 'text-gray-600 hover:bg-gray-100'
