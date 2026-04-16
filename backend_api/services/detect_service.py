@@ -21,8 +21,8 @@ from yolo_edu.engines.yolo_inference_engine import YOLOInferenceEngine
 from yolo_edu.services.model_config_service import ModelConfigService
 
 
-def process_image_detection(imgs: List[np.ndarray], presign_save: bool = False) -> List[Dict]:
-    engine = YOLOInferenceEngine()
+def process_image_detection(imgs: List[np.ndarray], model_id: int, presign_save: bool = False) -> List[Dict]:
+    engine = YOLOInferenceEngine(model_id=model_id)
     detections: List[Dict] = []
     for img in imgs:
         dets, vis = engine.infer_frame(img, draw=True)
@@ -38,7 +38,7 @@ def process_image_detection(imgs: List[np.ndarray], presign_save: bool = False) 
     return detections
 
 
-async def process_cap_detection(file: UploadFile) -> io.BytesIO:
+async def process_cap_detection(file: UploadFile, model_id: int) -> io.BytesIO:
     file_bytes = await file.read()
     input_buffer = io.BytesIO(file_bytes)
     container = av.open(input_buffer)
@@ -51,7 +51,7 @@ async def process_cap_detection(file: UploadFile) -> io.BytesIO:
     output_stream.height = stream.height
     output_stream.pix_fmt = "yuv420p"
 
-    engine = YOLOInferenceEngine(conf=0.4)
+    engine = YOLOInferenceEngine(conf=0.4, model_id=model_id)
 
     for frame in container.decode(stream):
         img = frame.to_ndarray(format="bgr24")
@@ -89,7 +89,7 @@ async def frame_to_np(files: Union[UploadFile, List[UploadFile]]) -> List[np.nda
 
 async def detection_img_task_service(data: DetectionTaskCreateSchema, files: List[UploadFile],presign_save: bool = True) -> List[Dict]:
     np_imgs = await frame_to_np(files)
-    results = process_image_detection(imgs=np_imgs, presign_save=presign_save)
+    results = process_image_detection(imgs=np_imgs, model_id=data.model_id, presign_save=presign_save)
     task_id =  valid_entity_before_save(data, results)
     for item in results:
         item["task_id"] = task_id
@@ -97,7 +97,7 @@ async def detection_img_task_service(data: DetectionTaskCreateSchema, files: Lis
 
 
 async def detection_cap_task_service(data: DetectionTaskCreateSchema, file: UploadFile,presign_save: bool = True) -> List[Dict]:
-    output_buffer = await process_cap_detection(file)
+    output_buffer = await process_cap_detection(file, model_id=data.model_id)
     url = upload_bytes_to_minio(
         data=output_buffer.read(),
         filename=file.filename,

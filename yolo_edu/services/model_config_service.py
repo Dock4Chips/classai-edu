@@ -1,6 +1,7 @@
 import ast
 from typing import Dict, List, Tuple, Optional
 from master_tools.logger_tool import log
+from repository.model_config_repository import get_model_by_id
 from repository.model_config_repository import page_list_model
 from repository.model_class_repository import get_model_class_by_model_id
 from repository.model_draw_config_repository import get_model_draw_config_by_model_id
@@ -125,6 +126,14 @@ class ModelConfigService:
         """获取模型路径"""
         config = cls.load_active_model_config()
         return config['model_path']
+
+    @classmethod
+    def get_model_path_by_id(cls, model_id: int) -> str:
+        """按 model_id 获取模型路径"""
+        model = get_model_by_id(model_id)
+        if not model or model.get('is_deleted') == 1:
+            raise RuntimeError(f"Model not found: model_id={model_id}")
+        return model['model_path']
 
     @classmethod
     def get_class_names(cls) -> List[str]:
