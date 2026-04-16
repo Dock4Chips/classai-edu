@@ -31,7 +31,7 @@ def page_list_notice(
 @db_fill('insert')
 def create_notice(data: dict):
     """创建通知"""
-    db.insert('sys_notice', data)
+    return db.insert('sys_notice', data)
 
 
 @db_fill('update')
