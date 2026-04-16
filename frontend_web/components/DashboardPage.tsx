@@ -63,7 +63,7 @@ const CLASS_NAMES = ['Learning to Copy', 'Looking Around', 'Sharing Answers', 'S
 const CLASS_COLORS = ['#ef4444', '#f59e0b', '#8b5cf6', '#3b82f6', '#6b7280', '#ec4899'];
 
 export default function DashboardPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [results, setResults] = useState<ResultsData | null>(null);
   const [boxCurves, setBoxCurves] = useState<BoxCurvesData | null>(null);
   const [confusionMatrix, setConfusionMatrix] = useState<ConfusionMatrixData | null>(null);
@@ -154,6 +154,7 @@ export default function DashboardPage() {
           <div className="relative px-10 py-16">
             <div className="max-w-2xl">
               <motion.div
+                key={`hero-badge-${i18n.language}`}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.2 }}
@@ -164,6 +165,7 @@ export default function DashboardPage() {
               </motion.div>
 
               <motion.h1
+                key={`hero-title-${i18n.language}`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.3 }}
@@ -180,6 +182,7 @@ export default function DashboardPage() {
               </motion.h1>
 
               <motion.p
+                key={`hero-subtitle-${i18n.language}`}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
@@ -189,6 +192,7 @@ export default function DashboardPage() {
               </motion.p>
 
               <motion.div
+                key={`hero-actions-${i18n.language}`}
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
@@ -217,7 +221,7 @@ export default function DashboardPage() {
                 { value: `${(results['metrics/mAP50(B)'][results['metrics/mAP50(B)'].length - 1] * 100).toFixed(1)}%`, label: t('dashboard.map50') }
               ].map((stat, index) => (
                 <motion.div
-                  key={stat.label}
+                  key={`${stat.label}-${i18n.language}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.6 + index * 0.1 }}
@@ -284,7 +288,7 @@ export default function DashboardPage() {
             />
           </motion.div>
         ) : results && boxCurves && confusionMatrix ? (
-          <div className="space-y-6">
+          <div key={`metrics-charts-${i18n.language}`} className="space-y-6">
             {/* Final Metrics Charts */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -319,7 +323,7 @@ export default function DashboardPage() {
                 },
               ].map((metric, i) => (
                 <motion.div
-                  key={metric.label}
+                  key={`${metric.label}-${i18n.language}`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.08 }}

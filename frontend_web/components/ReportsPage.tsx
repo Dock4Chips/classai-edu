@@ -67,7 +67,7 @@ const JsonPreviewModal = ({ isOpen, onClose, title, data, closeText }: { isOpen:
 };
 
 export default function ReportsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [reportsData, setReportsData] = useState<ReportListItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<'all' | 'model' | 'metrics'>('all');
@@ -165,7 +165,7 @@ export default function ReportsPage() {
         closeText={t('reports.close')}
       />
 
-      <main className="max-w-7xl mx-auto px-6 pt-28 pb-12">
+      <main key={`reports-page-${i18n.language}`} className="max-w-7xl mx-auto px-6 pt-28 pb-12">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
