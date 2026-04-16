@@ -1,4 +1,4 @@
-from typing import List, Dict, Tuple, Generator, AsyncGenerator
+from typing import List, Dict, Tuple, Generator
 
 import cv2
 import numpy as np
@@ -8,22 +8,23 @@ from yolo_edu.yolo_tools.draw_tool import DrawTool
 
 class YOLOInferenceEngine:
 
-    _model: YOLO | None = None
+    _models: Dict[int, YOLO] = {}
 
-    def __init__(self, conf: float = 0.4):
+    def __init__(self, conf: float = 0.4, model_id: int | None = None):
         self.conf = conf
-        self.model = self._load_model()
+        self.model_id = model_id or ModelConfigService.get_model_info().get('model_id')
+        self.model = self._load_model(self.model_id)
 
         self.cap: cv2.VideoCapture | None = None
         self._running: bool = False
 
     @classmethod
-    def _load_model(cls) -> YOLO:
-        if cls._model is not None:
-            return cls._model
-        model_path = ModelConfigService.get_model_path()
-        cls._model = YOLO(model_path, task="detect")
-        return cls._model
+    def _load_model(cls, model_id: int) -> YOLO:
+        if model_id in cls._models:
+            return cls._models[model_id]
+        model_path = ModelConfigService.get_model_path_by_id(model_id)
+        cls._models[model_id] = YOLO(model_path, task="detect")
+        return cls._models[model_id]
 
     def _predict(self, image: np.ndarray, conf: float):
         results = self.model.predict(
