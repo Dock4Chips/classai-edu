@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, Body
+from fastapi import APIRouter, Depends, Query, Body, UploadFile, File
 from auth.authorization import Authorization
 from models.exceptions import ServiceException
 from models.result import Res
@@ -11,11 +11,26 @@ from repository.sys_config_repository import (
     delete_config
 )
 from schema.sys_config_schema import ConfigQuerySchema, ConfigCreateSchema, ConfigUpdateSchema
+from tools.file_tool import upload_file_to_minio
+
+pub_sys_config_router = APIRouter(prefix='/api/public/system')
 
 pro_sys_config_router = APIRouter(
     prefix='/api/sys/config',
     dependencies=[Depends(Authorization.val_token)]
 )
+
+
+@pub_sys_config_router.get('/basic')
+async def get_public_system_basic():
+    name_config = get_config_by_key('system.name')
+    url_config = get_config_by_key('system.url')
+    logo_config = get_config_by_key('system.logo_url')
+    return Res.ok({
+        "system_name": name_config[0].get("config_value") if name_config else "ClassEdu",
+        "system_url": url_config[0].get("config_value") if url_config else "",
+        "system_logo_url": logo_config[0].get("config_value") if logo_config else "",
+    })
 
 
 @pro_sys_config_router.get('/list')
@@ -85,3 +100,13 @@ async def remove_config(config_id: int):
 
     delete_config(config_id)
     return Res.ok("删除成功")
+
+
+@pro_sys_config_router.post('/upload-logo')
+async def upload_logo(file: UploadFile = File(...)):
+    if not file:
+        raise ServiceException(msg="请上传文件")
+    if not (file.content_type or "").startswith("image/"):
+        raise ServiceException(msg="请上传图片文件")
+    logo_url = await upload_file_to_minio(file)
+    return Res.ok({"url": logo_url})

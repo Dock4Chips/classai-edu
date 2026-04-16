@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Settings, Save, Sparkles, Shield, Bell, Globe, Lock, Mail, Loader2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { Settings, Save, Sparkles, Shield, Bell, Globe, Lock, Mail, Loader2, Upload } from 'lucide-react';
+import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { usePermissions } from '@/lib/contexts/PermissionsContext';
 import {useTranslation} from 'react-i18next';
 import { ConfigService } from '@/lib/service/config';
@@ -11,6 +11,7 @@ import { notification } from '@/utils/notification';
 const defaultSettings = {
   systemName: 'ClassAI Edu',
   systemUrl: 'https://classai.edu',
+  systemLogo: '',
   passwordComplexity: true,
   twoFactorAuth: false,
   emailNotifications: true,
@@ -37,6 +38,12 @@ const SETTINGS_CONFIG_META: Record<SettingsKey, {
   systemUrl: {
     configKey: 'system.url',
     configName: '系统网址',
+    configType: 'string',
+    groupName: 'system',
+  },
+  systemLogo: {
+    configKey: 'system.logo_url',
+    configName: '系统Logo地址',
     configType: 'string',
     groupName: 'system',
   },
@@ -86,6 +93,8 @@ export default function SettingsPage() {
   const [settings, setSettings] = useState<SettingsState>(defaultSettings);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const logoInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -159,6 +168,37 @@ export default function SettingsPage() {
     });
   };
 
+  const handleLogoFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      notification.error(t('settings.logoImageOnly'));
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      notification.error(t('settings.logoImageSizeLimit'));
+      return;
+    }
+
+    setUploadingLogo(true);
+    ConfigService.uploadLogo(file).then((res) => {
+      if (res.code === 200 && res.data?.url) {
+        updateSetting('systemLogo', res.data.url);
+        notification.success(t('settings.logoUploadedSuccessfully'));
+      } else {
+        notification.error(res.msg);
+      }
+    }).catch((error) => {
+      notification.error(error?.message);
+    }).finally(() => {
+      setUploadingLogo(false);
+      if (logoInputRef.current) {
+        logoInputRef.current.value = '';
+      }
+    });
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -218,6 +258,42 @@ export default function SettingsPage() {
                 readOnly={!canEdit}
                 className={`w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-black focus:bg-white focus:ring-2 focus:ring-black/5 transition-all outline-none text-sm ${!canEdit ? 'cursor-not-allowed opacity-60' : ''}`}
               />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-900 mb-2">{t('settings.systemLogo')}</label>
+              <input
+                type="url"
+                value={settings.systemLogo}
+                onChange={(e) => canEdit && updateSetting('systemLogo', e.target.value)}
+                disabled={!canEdit || saving || loading}
+                readOnly={!canEdit}
+                className={`w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:border-black focus:bg-white focus:ring-2 focus:ring-black/5 transition-all outline-none text-sm ${!canEdit ? 'cursor-not-allowed opacity-60' : ''}`}
+              />
+              <div className="mt-3 flex items-center gap-3">
+                <input
+                  ref={logoInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleLogoFileSelect}
+                />
+                <button
+                  type="button"
+                  onClick={() => logoInputRef.current?.click()}
+                  disabled={!canEdit || saving || loading || uploadingLogo}
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {uploadingLogo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+                  <span>{t('settings.uploadLogo')}</span>
+                </button>
+                {settings.systemLogo && (
+                  <img
+                    src={settings.systemLogo}
+                    alt="logo-preview"
+                    className="w-10 h-10 rounded-lg object-cover border border-gray-200"
+                  />
+                )}
+              </div>
             </div>
           </div>
         </motion.div>

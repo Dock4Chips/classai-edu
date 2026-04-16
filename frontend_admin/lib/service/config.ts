@@ -51,4 +51,17 @@ export class ConfigService {
     static async deleteConfig(configId: number): Promise<Results> {
         return await apiClient.delete<Results>(`/api/sys/config/${configId}`);
     }
+
+    /**
+     * 上传系统 Logo，返回文件 URL
+     */
+    static async uploadLogo(file: File): Promise<Results> {
+        const formData = new FormData();
+        formData.append('file', file);
+        return await apiClient.post<Results>('/api/sys/config/upload-logo', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+    }
 }

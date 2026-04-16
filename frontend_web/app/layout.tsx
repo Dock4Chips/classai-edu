@@ -5,9 +5,10 @@ import { ConfirmContainer } from '@/utils/confirm';
 import { I18nProvider } from '@/contexts/I18nProvider';
 import { LanguageProvider } from '@/contexts/LanguageContext';
 import { ClientOnly } from '@/components/ClientOnly';
+import { SystemTitleSync } from '@/components/SystemTitleSync';
 
 export const metadata: Metadata = {
-  title: 'ClassAI Edu',
+  title: 'ClassEdu',
   description: 'Modern education platform',
 };
 
@@ -22,6 +23,7 @@ export default function RootLayout({
         <ClientOnly>
           <I18nProvider>
             <LanguageProvider>
+              <SystemTitleSync />
               {children}
               <NotificationContainer />
               <ConfirmContainer />
