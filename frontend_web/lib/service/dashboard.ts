@@ -3,6 +3,7 @@ import {apiClient, Results} from '../api';
 export interface DashboardMetricsData {
     results?: {
         epoch?: number[];
+        time?: number[];
         'metrics/precision(B)'?: number[];
         'metrics/recall(B)'?: number[];
         'metrics/mAP50(B)'?: number[];
@@ -17,6 +18,19 @@ export interface DashboardMetricsData {
     };
     'confusion-matrix'?: {
         normalized?: number[][];
+    };
+    'overview-metrics'?: {
+        preprocess_ms?: number;
+        inference_ms?: number;
+        postprocess_ms?: number;
+        latency_ms?: number;
+        fps?: number;
+        precision?: number;
+        recall?: number;
+        map50?: number;
+        map50_95?: number;
+        f1_best?: number;
+        epochs?: number;
     };
 }
 
