@@ -123,8 +123,8 @@ export default function ModelsPage() {
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: t('model.no')},
-                {value: '1', label: t('model.yes')},
+                {value: '0', label: t('common.no')},
+                {value: '1', label: t('common.yes')},
             ],
             placeholder: t('model.selectDefault'),
         },
@@ -134,8 +134,8 @@ export default function ModelsPage() {
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: t('model.no')},
-                {value: '1', label: t('model.yes')},
+                {value: '0', label: t('common.disabled')},
+                {value: '1', label: t('common.active')},
             ],
             placeholder: t('model.selectActive'),
         },
@@ -224,8 +224,8 @@ export default function ModelsPage() {
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: t('model.no')},
-                {value: '1', label: t('model.yes')},
+                {value: '0', label: t('common.no')},
+                {value: '1', label: t('common.yes')},
             ],
             placeholder: t('model.selectDefault'),
         },
@@ -235,8 +235,8 @@ export default function ModelsPage() {
             type: 'select',
             colSpan: 1,
             options: [
-                {value: '0', label: t('model.no')},
-                {value: '1', label: t('model.yes')},
+                {value: '0', label: t('common.disabled')},
+                {value: '1', label: t('common.active')},
             ],
             placeholder: t('model.selectActive'),
         },
