@@ -2,7 +2,7 @@
 
 import {useState, useEffect} from 'react';
 import {motion} from 'framer-motion';
-import {Plus, Sparkles, MoreVertical, Pencil, Trash2, Key, Check} from 'lucide-react';
+import {Plus, MoreVertical, Pencil, Trash2, Key, Check} from 'lucide-react';
 import {RoleService} from '@/lib/service/role';
 import {Results} from '@/lib/api';
 import {Table, Column} from '@/components/ui/table';
@@ -14,6 +14,7 @@ import {confirm} from '@/utils/confirm';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
 import {useTranslation} from 'react-i18next';
+import {PageMenuIcon} from '@/components/PageMenuIcon';
 
 export default function RolesPage() {
     const {t} = useTranslation();
@@ -321,7 +322,7 @@ export default function RolesPage() {
                 <div>
                     <h1 className="text-4xl font-bold">{t('role.title')}</h1>
                     <p className="text-gray-600 flex items-center gap-2">
-                        <Sparkles size={18}/>
+                        <PageMenuIcon />
                         {t('role.title')}
                     </p>
                 </div>

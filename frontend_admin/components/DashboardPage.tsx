@@ -1,12 +1,13 @@
 'use client';
 
 import {motion} from 'framer-motion';
-import {Users, Activity, DollarSign, TrendingUp, Sparkles} from 'lucide-react';
+import {Users, Activity, DollarSign, TrendingUp} from 'lucide-react';
 import {StatCard} from './StatCard';
 import {DashboardService} from '@/lib/service/dashboard';
 import {useEffect, useState} from 'react';
 import {notification} from "@/utils/notification";
 import {useTranslation} from 'react-i18next';
+import {PageMenuIcon} from '@/components/PageMenuIcon';
 
 export default function DashboardPage() {
     const {t} = useTranslation();
@@ -51,7 +52,7 @@ export default function DashboardPage() {
                         {t('dashboard.title')}
                     </h1>
                     <p className="text-gray-600 flex items-center gap-2">
-                        <Sparkles className="text-indigo-500" size={18}/>
+                        <PageMenuIcon />
                         <span>{t('dashboard.welcome')}</span>
                     </p>
                 </div>

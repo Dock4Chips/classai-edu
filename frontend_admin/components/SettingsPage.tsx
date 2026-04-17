@@ -1,12 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Settings, Save, Sparkles, Shield, Bell, Globe, Lock, Mail, Loader2, Upload } from 'lucide-react';
+import { Settings, Save, Shield, Bell, Globe, Lock, Mail, Loader2, Upload } from 'lucide-react';
 import { ChangeEvent, useEffect, useRef, useState } from 'react';
 import { usePermissions } from '@/lib/contexts/PermissionsContext';
 import {useTranslation} from 'react-i18next';
 import { ConfigService } from '@/lib/service/config';
 import { notification } from '@/utils/notification';
+import {PageMenuIcon} from '@/components/PageMenuIcon';
 
 const defaultSettings = {
   systemName: 'ClassAI Edu',
@@ -210,7 +211,7 @@ export default function SettingsPage() {
           {t('settings.title')}
         </h1>
         <p className="text-gray-600 flex items-center gap-2">
-          <Sparkles className="text-indigo-500" size={18} />
+          <PageMenuIcon />
           <span>{t('settings.manageSystemConfig')}</span>
         </p>
       </motion.div>

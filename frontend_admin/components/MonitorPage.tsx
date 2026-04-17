@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
 import { MonitorService } from '@/lib/service/monitor';
 import { Results } from '@/lib/api';
 import { Table, Column } from '@/components/ui/table';
@@ -10,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs } from '@/components/ui/tabs';
 import {useTranslation} from 'react-i18next';
 import {notification} from '@/utils/notification';
+import {PageMenuIcon} from '@/components/PageMenuIcon';
 
 export default function MonitorPage() {
   const {t} = useTranslation();
@@ -184,7 +184,7 @@ export default function MonitorPage() {
         <div>
           <h1 className="text-4xl font-bold">{t('monitor.title')}</h1>
           <p className="text-gray-600 flex items-center gap-2">
-            <Sparkles size={18} />
+            <PageMenuIcon />
             {t('monitor.monitorSystemStatus')}
           </p>
         </div>

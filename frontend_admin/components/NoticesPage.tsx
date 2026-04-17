@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Trash2, Sparkles, FileText, Edit, Eye } from 'lucide-react';
+import { Plus, Trash2, FileText, Edit, Eye } from 'lucide-react';
 import { NoticeService } from '@/lib/service/notice';
 import { Table, Column } from '@/components/ui/table';
 import { Modal } from '@/components/ui/modal';
@@ -13,6 +13,7 @@ import { FormFieldConfig } from '@/components/ui/form/types';
 import { Results } from '@/lib/api';
 import { usePermissions } from '@/lib/contexts/PermissionsContext';
 import {useTranslation} from 'react-i18next';
+import {PageMenuIcon} from '@/components/PageMenuIcon';
 
 export default function NoticesPage() {
     const {t} = useTranslation();
@@ -327,7 +328,7 @@ export default function NoticesPage() {
         <div>
           <h1 className="text-4xl font-bold">{t('notice.title')}</h1>
           <p className="text-gray-600 flex items-center gap-2">
-            <Sparkles size={18} />
+            <PageMenuIcon />
             {t('notice.manageSystemNotices')}
           </p>
         </div>

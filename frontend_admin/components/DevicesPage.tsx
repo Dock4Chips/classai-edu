@@ -28,6 +28,7 @@ import {Results} from '@/lib/api';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
 import {useTranslation} from 'react-i18next';
+import {PageMenuIcon} from '@/components/PageMenuIcon';
 
 export default function DevicesPage() {
     const {t} = useTranslation();
@@ -463,7 +464,7 @@ export default function DevicesPage() {
                 <div>
                     <h1 className="text-4xl font-bold">{t('device.title')}</h1>
                     <p className="text-gray-600 flex items-center gap-2">
-                        <Camera size={18}/>
+                        <PageMenuIcon />
                         {t('device.manageDetectionDevices')}
                     </p>
                 </div>

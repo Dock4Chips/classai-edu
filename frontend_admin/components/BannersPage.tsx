@@ -2,7 +2,7 @@
 
 import {useState, useEffect, useRef} from 'react';
 import {motion} from 'framer-motion';
-import {Plus, Trash2, Sparkles, Image as ImageIcon, Upload, X, Loader2, RefreshCw} from 'lucide-react';
+import {Plus, Trash2, Image as ImageIcon, Upload, X, Loader2, RefreshCw} from 'lucide-react';
 import {BannerService} from '@/lib/service/banner';
 import {Table, Column} from '@/components/ui/table';
 import {Modal} from '@/components/ui/modal';
@@ -10,6 +10,7 @@ import {notification} from '@/utils/notification';
 import {confirm} from '@/utils/confirm';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
 import {useTranslation} from 'react-i18next';
+import {PageMenuIcon} from '@/components/PageMenuIcon';
 
 export default function BannersPage() {
     const {t} = useTranslation();
@@ -219,7 +220,7 @@ export default function BannersPage() {
                 <div>
                     <h1 className="text-4xl font-bold">{t('banner.title')}</h1>
                     <p className="text-gray-600 flex items-center gap-2">
-                        <Sparkles size={18}/>
+                        <PageMenuIcon />
                         {t('banner.manageHomepageCarousel')}
                     </p>
                 </div>
