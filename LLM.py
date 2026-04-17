@@ -8,6 +8,8 @@ import json
 BASE_URL = "https://model-world.vip.cpolar.cn"
 MODEL = "kwangsuklee/Qwen3.5-27B-Claude-4.6-Opus-Reasoning-Distilled-GGUF:latest"
 
+# BASE_URL = "http://10.88.28.20:11434"
+# MODEL = "llama3.1:8b"
 
 def chat(prompt: str, stream: bool = True):
     """发送聊天请求"""
