@@ -7,6 +7,7 @@ from models.exceptions import ServiceException
 from models.result import Res
 from repository.class_index_banner_repository import (
     list_banners,
+    page_list_banners,
     create_banner,
     get_banner_by_id,
     update_banner,
@@ -14,7 +15,9 @@ from repository.class_index_banner_repository import (
 )
 from schema.detection_task_schema import DetectionTaskCreateSchema
 from services.detect_service import detection_img_task_service
+from tools.data_scope_tool import apply_data_scope_filter
 from tools.file_tool import delete_minio_file
+from tools.data_scope_tool import ensure_record_data_scope
 from tools.security_tool import SecurityTool
 from yolo_edu.services.model_config_service import ModelConfigService
 
@@ -32,6 +35,18 @@ async def list_banner():
     return Res.ok(list_banners())
 
 
+@pro_class_index_banner_router.get('/list')
+async def list_banner_admin():
+    result = page_list_banners(
+        page=1,
+        page_size=1000,
+        filters=apply_data_scope_filter({'is_deleted': 0}, data_scope='user_id'),
+        order_by=[("create_time", "desc")],
+        select_fields=None
+    )
+    return Res.ok(result.get('records', []))
+
+
 @pro_class_index_banner_router.post('')
 async def add_banner(file: UploadFile = File(...)):
     if count_banners()[0].get('total_count') >= 6:
@@ -47,6 +62,7 @@ async def edit_banner(id: int, file: UploadFile = File(...)):
     old_record = get_banner_by_id(id)
     if not old_record:
         raise ServiceException(msg="记录不存在")
+    ensure_record_data_scope(old_record[0])
     old_resource_url = old_record[0].get("resource_url")
     update_data = await common_process_det(file)
     update_banner(id, update_data)
@@ -59,6 +75,7 @@ async def remove_banner(id: int):
     old_record = get_banner_by_id(id)
     if not old_record:
         raise ServiceException(msg="记录不存在")
+    ensure_record_data_scope(old_record[0])
     old_resource_url = old_record[0].get("resource_url")
     delete_banner(id)
     delete_minio_file(old_resource_url)
@@ -107,4 +124,5 @@ async def common_process_det(file):
         "raw_result": json.dumps(results),
         "created_by": SecurityTool.get_user_id(),
         "updated_by": SecurityTool.get_user_id(),
+        "user_id": SecurityTool.get_user_id(),
     }

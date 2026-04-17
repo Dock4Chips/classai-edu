@@ -70,6 +70,17 @@ export default function RolesPage() {
             ],
             placeholder: t('common.select'),
         },
+        {
+            key: 'data_scope',
+            label: t('role.dataScope'),
+            type: 'select',
+            colSpan: 2,
+            options: [
+                {value: '1', label: t('role.dataScopeAll')},
+                {value: '5', label: t('role.dataScopeSelf')},
+            ],
+            placeholder: t('role.dataScope'),
+        },
     ];
 
     /** 新增表单字段配置 */
@@ -100,6 +111,17 @@ export default function RolesPage() {
                 {value: '1', label: t('common.disabled')},
             ],
             placeholder: t('common.select'),
+        },
+        {
+            key: 'data_scope',
+            label: t('role.dataScope'),
+            type: 'select',
+            colSpan: 2,
+            options: [
+                {value: '1', label: t('role.dataScopeAll')},
+                {value: '5', label: t('role.dataScopeSelf')},
+            ],
+            placeholder: t('role.dataScope'),
         },
     ];
 
@@ -165,7 +187,11 @@ export default function RolesPage() {
     /** 打开新增 */
     const handleAdd = () => {
         setIsEditMode(false);
-        setAddForm(getEmptyForm(addFormFields));
+        setAddForm({
+            ...getEmptyForm(addFormFields),
+            status: '0',
+            data_scope: '1',
+        });
         setModalOpen(true);
     };
 
@@ -179,6 +205,7 @@ export default function RolesPage() {
             role_name: role.role_name ?? null,
             role_key: role.role_key ?? null,
             status: role.status ?? '0',
+            data_scope: role.data_scope ?? '1',
         });
         setModalOpen(true);
     };

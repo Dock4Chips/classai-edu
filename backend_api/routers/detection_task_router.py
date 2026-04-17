@@ -10,6 +10,7 @@ from repository.detection_detail_repository import get_by_task_id
 from repository.detection_task_repository import page_list_task_detail
 from schema.detection_task_schema import DetectionTaskListQuerySchema, DetectionTaskCreateSchema
 from services.detect_service import detection_img_task_service, detection_cap_task_service
+from tools.data_scope_tool import apply_data_scope_filter
 
 pro_detection_task_router = APIRouter(
     prefix='/api/detection/task',
@@ -26,6 +27,7 @@ async def list_detection_task(query: DetectionTaskListQuerySchema = Depends()):
             "is_deleted": 0,
         }.items() if v is not None
     }
+    filters = apply_data_scope_filter(filters, data_scope='user_id')
     results = page_list_task_detail(page=query.page, page_size=query.page_size, filters=filters,
                                     order_by=[('create_time', 'desc')])
     for task in results['records']:
@@ -61,4 +63,3 @@ async def add_detection_task(data: DetectionTaskCreateSchema = Depends(), files:
             results = await detection_cap_task_service(data, files[0])
 
     return Res.ok(results)
-

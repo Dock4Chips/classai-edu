@@ -17,6 +17,16 @@ pro_sys_role_router = APIRouter(
     dependencies=[Depends(Authorization.val_token)]
 )
 
+ALLOWED_DATA_SCOPES = {"1", "2", "3", "4", "5"}
+
+
+def _validate_data_scope(data_scope: str | None):
+    if data_scope is None:
+        return
+    if str(data_scope) not in ALLOWED_DATA_SCOPES:
+        raise ServiceException(msg="数据权限范围不合法")
+
+
 @pro_sys_role_router.get('/list')
 async def list_role(query: RoleListQuerySchema = Depends()):
     filters = {
@@ -45,23 +55,27 @@ async def get_role(role_id: int):
 
 @pro_sys_role_router.post('')
 async def add_role(data: RoleCreateUpdateSchema = Body(...)):
-    existing = get_role_by_key(data.role_key)
+    payload = data.dict(exclude_unset=True)
+    _validate_data_scope(payload.get("data_scope"))
+    existing = get_role_by_key(payload.get("role_key"))
     if existing:
         raise ServiceException(msg="角色键已存在")
-    create_role(data.dict())
+    create_role(payload)
     return Res.ok("新增成功")
 
 
 @pro_sys_role_router.put('/{role_id}')
 async def edit_role(role_id: int, data: RoleCreateUpdateSchema = Body(...)):
+    payload = data.dict(exclude_unset=True)
+    _validate_data_scope(payload.get("data_scope"))
     role_list = get_role_by_id(role_id)
     if not role_list:
         raise ServiceException(msg="角色不存在")
-    if data.role_key != role_list[0]['role_key']:
-        existing = get_role_by_key(data.role_key)
+    if "role_key" in payload and payload.get("role_key") != role_list[0]['role_key']:
+        existing = get_role_by_key(payload.get("role_key"))
         if existing:
             raise ServiceException(msg="角色键已存在")
-    update_role(role_id, data.dict())
+    update_role(role_id, payload)
     return Res.ok("修改成功")
 
 
