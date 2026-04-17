@@ -12,6 +12,7 @@ import {
     Check,
     X,
     Palette,
+    RefreshCcw,
 } from 'lucide-react';
 import {ModelService} from '@/lib/service/model';
 import {Table, Column} from '@/components/ui/table';
@@ -26,6 +27,8 @@ import {DrawConfigModal} from './DrawConfigModal';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
 import {useTranslation} from 'react-i18next';
 
+const SYNCING_MODEL_STORAGE_KEY = 'models_syncing_model_id';
+
 export default function ModelsPage() {
     const {t} = useTranslation();
     const {hasPermission} = usePermissions();
@@ -36,6 +39,7 @@ export default function ModelsPage() {
     const [originalModelData, setOriginalModelData] = useState<any>(null);
     const [drawConfigModalOpen, setDrawConfigModalOpen] = useState(false);
     const [selectedModelForDrawConfig, setSelectedModelForDrawConfig] = useState<any>(null);
+    const [syncingModelId, setSyncingModelId] = useState<number | null>(null);
 
     /** 查询参数（搜索 + 分页） */
     const [queryParams, setQueryParams] = useState<Results>({
@@ -265,6 +269,44 @@ export default function ModelsPage() {
         fetchModels();
     }, [queryParams.current]);
 
+    useEffect(() => {
+        const raw = localStorage.getItem(SYNCING_MODEL_STORAGE_KEY);
+        if (!raw) return;
+        const cachedId = Number(raw);
+        if (Number.isFinite(cachedId) && cachedId > 0) {
+            setSyncingModelId(cachedId);
+        } else {
+            localStorage.removeItem(SYNCING_MODEL_STORAGE_KEY);
+        }
+    }, []);
+
+    const clearSyncingState = () => {
+        setSyncingModelId(null);
+        localStorage.removeItem(SYNCING_MODEL_STORAGE_KEY);
+    };
+
+    const checkSyncStatus = (modelId: number) => {
+        return ModelService.getSyncStatus(modelId).then((res) => {
+            if (res?.code !== 200) return;
+            const status = Number(res?.data?.sync_status ?? 0);
+            if (status !== 1) {
+                clearSyncingState();
+                fetchModels();
+            }
+        }).catch(() => {
+            // 网络抖动时不清理状态，保留加载态，等待下一次轮询
+        });
+    };
+
+    useEffect(() => {
+        if (!syncingModelId) return;
+        checkSyncStatus(syncingModelId);
+        const timer = window.setInterval(() => {
+            checkSyncStatus(syncingModelId);
+        }, 3000);
+        return () => window.clearInterval(timer);
+    }, [syncingModelId]);
+
     /** 获取模型列表 */
     const fetchModels = () => {
         setLoading(true);
@@ -346,6 +388,34 @@ export default function ModelsPage() {
         setDrawConfigModalOpen(true);
     };
 
+    /** 同步单个模型数据 */
+    const handleSyncData = (model: any) => {
+        const modelId = Number(model.model_id);
+        if (!Number.isFinite(modelId) || modelId <= 0) return;
+        if (syncingModelId && syncingModelId !== modelId) {
+            notification.error(t('model.syncInProgress'));
+            return;
+        }
+        if (syncingModelId === modelId) return;
+
+        setSyncingModelId(modelId);
+        localStorage.setItem(SYNCING_MODEL_STORAGE_KEY, String(modelId));
+        notification.info(t('model.syncStarted'));
+
+        ModelService.syncModelData(modelId).then((results) => {
+            if (results.code === 200) {
+                notification.success(String(results.data || t('common.updatedSuccessfully')));
+                clearSyncingState();
+                return fetchModels();
+            }
+            notification.error(String(results.msg || '操作失败'));
+            return checkSyncStatus(modelId);
+        }).catch((error) => {
+            notification.error(error?.message);
+            return checkSyncStatus(modelId);
+        });
+    };
+
     /** 新增保存 */
     const handleSaveAdd = () => {
         const data = Object.fromEntries(
@@ -359,6 +429,7 @@ export default function ModelsPage() {
                 setModalOpen(false);
                 return fetchModels();
             }
+            notification.error(String(results.msg || '操作失败'));
         }).catch((error) => {
             notification.error(error?.message);
         }).finally(() => {
@@ -379,15 +450,23 @@ export default function ModelsPage() {
             })
             .map(f => [f.key, updateForm[f.key]]);
 
-        const data = Object.fromEntries(changedFields);
+        const clearFields = changedFields
+            .filter(([, v]) => v === '' || v === null)
+            .map(([k]) => String(k));
+        const data = Object.fromEntries(
+            changedFields
+                .filter(([, v]) => v !== '' && v !== null)
+        );
+        const payload = clearFields.length > 0 ? {...data, clear_fields: clearFields} : data;
 
         setLoading(true);
-        ModelService.updateModel(updateForm.model_id, data).then((results) => {
+        ModelService.updateModel(updateForm.model_id, payload).then((results) => {
             if (results.code === 200) {
                 notification.success(t('common.updatedSuccessfully'));
                 setModalOpen(false);
                 return fetchModels();
             }
+            notification.error(String(results.msg || '操作失败'));
         }).catch((error) => {
             notification.error(error?.message);
         }).finally(() => {
@@ -401,7 +480,24 @@ export default function ModelsPage() {
             title: 'ID',
             render: v => <span className="text-gray-500 font-mono">#{v}</span>,
         },
-        {key: 'model_name', title: t('model.modelName')},
+        {
+            key: 'model_name',
+            title: t('model.modelName'),
+            render: (v, record) => {
+                const isSyncingThisRow = syncingModelId === Number(record.model_id);
+                return (
+                    <div className="flex items-center gap-2">
+                        <span>{v}</span>
+                        {isSyncingThisRow && (
+                            <span className="inline-flex items-center gap-1 text-blue-600 text-xs">
+                                <RefreshCcw className="w-3.5 h-3.5 animate-spin"/>
+                                {t('model.syncingData')}
+                            </span>
+                        )}
+                    </div>
+                );
+            },
+        },
         {key: 'num_classes', title: t('model.classes'), render: v => v ?? '-'},
         {
             key: 'is_active',
@@ -459,6 +555,17 @@ export default function ModelsPage() {
                     icon: <Palette className="w-4 h-4"/>,
                     onClick: () => handleDrawConfig(record),
                 });
+                if (hasPermission('models:edit')) {
+                    const isSyncingThisRow = syncingModelId === Number(record.model_id);
+                    const hasOtherSyncTask = syncingModelId !== null && !isSyncingThisRow;
+                    items.push({
+                        key: 'syncData',
+                        label: isSyncingThisRow ? t('model.syncingData') : t('model.syncData'),
+                        icon: <RefreshCcw className={`w-4 h-4 ${isSyncingThisRow ? 'animate-spin' : ''}`}/>,
+                        disabled: hasOtherSyncTask || isSyncingThisRow,
+                        onClick: () => handleSyncData(record),
+                    });
+                }
                 if (hasPermission('models:delete')) {
                     items.push({
                         key: 'delete',

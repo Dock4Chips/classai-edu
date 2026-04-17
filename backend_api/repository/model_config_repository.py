@@ -36,6 +36,23 @@ def update_model(model_id: int, data: dict):
     return db.update('model_config', 'model_id', model_id, data)
 
 
+def clear_model_fields(model_id: int, fields: list[str]):
+    if not fields:
+        return 0
+    set_clause = ', '.join(f'{field} = NULL' for field in fields)
+    sql = f'update model_config set {set_clause} where model_id = :model_id'
+    return db.execute(sql, {'model_id': model_id})
+
+
+def unset_other_default_models(current_model_id: int):
+    sql = (
+        'update model_config '
+        'set is_default = 0 '
+        'where is_deleted = 0 and model_id != :model_id and is_default = 1'
+    )
+    return db.execute(sql, {'model_id': current_model_id})
+
+
 @db_fill('update')
 def delete_model(model_id: int):
     return db.update('model_config', 'model_id', model_id, {'is_deleted': 1})

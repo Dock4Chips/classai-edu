@@ -1,20 +1,41 @@
 import numpy as np
 import pandas as pd
 import json
+import re
 from pathlib import Path
 from ultralytics import YOLO
 
 RUN_DIR = Path("../dodge_project/classai_model")
-OUT_DIR = Path("./metrics")
+BASE_OUT_DIR = Path("./metrics")
 DATA_YAML = "../datasets/dataset.yaml"
-OUT_DIR.mkdir(exist_ok=True)
+BASE_OUT_DIR.mkdir(exist_ok=True)
 
-def export_all_metrics():
-    df = pd.read_csv(RUN_DIR / "results.csv")
-    with open(OUT_DIR / "results.json", "w") as f:
+def _sanitize_dir_name(name: str) -> str:
+    value = re.sub(r"[^\w\-.]+", "_", (name or "").strip())
+    return value or "default_model"
+
+
+def _infer_run_dir(model_path: Path) -> Path:
+    candidates = [model_path.parent.parent, model_path.parent]
+    for candidate in candidates:
+        if (candidate / "results.csv").exists():
+            return candidate
+    return RUN_DIR
+
+
+def export_all_metrics(model_name: str | None = None, model_path: str | None = None):
+    out_dir = BASE_OUT_DIR / _sanitize_dir_name(model_name) if model_name else BASE_OUT_DIR
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    resolved_model_path = Path(model_path).expanduser() if model_path else (RUN_DIR / "weights/best.pt")
+    run_dir = _infer_run_dir(resolved_model_path)
+
+    results_csv = run_dir / "results.csv"
+    df = pd.read_csv(results_csv) if results_csv.exists() else pd.DataFrame()
+    with open(out_dir / "results.json", "w") as f:
         json.dump(df.to_dict(orient="list"), f, indent=2)
 
-    model = YOLO(RUN_DIR / "weights/best.pt")
+    model = YOLO(str(resolved_model_path))
     metrics = model.val(data=DATA_YAML, verbose=False, project='dodge_project', name='classai_model_val')
 
     curves_raw = metrics.box.curves_results
@@ -26,12 +47,12 @@ def export_all_metrics():
         "pr_recall": curves_raw[3][0].tolist(),
         "pr_precision": curves_raw[3][1].tolist(),
     }
-    with open(OUT_DIR / "box_curves.json", "w") as f:
+    with open(out_dir / "box_curves.json", "w") as f:
         json.dump(curves, f, indent=2)
 
     matrix = np.array(metrics.confusion_matrix.matrix)
     normalized = matrix / (matrix.sum(axis=1, keepdims=True) + 1e-9)
-    with open(OUT_DIR / "confusion_matrix.json", "w") as f:
+    with open(out_dir / "confusion_matrix.json", "w") as f:
         json.dump({"raw": matrix.tolist(), "normalized": normalized.tolist()}, f, indent=2)
 
     speed = getattr(metrics, "speed", {}) or {}
@@ -65,10 +86,10 @@ def export_all_metrics():
         "epochs": epochs
     }
 
-    with open(OUT_DIR / "overview_metrics.json", "w") as f:
+    with open(out_dir / "overview_metrics.json", "w") as f:
         json.dump(overview_metrics, f, indent=2)
 
-    print('ok')
+
 
 if __name__ == "__main__":
     export_all_metrics()

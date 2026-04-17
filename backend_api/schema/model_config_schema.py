@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Optional
+from typing import List
 
 
 class ModelConfigCreateUpdateSchema(BaseModel):
@@ -17,7 +18,7 @@ class ModelConfigCreateUpdateSchema(BaseModel):
     is_active: Optional[bool] = True
     description: Optional[str] = None
     training_dataset: Optional[str] = None
+    clear_fields: Optional[List[str]] = None
 
     class Config:
         extra = "forbid"
-
