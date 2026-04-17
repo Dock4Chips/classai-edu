@@ -23,6 +23,16 @@ def _infer_run_dir(model_path: Path) -> Path:
     return RUN_DIR
 
 
+def _export_model_artifacts(model: YOLO):
+    # 导出 report 页面依赖的 3 种模型文件；单项失败不影响指标导出。
+    export_targets = ("onnx", "coreml", "torchscript")
+    for fmt in export_targets:
+        try:
+            model.export(format=fmt)
+        except Exception as e:
+            print(f"warn: export {fmt} failed: {e}")
+
+
 def export_all_metrics(model_name: str | None = None, model_path: str | None = None):
     out_dir = BASE_OUT_DIR / _sanitize_dir_name(model_name) if model_name else BASE_OUT_DIR
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -36,6 +46,7 @@ def export_all_metrics(model_name: str | None = None, model_path: str | None = N
         json.dump(df.to_dict(orient="list"), f, indent=2)
 
     model = YOLO(str(resolved_model_path))
+    _export_model_artifacts(model)
     metrics = model.val(data=DATA_YAML, verbose=False, project='dodge_project', name='classai_model_val')
 
     curves_raw = metrics.box.curves_results
