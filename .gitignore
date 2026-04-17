@@ -4,7 +4,7 @@ __pycache__/
 .idea
 
 
-yolo_edu/datasets/active/
+#yolo_edu/datasets/active/
 *.zip
 
 yolo_edu/datasets/*.mp4
