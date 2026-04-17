@@ -77,6 +77,7 @@ async def add_menu(data: MenuCreateUpdateSchema = Body(...)):
 
     user_id = SecurityTool.get_user_id()
     menu_data = data.dict(exclude_unset=True)
+    menu_data["user_id"] = user_id
     menu_data["created_by"] = user_id
     menu_data["updated_by"] = user_id
 
