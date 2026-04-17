@@ -47,7 +47,7 @@ async def list_all_menus(query: MenuListQuerySchema = Depends()):
 
     filters = {
         k: v for k, v in {
-            "menu_name": query.menu_name,
+            "menu_name": f"%{query.menu_name.strip()}%" if query.menu_name and query.menu_name.strip() else None,
             "status": query.status,
             "menu_type": query.menu_type,
             "is_deleted": 0

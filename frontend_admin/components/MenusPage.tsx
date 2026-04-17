@@ -2,10 +2,29 @@
 
 import {useState, useEffect} from 'react';
 import {motion} from 'framer-motion';
-import {Plus, Sparkles, MoreVertical, Pencil, Trash2, ListTree, Key} from 'lucide-react';
+import {
+    Plus,
+    MoreVertical,
+    Pencil,
+    Trash2,
+    ListTree,
+    ChevronRight,
+    ChevronDown,
+    LayoutDashboard,
+    Users,
+    Shield,
+    Camera,
+    BrainCircuit,
+    ImageIcon,
+    Settings,
+    Bell,
+    Activity,
+    Key,
+    Palette,
+    Tags,
+} from 'lucide-react';
 import {MenuService} from '@/lib/service/menu';
 import {Results} from '@/lib/api';
-import {Table, Column} from '@/components/ui/table';
 import {Badge} from '@/components/ui/badge';
 import {Dropdown, DropdownButton} from '@/components/ui/dropdown';
 import {Modal} from '@/components/ui/modal';
@@ -27,6 +46,62 @@ export default function MenusPage() {
     const [allMenus, setAllMenus] = useState<any[]>([]);
     const [roleMenus, setRoleMenus] = useState<number[]>([]);
     const [originalMenuData, setOriginalMenuData] = useState<any>(null);
+    const [collapsedMenus, setCollapsedMenus] = useState<Record<number, boolean>>({});
+    const renderIconLabel = (name: string, IconComponent?: any) => (
+        <span className="inline-flex items-center gap-2">
+            {IconComponent ? <IconComponent className="w-4 h-4 text-gray-500"/> : null}
+            <span>{name}</span>
+        </span>
+    );
+    const iconOptions = [
+        {value: '', label: '-'},
+        {value: 'LayoutDashboard', label: renderIconLabel('LayoutDashboard', LayoutDashboard)},
+        {value: 'Users', label: renderIconLabel('Users', Users)},
+        {value: 'Shield', label: renderIconLabel('Shield', Shield)},
+        {value: 'ListTree', label: renderIconLabel('ListTree', ListTree)},
+        {value: 'Camera', label: renderIconLabel('Camera', Camera)},
+        {value: 'BrainCircuit', label: renderIconLabel('BrainCircuit', BrainCircuit)},
+        {value: 'ImageIcon', label: renderIconLabel('ImageIcon', ImageIcon)},
+        {value: 'Settings', label: renderIconLabel('Settings', Settings)},
+        {value: 'Bell', label: renderIconLabel('Bell', Bell)},
+        {value: 'Activity', label: renderIconLabel('Activity', Activity)},
+        {value: 'Plus', label: renderIconLabel('Plus', Plus)},
+        {value: 'Pencil', label: renderIconLabel('Pencil', Pencil)},
+        {value: 'Trash2', label: renderIconLabel('Trash2', Trash2)},
+        {value: 'Key', label: renderIconLabel('Key', Key)},
+        {value: 'Palette', label: renderIconLabel('Palette', Palette)},
+        {value: 'Tags', label: renderIconLabel('Tags', Tags)},
+    ];
+
+    const buildMenuTree = (records: any[]) => {
+        const nodeMap = new Map<number, any>();
+        const roots: any[] = [];
+
+        records.forEach((item) => {
+            nodeMap.set(item.menu_id, {...item, children: []});
+        });
+
+        nodeMap.forEach((node) => {
+            const parentId = Number(node.parent_id || 0);
+            if (parentId === 0 || !nodeMap.has(parentId)) {
+                roots.push(node);
+            } else {
+                nodeMap.get(parentId).children.push(node);
+            }
+        });
+
+        const sortNodes = (nodes: any[]) => {
+            nodes.sort((a, b) => {
+                const orderA = Number(a.order_num ?? 0);
+                const orderB = Number(b.order_num ?? 0);
+                if (orderA !== orderB) return orderA - orderB;
+                return Number(a.menu_id) - Number(b.menu_id);
+            });
+            nodes.forEach((node) => sortNodes(node.children || []));
+        };
+        sortNodes(roots);
+        return roots;
+    };
 
     /** 查询参数（分页） */
     const [queryParams, setQueryParams] = useState<Results>({
@@ -87,9 +162,10 @@ export default function MenusPage() {
         {
             key: 'icon',
             label: t('menu.icon'),
-            type: 'text',
+            type: 'select',
             colSpan: 1,
-            placeholder: 'LayoutDashboard',
+            options: iconOptions,
+            placeholder: t('common.select'),
             description: t('menu.lucideIcon')
         },
         {
@@ -110,8 +186,8 @@ export default function MenusPage() {
             type: 'select',
             colSpan: 1,
             options: [
-                {value: 0, label: t('common.active')},
-                {value: 1, label: t('common.disabled')},
+                {value: '0', label: t('common.active')},
+                {value: '1', label: t('common.disabled')},
             ],
             placeholder: t('menu.selectStatus')
         },
@@ -121,8 +197,8 @@ export default function MenusPage() {
             type: 'select',
             colSpan: 1,
             options: [
-                {value: 1, label: t('common.yes')},
-                {value: 0, label: t('common.no')},
+                {value: '1', label: t('common.yes')},
+                {value: '0', label: t('common.no')},
             ],
             placeholder: t('menu.selectVisibility')
         },
@@ -180,9 +256,10 @@ export default function MenusPage() {
         {
             key: 'icon',
             label: t('menu.icon'),
-            type: 'text',
+            type: 'select',
             colSpan: 1,
-            placeholder: 'LayoutDashboard',
+            options: iconOptions,
+            placeholder: t('common.select'),
             description: t('menu.lucideIcon')
         },
         {
@@ -239,22 +316,39 @@ export default function MenusPage() {
 
     useEffect(() => {
         void fetchMenus();
-    }, [queryParams.current, queryParams.menu_name]);
+    }, [queryParams.menu_name]);
 
     /** 获取菜单列表 */
     const fetchMenus = async () => {
         setLoading(true);
         const result = await MenuService.getAllMenus({
-            page: queryParams.current,
-            page_size: queryParams.pageSize,
+            page: 1,
+            page_size: 100,
             menu_name: queryParams.menu_name,
         });
 
         if (result?.code === 200) {
-            setMenus(result.data.records || []);
+            const records = result.data.records || [];
+            const tree = buildMenuTree(records);
+            setMenus(tree);
+            setCollapsedMenus((prev) => {
+                const next = {...prev};
+                const walk = (items: any[]) => {
+                    items.forEach((item) => {
+                        if (next[item.menu_id] === undefined) {
+                            next[item.menu_id] = false;
+                        }
+                        if (item.children?.length) {
+                            walk(item.children);
+                        }
+                    });
+                };
+                walk(tree);
+                return next;
+            });
             setQueryParams(prev => ({
                 ...prev,
-                total: result.data.total || 0,
+                total: records.length || 0,
             }));
         }
         setLoading(false);
@@ -297,7 +391,7 @@ export default function MenusPage() {
             parent_id: String(menu.parent_id ?? 0),
             order_num: menu.order_num ?? 0,
             path: menu.path ?? null,
-            icon: menu.icon ?? null,
+            icon: menu.icon ?? '',
             menu_type: menu.menu_type ?? 'C',
             status: String(menu.status ?? 0),
             is_visible: String(menu.is_visible ?? 1),
@@ -385,115 +479,113 @@ export default function MenusPage() {
         setLoading(false);
     };
 
-    const columns: Column<any>[] = [
-        {
-            key: 'menu_id',
-            title: 'ID',
-            render: value => <span className="text-gray-500 font-mono">#{value}</span>,
-        },
-        {
-            key: 'menu_name',
-            title: t('menu.menuName'),
-            render: (value, record) => (
-                <div className="flex items-center gap-2">
-                    {record.parent_id !== 0 && <span className="text-gray-400">└</span>}
-                    <span>{value}</span>
-                    {record.parent_id !== 0 && (
-                        <Badge variant="default" className="text-xs">{t('menu.child')}</Badge>
-                    )}
+    const getTypeBadge = (type: string) => {
+        const typeMap: Record<string, {label: string; variant: any}> = {
+            'M': {label: t('menu.menuTypes.directory'), variant: 'info'},
+            'C': {label: t('menu.menuTypes.menu'), variant: 'default'},
+            'F': {label: t('menu.menuTypes.button'), variant: 'purple'},
+        };
+        const config = typeMap[type] || typeMap.C;
+        return <Badge variant={config.variant}>{config.label}</Badge>;
+    };
+
+    const getStatusBadge = (status: number) => (
+        <Badge variant={status === 0 ? 'success' : 'warning'}>
+            {status === 0 ? t('common.active') : t('common.disabled')}
+        </Badge>
+    );
+
+    const getVisibleBadge = (isVisible: number) => (
+        <Badge variant={isVisible === 1 ? 'success' : 'default'}>
+            {isVisible === 1 ? t('common.yes') : t('common.no')}
+        </Badge>
+    );
+
+    const getActionItems = (record: any) => {
+        const items = [];
+        if (hasPermission('menus:edit')) {
+            items.push({
+                key: 'edit',
+                label: t('common.edit'),
+                icon: <Pencil className="w-4 h-4"/>,
+                onClick: () => handleEdit(record),
+            });
+        }
+        if (hasPermission('menus:delete')) {
+            items.push({
+                key: 'delete',
+                label: t('common.delete'),
+                icon: <Trash2 className="w-4 h-4"/>,
+                danger: true,
+                onClick: () => handleDelete(record.menu_id),
+            });
+        }
+        return items;
+    };
+
+    const renderMenuNode = (record: any, level = 0) => {
+        const hasChildren = !!record.children?.length;
+        const collapsed = !!collapsedMenus[record.menu_id];
+        const actionItems = getActionItems(record);
+
+        return (
+            <div key={record.menu_id} className={`${level > 0 ? 'mt-2' : ''}`}>
+                <div
+                    className={`rounded-2xl border transition-all ${
+                        level === 0 ? 'border-gray-200 bg-white shadow-sm' : 'border-gray-100 bg-gray-50/70'
+                    }`}
+                >
+                    <div className="px-4 py-3 flex items-center justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                                <span className="text-xs text-gray-500 font-mono">#{record.menu_id}</span>
+                                {hasChildren && (
+                                    <button
+                                        type="button"
+                                        className="w-5 h-5 rounded-md hover:bg-gray-100 inline-flex items-center justify-center"
+                                        onClick={() =>
+                                            setCollapsedMenus((prev) => ({...prev, [record.menu_id]: !prev[record.menu_id]}))
+                                        }
+                                    >
+                                        {collapsed ? <ChevronRight className="w-4 h-4"/> : <ChevronDown className="w-4 h-4"/>}
+                                    </button>
+                                )}
+                                <span className="font-semibold text-gray-900 break-all">{record.menu_name || '-'}</span>
+                                {getTypeBadge(record.menu_type)}
+                                {getStatusBadge(record.status)}
+                                {getVisibleBadge(record.is_visible)}
+                                <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                                    {t('menu.orderNum')}: {record.order_num ?? 0}
+                                </span>
+                            </div>
+                            <div className="mt-2 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                                <code className="px-2 py-1 rounded bg-gray-100 text-gray-700">{record.menu_key || '-'}</code>
+                                <span className="max-w-full break-all">{record.path || '-'}</span>
+                            </div>
+                        </div>
+                        {actionItems.length > 0 ? (
+                            <Dropdown
+                                trigger={
+                                    <DropdownButton size="sm" variant="ghost" showChevron={false}>
+                                        <MoreVertical className="w-4 h-4"/>
+                                    </DropdownButton>
+                                }
+                                items={actionItems}
+                            />
+                        ) : (
+                            <span className="text-gray-400 text-sm">-</span>
+                        )}
+                    </div>
                 </div>
-            ),
-        },
-        {
-            key: 'menu_key',
-            title: t('menu.menuKey'),
-            render: value => (
-                <code className="px-2 py-1 bg-gray-100 rounded text-sm text-gray-700 font-mono">
-                    {value || '-'}
-                </code>
-            ),
-        },
-        {
-            key: 'path',
-            title: t('menu.path'),
-            render: value => value || <span className="text-gray-400">-</span>,
-        },
-        {
-            key: 'menu_type',
-            title: t('menu.menuType'),
-            render: value => {
-                const typeMap: Record<string, {label: string; variant: any}> = {
-                    'M': {label: t('menu.menuTypes.directory'), variant: 'info'},
-                    'C': {label: t('menu.menuTypes.menu'), variant: 'default'},
-                    'F': {label: t('menu.menuTypes.button'), variant: 'purple'},
-                };
-                const config = typeMap[value] || typeMap['C'];
-                return <Badge variant={config.variant}>{config.label}</Badge>;
-            },
-        },
-        {
-            key: 'order_num',
-            title: t('menu.orderNum'),
-            render: value => value ?? 0,
-        },
-        {
-            key: 'status',
-            title: t('common.status'),
-            render: value => (
-                <Badge variant={value === 0 ? 'success' : 'warning'}>
-                    {value === 0 ? t('common.active') : t('common.disabled')}
-                </Badge>
-            ),
-        },
-        {
-            key: 'is_visible',
-            title: t('menu.visible'),
-            render: value => (
-                <Badge variant={value === 1 ? 'success' : 'default'}>
-                    {value === 1 ? t('common.yes') : t('common.no')}
-                </Badge>
-            ),
-        },
-        {
-            key: 'actions',
-            title: t('common.actions'),
-            render: (_, record) => {
-                const items = [];
-                if (hasPermission('menus:edit')) {
-                    items.push({
-                        key: 'edit',
-                        label: t('common.edit'),
-                        icon: <Pencil className="w-4 h-4"/>,
-                        onClick: () => handleEdit(record),
-                    });
-                }
-                if (hasPermission('menus:delete')) {
-                    items.push({
-                        key: 'delete',
-                        label: t('common.delete'),
-                        icon: <Trash2 className="w-4 h-4"/>,
-                        danger: true,
-                        onClick: () => handleDelete(record.menu_id),
-                    });
-                }
 
-                if (items.length === 0) {
-                    return <span className="text-gray-400">-</span>;
-                }
-
-                return (
-                    <Dropdown
-                        trigger={
-                            <DropdownButton size="sm" variant="ghost" showChevron={false}>
-                                <MoreVertical className="w-4 h-4"/>
-                            </DropdownButton>
-                        }
-                        items={items}
-                    />
-                );
-            },
-        },
-    ];
+                {hasChildren && !collapsed && (
+                    <div className="ml-5 pl-4 border-l-2 border-gray-200 mt-2">
+                        {record.children.map((child: any) => renderMenuNode(child, level + 1))}
+                    </div>
+                )}
+            </div>
+        );
+    };
 
     return (
         <div className="space-y-6">
@@ -537,18 +629,34 @@ export default function MenusPage() {
                 </div>
             </div>
 
-            {/* table */}
-            <Table
-                columns={columns}
-                data={menus}
-                loading={loading}
-                pagination={{
-                    current: queryParams.current,
-                    total: queryParams.total,
-                    pageSize: queryParams.pageSize,
-                    onChange: page => setQueryParams(prev => ({...prev, current: page})),
-                }}
-            />
+            {/* tree cards */}
+            <div className="rounded-3xl border border-gray-200 bg-white/90 backdrop-blur p-4 md:p-6">
+                <div className="flex items-center justify-between mb-4">
+                    <div className="text-sm text-gray-500">
+                        Total: <span className="font-semibold text-gray-900">{queryParams.total || 0}</span>
+                    </div>
+                    <div className="text-xs text-gray-400">
+                        {t('menu.title')}
+                    </div>
+                </div>
+
+                {loading ? (
+                    <div className="py-16 flex flex-col items-center justify-center gap-3">
+                        <motion.div
+                            className="w-10 h-10 border-4 border-blue-500/20 border-t-blue-500 rounded-full"
+                            animate={{rotate: 360}}
+                            transition={{duration: 1, repeat: Infinity, ease: 'linear'}}
+                        />
+                        <p className="text-gray-500 text-sm">{t('common.loading')}</p>
+                    </div>
+                ) : menus.length === 0 ? (
+                    <div className="py-16 text-center text-gray-400">{t('common.noData')}</div>
+                ) : (
+                    <div className="space-y-3">
+                        {menus.map((menu) => renderMenuNode(menu))}
+                    </div>
+                )}
+            </div>
 
             {/* modal */}
             <Modal

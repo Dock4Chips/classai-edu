@@ -7,7 +7,7 @@ import { ChevronDown, Check } from 'lucide-react';
 
 export interface SelectOption {
   value: string | number;
-  label: string;
+  label: React.ReactNode;
   disabled?: boolean;
 }
 
@@ -37,6 +37,7 @@ export function Select({
 
   const selectedOption = options.find(opt => opt.value === value);
   const displayValue = selectedOption?.label || placeholder || 'Select...';
+  const estimatedMenuHeight = Math.min(280, Math.max(48, options.length * 42 + 12));
 
   // Handle click outside and position calculation
   useEffect(() => {
@@ -61,12 +62,15 @@ export function Select({
         if (triggerRef.current) {
           const rect = triggerRef.current.getBoundingClientRect();
           const gap = 8;
-          const maxHeight = 280; // Max height for menu
+          const menuHeight = estimatedMenuHeight;
 
           // Calculate top position
           let top = rect.bottom + gap;
-          if (top + maxHeight > window.innerHeight) {
-            top = rect.top - maxHeight - gap; // Show above if not enough space below
+          if (top + menuHeight > window.innerHeight) {
+            top = rect.top - menuHeight - gap; // Show above if not enough space below
+          }
+          if (top < 8) {
+            top = 8;
           }
 
           setPosition({
@@ -86,7 +90,7 @@ export function Select({
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [isOpen]);
+  }, [isOpen, estimatedMenuHeight]);
 
   const handleSelect = (option: SelectOption) => {
     if (!option.disabled) {
@@ -171,7 +175,7 @@ export function Select({
           ${!selectedOption && !placeholder ? 'text-gray-400' : 'text-gray-900'}
         `}
       >
-        <span className="flex-1 text-left truncate">{displayValue}</span>
+        <span className="flex-1 text-left inline-flex items-center gap-2 truncate">{displayValue}</span>
         <motion.span
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
@@ -230,7 +234,7 @@ export function Select({
                           ${isSelected ? 'bg-black/5' : ''}
                         `}
                       >
-                        <span className="flex-1 truncate">{option.label}</span>
+                        <span className="flex-1 inline-flex items-center gap-2">{option.label}</span>
                         {isSelected && (
                           <motion.span
                             initial={{ scale: 0 }}
