@@ -7,7 +7,6 @@ import {
     MoreVertical,
     Pencil,
     Trash2,
-    BrainCircuit,
     Star,
     Check,
     X,
@@ -26,6 +25,7 @@ import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {DrawConfigModal} from './DrawConfigModal';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
 import {useTranslation} from 'react-i18next';
+import {PageMenuIcon} from '@/components/PageMenuIcon';
 
 const SYNCING_MODEL_STORAGE_KEY = 'models_syncing_model_id';
 
@@ -603,7 +603,7 @@ export default function ModelsPage() {
                 <div>
                     <h1 className="text-4xl font-bold">{t('model.title')}</h1>
                     <p className="text-gray-600 flex items-center gap-2">
-                        <BrainCircuit size={18}/>
+                        <PageMenuIcon />
                         {t('model.manageYoloDetectionModels')}
                     </p>
                 </div>

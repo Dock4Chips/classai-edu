@@ -33,6 +33,7 @@ import {confirm} from '@/utils/confirm';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
 import {useTranslation} from 'react-i18next';
+import {PageMenuIcon} from '@/components/PageMenuIcon';
 
 export default function MenusPage() {
     const {t} = useTranslation();
@@ -594,7 +595,7 @@ export default function MenusPage() {
                 <div>
                     <h1 className="text-4xl font-bold">{t('menu.title')}</h1>
                     <p className="text-gray-600 flex items-center gap-2">
-                        <ListTree size={18}/>
+                        <PageMenuIcon />
                         {t('menu.title')}
                     </p>
                 </div>

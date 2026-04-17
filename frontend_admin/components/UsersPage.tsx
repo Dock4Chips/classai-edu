@@ -8,7 +8,6 @@ import {
     MoreVertical,
     Pencil,
     Trash2,
-    Sparkles,
 } from 'lucide-react';
 import {UserService} from '@/lib/service/user';
 import {Table, Column} from '@/components/ui/table';
@@ -22,6 +21,7 @@ import {buildParams} from '@/utils/buildParams';
 import {FormField, type FormFieldConfig} from '@/components/ui/form';
 import {usePermissions} from '@/lib/contexts/PermissionsContext';
 import {useTranslation} from 'react-i18next';
+import {PageMenuIcon} from '@/components/PageMenuIcon';
 
 export default function UsersPage() {
     const {t} = useTranslation();
@@ -337,7 +337,7 @@ export default function UsersPage() {
                 <div>
                     <h1 className="text-4xl font-bold">{t('user.title')}</h1>
                     <p className="text-gray-600 flex items-center gap-2">
-                        <Sparkles size={18}/>
+                        <PageMenuIcon />
                         {t('user.title')}
                     </p>
                 </div>
