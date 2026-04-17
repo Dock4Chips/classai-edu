@@ -18,6 +18,8 @@ from repository.model_config_repository import (
     delete_model
 )
 from schema.model_config_schema import ModelConfigCreateUpdateSchema
+from tools.data_scope_tool import apply_data_scope_filter, ensure_record_data_scope
+from tools.security_tool import SecurityTool
 from yolo_edu.services.model_config_service import ModelConfigService
 from yolo_edu.scripts.export_yolo_metrics import export_all_metrics
 
@@ -126,7 +128,7 @@ async def list_model_config(
         page=page,
         page_size=page_size,
         order_by=[("create_time","asc")],
-        filters={"is_deleted": 0},
+        filters=apply_data_scope_filter({"is_deleted": 0}, data_scope="user_id"),
         select_fields=None,
     )
     return Res.ok(result)
@@ -137,6 +139,7 @@ async def get_model_config(model_id: int):
     model = get_model_by_id(model_id)
     if not model:
         raise ServiceException(msg="模型配置不存在")
+    ensure_record_data_scope(model)
     return Res.ok(model)
 
 
@@ -144,6 +147,9 @@ async def get_model_config(model_id: int):
 async def add_model_config(data: ModelConfigCreateUpdateSchema = Body(...)):
     payload = data.dict()
     _ensure_single_default_model(bool(payload.get("is_default")))
+    payload["user_id"] = SecurityTool.get_user_id()
+    payload["created_by"] = SecurityTool.get_user_id()
+    payload["updated_by"] = SecurityTool.get_user_id()
     create_model(payload)
     ModelConfigService.clear_cache()
     return Res.ok("新增成功")
@@ -154,6 +160,7 @@ async def sync_model_data(model_id: int):
     model = get_model_by_id(model_id)
     if not model:
         raise ServiceException(msg="模型配置不存在")
+    ensure_record_data_scope(model)
 
     model_path = model.get("model_path")
     if not model_path:
@@ -200,6 +207,7 @@ async def sync_model_data(model_id: int):
             "map50": float(overview.get("map50", 0.0)),
             "map50_95": float(overview.get("map50_95", 0.0)),
             "training_epochs": int(overview.get("epochs", 0)),
+            "updated_by": SecurityTool.get_user_id(),
         }
         update_model(model_id, payload)
         ModelConfigService.clear_cache()
@@ -210,10 +218,18 @@ async def sync_model_data(model_id: int):
 
 @pro_model_config_router.get('/{model_id}/sync-status')
 async def get_sync_status(model_id: int):
+    model = get_model_by_id(model_id)
+    if not model:
+        raise ServiceException(msg="模型配置不存在")
+    ensure_record_data_scope(model)
     return Res.ok({"sync_status": _get_sync_status(model_id)})
 
 @pro_model_config_router.put('/{model_id}')
 async def edit_model_config(model_id: int, data: ModelConfigCreateUpdateSchema = Body(...)):
+    model = get_model_by_id(model_id)
+    if not model:
+        raise ServiceException(msg="模型配置不存在")
+    ensure_record_data_scope(model)
     payload = data.dict(exclude_unset=True)
     clear_fields = payload.pop("clear_fields", None) or []
     allowed_clear_fields = {
@@ -232,6 +248,7 @@ async def edit_model_config(model_id: int, data: ModelConfigCreateUpdateSchema =
     if bool(payload.get("is_default")):
         unset_other_default_models(model_id)
     if payload:
+        payload["updated_by"] = SecurityTool.get_user_id()
         update_model(model_id, payload)
     if clear_fields:
         clear_model_fields(model_id, clear_fields)
@@ -242,5 +259,9 @@ async def edit_model_config(model_id: int, data: ModelConfigCreateUpdateSchema =
 @pro_model_config_router.delete('/{model_id}')
 async def remove_model_config(model_id: int):
     """删除模型配置"""
+    model = get_model_by_id(model_id)
+    if not model:
+        raise ServiceException(msg="模型配置不存在")
+    ensure_record_data_scope(model)
     delete_model(model_id)
     return Res.ok("删除成功")

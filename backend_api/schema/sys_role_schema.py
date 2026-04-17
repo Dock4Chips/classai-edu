@@ -12,6 +12,7 @@ class RoleListQuerySchema(BaseModel):
 class RoleCreateUpdateSchema(BaseModel):
     role_name: Optional[str] = Field(None, min_length=1, max_length=50)
     role_key: Optional[str] = Field(None, min_length=1, max_length=100)
+    data_scope: Optional[str] = Field(None, max_length=1)
     status: Optional[str] = Field(None, max_length=1)
     remark: Optional[str] = Field(None, max_length=500)
 

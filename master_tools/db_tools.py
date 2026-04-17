@@ -102,6 +102,11 @@ class DBTools:
         for k, v in filters.items():
             if v is None:
                 continue
+            if k.endswith('__not_null'):
+                col = k[:-10]
+                if v:
+                    where_parts.append(f'{col} IS NOT NULL')
+                continue
             if isinstance(v, str) and '%' in v:
                 where_parts.append(f'{k} LIKE :{k}')
             else:
@@ -414,4 +419,3 @@ if __name__ == '__main__':
     )
     for user in results:
         print(f'用户 ID: {user["id"]}, 用户名：{user["username"]}, 邮箱：{user["email"]}')
-

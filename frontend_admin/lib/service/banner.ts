@@ -6,7 +6,7 @@ export class BannerService {
      * 获取轮播图列表
      */
     static async getBannerList(): Promise<Results> {
-        return await apiClient.get<Results>('/api/class/index/banner');
+        return await apiClient.get<Results>('/api/class/index/banner/list');
     }
 
     /**
