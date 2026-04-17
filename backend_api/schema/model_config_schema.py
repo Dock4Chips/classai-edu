@@ -16,6 +16,7 @@ class ModelConfigCreateUpdateSchema(BaseModel):
     is_default: Optional[bool] = False
     is_active: Optional[bool] = True
     description: Optional[str] = None
+    training_dataset: Optional[str] = None
 
     class Config:
         extra = "forbid"

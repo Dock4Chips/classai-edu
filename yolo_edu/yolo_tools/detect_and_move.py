@@ -13,7 +13,7 @@ import sys
 import logging
 import warnings
 import cv2
-from yolo_edu import torch_info
+import torch
 import tkinter as tk
 from tkinter import filedialog, messagebox
 import shutil
