@@ -44,7 +44,7 @@ async def upload_file(file: UploadFile = File(...)):
 
 @predict_ws_router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket, token: str):
-    client = Authorization.val_token(token)
+    client = Authorization.decode_token(token=token)
     client_id: int = client["user_id"]
     await websocket.accept()
     log.info(f"WS connected: {client_id}")

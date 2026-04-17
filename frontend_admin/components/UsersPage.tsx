@@ -10,6 +10,7 @@ import {
     Trash2,
 } from 'lucide-react';
 import {UserService} from '@/lib/service/user';
+import {RoleService} from '@/lib/service/role';
 import {Table, Column} from '@/components/ui/table';
 import {Badge} from '@/components/ui/badge';
 import {Dropdown, DropdownButton} from '@/components/ui/dropdown';
@@ -32,6 +33,7 @@ export default function UsersPage() {
     const [isEditMode, setIsEditMode] = useState(false);
     const [originalUserData, setOriginalUserData] = useState<any>(null);
     const [allowedMenuKeys, setAllowedMenuKeys] = useState<Set<string>>(new Set());
+    const [roleOptions, setRoleOptions] = useState<{ value: string; label: string }[]>([]);
 
     /** 查询参数（搜索 + 分页） */
     const [queryParams, setQueryParams] = useState<Results>({
@@ -73,10 +75,11 @@ export default function UsersPage() {
         },
         {
             key: 'role_id',
-            label: t('user.roleId'),
-            type: 'number',
-            placeholder: t('user.roleId'),
-            description: t('user.roleId'),
+            label: t('user.role'),
+            type: 'select',
+            options: roleOptions,
+            placeholder: t('user.role'),
+            description: t('user.role'),
             colSpan: 2,
         },
         {key: 'remark', label: t('user.remark'), type: 'textarea', rows: 3, colSpan: 2, placeholder: t('user.remark')},
@@ -113,11 +116,12 @@ export default function UsersPage() {
         },
         {
             key: 'role_id',
-            label: t('user.roleId'),
-            type: 'number',
-            placeholder: t('user.roleId'),
+            label: t('user.role'),
+            type: 'select',
+            options: roleOptions,
+            placeholder: t('user.role'),
             colSpan: 2,
-            description: t('user.roleId')
+            description: t('user.role')
         },
         {key: 'remark', label: t('user.remark'), type: 'textarea', rows: 3, colSpan: 2, placeholder: t('user.remark')},
     ];
@@ -138,11 +142,21 @@ export default function UsersPage() {
     const setCurrentForm = isEditMode ? setUpdateForm : setAddForm;
 
     useEffect(() => {
-        fetchUsers();
-    }, [queryParams.current, queryParams.user_name, queryParams.email]);
+        RoleService.getRoleList({page: 1, page_size: 100}).then((results) => {
+            if (results?.code === 200) {
+                const records = results?.data?.records || [];
+                setRoleOptions(records.map((item: any) => ({
+                    value: String(item.role_id),
+                    label: item.role_name,
+                })));
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        });
+    }, []);
 
     /** 获取用户列表 */
-    const fetchUsers = () => {
+    function fetchUsers() {
         setLoading(true);
         const params = buildParams({
             page: Number(queryParams.current),
@@ -163,7 +177,11 @@ export default function UsersPage() {
         }).finally(() => {
             setLoading(false);
         });
-    };
+    }
+
+    useEffect(() => {
+        fetchUsers();
+    }, [queryParams.current, queryParams.user_name, queryParams.email]);
 
     /** 删除 */
     const handleDelete = (userId: number) => {
@@ -195,7 +213,10 @@ export default function UsersPage() {
     const handleEdit = (user: any) => {
         setIsEditMode(true);
         // 保存原始数据用于对比
-        setOriginalUserData(user);
+        setOriginalUserData({
+            ...user,
+            role_id: user.role_id != null ? String(user.role_id) : null,
+        });
         setUpdateForm({
             user_id: user.user_id,
             user_name: user.user_name ?? null,
@@ -204,7 +225,7 @@ export default function UsersPage() {
             phonenumber: user.phonenumber ?? null,
             sex: user.sex ?? '2',
             status: user.status ?? '0',
-            role_id: user.role_id ?? null,
+            role_id: user.role_id != null ? String(user.role_id) : null,
             password: null, // 编辑时不显示密码
             remark: user.remark ?? null,
         });
@@ -216,6 +237,9 @@ export default function UsersPage() {
         const data = Object.fromEntries(
             addFormFields.map(f => [f.key, addForm[f.key]])
         );
+        if (data.role_id !== null && data.role_id !== undefined && data.role_id !== '') {
+            data.role_id = Number(data.role_id);
+        }
 
         setLoading(true);
         UserService.createUser(data).then((results) => {
@@ -245,6 +269,13 @@ export default function UsersPage() {
             .map(f => [f.key, updateForm[f.key]]);
 
         const data = Object.fromEntries(changedFields);
+        if (Object.prototype.hasOwnProperty.call(data, 'role_id')) {
+            if (data.role_id === '' || data.role_id === undefined) {
+                data.role_id = null;
+            } else if (data.role_id !== null) {
+                data.role_id = Number(data.role_id);
+            }
+        }
 
         setLoading(true);
         UserService.updateUser(updateForm.user_id, data).then((results) => {

@@ -18,7 +18,11 @@ async def security(request: Request, call_next):
         scheme, token = get_authorization_scheme_param(authorization)
         if scheme.lower() == "bearer" and token:
             try:
-                user_info = Authorization.val_token(token)
+                user_info = Authorization.decode_token(
+                    token=token,
+                    request_path=request.url.path,
+                    request_method=request.method.upper()
+                )
                 SecurityTool.set(user_info)
 
                 # 更新在线用户最后访问时间（每5分钟更新一次）

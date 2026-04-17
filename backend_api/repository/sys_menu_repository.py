@@ -76,7 +76,7 @@ def assign_menus_to_role(role_id: int, menu_ids: list[int]):
     # 批量插入新的菜单权限
     if menu_ids:
         values = [{'role_id': role_id, 'menu_id': menu_id} for menu_id in menu_ids]
-        db.insert_many('sys_role_menu', values)
+        db.batch_insert('sys_role_menu', values)
 
 
 def get_role_menu_ids(role_id: int) -> list[int]:
@@ -84,6 +84,27 @@ def get_role_menu_ids(role_id: int) -> list[int]:
     result = db.query('SELECT menu_id FROM sys_role_menu WHERE role_id = :role_id',
                       {'role_id': role_id})
     return [row['menu_id'] for row in result]
+
+
+def role_has_menu_key(role_id: int, menu_key: str) -> bool:
+    """判断角色是否拥有指定菜单权限键"""
+    if not menu_key:
+        return False
+    result = db.query(
+        '''
+        SELECT 1
+        FROM sys_role_menu rm
+        INNER JOIN sys_menu m ON rm.menu_id = m.menu_id
+        WHERE rm.role_id = :role_id
+          AND m.menu_key = :menu_key
+          AND m.is_deleted = 0
+          AND m.status = 0
+          AND (m.is_visible = 1 OR m.menu_type = 'M')
+        LIMIT 1
+        ''',
+        {'role_id': role_id, 'menu_key': menu_key}
+    )
+    return bool(result)
 
 
 if __name__ == '__main__':

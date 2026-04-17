@@ -2,8 +2,9 @@
 
 import {useState, useEffect} from 'react';
 import {motion} from 'framer-motion';
-import {Plus, MoreVertical, Pencil, Trash2, Key, Check} from 'lucide-react';
+import {Plus, MoreVertical, Pencil, Trash2, Key, ChevronRight, ChevronDown} from 'lucide-react';
 import {RoleService} from '@/lib/service/role';
+import {MenuService} from '@/lib/service/menu';
 import {Results} from '@/lib/api';
 import {Table, Column} from '@/components/ui/table';
 import {Badge} from '@/components/ui/badge';
@@ -26,6 +27,11 @@ export default function RolesPage() {
     const [permissionsModalOpen, setPermissionsModalOpen] = useState(false);
     const [selectedRole, setSelectedRole] = useState<any>(null);
     const [originalRoleData, setOriginalRoleData] = useState<any>(null); // 保存原始数据用于对比
+    const [allMenus, setAllMenus] = useState<any[]>([]);
+    const [roleMenuIds, setRoleMenuIds] = useState<number[]>([]);
+    const [permissionsLoading, setPermissionsLoading] = useState(false);
+    const [permissionsSaving, setPermissionsSaving] = useState(false);
+    const [collapsedMenus, setCollapsedMenus] = useState<Record<number, boolean>>({});
 
     /** 查询参数（搜索 + 分页） */
     const [queryParams, setQueryParams] = useState<Results>({
@@ -112,12 +118,8 @@ export default function RolesPage() {
     const currentFields = isEditMode ? updateFormFields : addFormFields;
     const setCurrentForm = isEditMode ? setUpdateForm : setAddForm;
 
-    useEffect(() => {
-        fetchRoles();
-    }, [queryParams.current]);
-
     /** 获取角色列表 */
-    const fetchRoles = () => {
+    function fetchRoles() {
         setLoading(true);
         RoleService.getRoleList({
             page: queryParams.current,
@@ -135,7 +137,11 @@ export default function RolesPage() {
         }).finally(() => {
             setLoading(false);
         });
-    };
+    }
+
+    useEffect(() => {
+        fetchRoles();
+    }, [queryParams.current]);
 
     /** 删除 */
     const handleDelete = (roleId: number) => {
@@ -177,10 +183,164 @@ export default function RolesPage() {
         setModalOpen(true);
     };
 
+    const buildMenuTree = (records: any[]) => {
+        const nodeMap = new Map<number, any>();
+        const roots: any[] = [];
+
+        records.forEach((item) => {
+            nodeMap.set(item.menu_id, {...item, children: []});
+        });
+
+        nodeMap.forEach((node) => {
+            const parentId = Number(node.parent_id || 0);
+            if (parentId === 0 || !nodeMap.has(parentId)) {
+                roots.push(node);
+            } else {
+                nodeMap.get(parentId).children.push(node);
+            }
+        });
+
+        const sortNodes = (nodes: any[]) => {
+            nodes.sort((a, b) => {
+                const orderA = Number(a.order_num ?? 0);
+                const orderB = Number(b.order_num ?? 0);
+                if (orderA !== orderB) return orderA - orderB;
+                return Number(a.menu_id) - Number(b.menu_id);
+            });
+            nodes.forEach((node) => sortNodes(node.children || []));
+        };
+        sortNodes(roots);
+        return roots;
+    };
+
     /** 权限管理 */
     const handlePermissions = (role: any) => {
         setSelectedRole(role);
         setPermissionsModalOpen(true);
+        setPermissionsLoading(true);
+
+        Promise.all([
+            MenuService.getAllMenus({page: 1, page_size: 100}),
+            MenuService.getRoleMenuIds(role.role_id),
+        ]).then(([menuRes, roleMenuRes]) => {
+            const records = menuRes?.code === 200 ? (menuRes?.data?.records || []) : [];
+            const menuTree = buildMenuTree(records);
+            setAllMenus(menuTree);
+            const ids = roleMenuRes?.code === 200 ? (roleMenuRes?.data || []) : [];
+            setRoleMenuIds(ids);
+            const collapseMap: Record<number, boolean> = {};
+            const walk = (nodes: any[]) => {
+                nodes.forEach((node) => {
+                    collapseMap[node.menu_id] = false;
+                    if (node.children?.length) walk(node.children);
+                });
+            };
+            walk(menuTree);
+            setCollapsedMenus(collapseMap);
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setPermissionsLoading(false);
+        });
+    };
+
+    const togglePermission = (menuId: number) => {
+        const findNodeById = (nodes: any[], targetId: number): any | null => {
+            for (const node of nodes) {
+                if (node.menu_id === targetId) return node;
+                if (node.children?.length) {
+                    const found = findNodeById(node.children, targetId);
+                    if (found) return found;
+                }
+            }
+            return null;
+        };
+
+        const collectDescendantIds = (node: any): number[] => {
+            const ids: number[] = [node.menu_id];
+            if (node.children?.length) {
+                node.children.forEach((child: any) => {
+                    ids.push(...collectDescendantIds(child));
+                });
+            }
+            return ids;
+        };
+
+        setRoleMenuIds((prev) => {
+            const targetNode = findNodeById(allMenus, menuId);
+            if (!targetNode) {
+                return prev;
+            }
+
+            const affectedIds = collectDescendantIds(targetNode);
+            const isChecked = prev.includes(menuId);
+
+            if (isChecked) {
+                return prev.filter((id) => !affectedIds.includes(id));
+            }
+
+            const next = new Set(prev);
+            affectedIds.forEach((id) => next.add(id));
+            return Array.from(next);
+        });
+    };
+
+    const handleSavePermissions = () => {
+        if (!selectedRole) return;
+        setPermissionsSaving(true);
+        MenuService.assignMenusToRole(selectedRole.role_id, roleMenuIds).then((res) => {
+            if (res?.code === 200) {
+                notification.success(t('role.permissionsUpdated'));
+                setPermissionsModalOpen(false);
+                setSelectedRole(null);
+                setRoleMenuIds([]);
+            } else {
+                notification.error(res?.msg);
+            }
+        }).catch((error) => {
+            notification.error(error?.message);
+        }).finally(() => {
+            setPermissionsSaving(false);
+        });
+    };
+
+    const renderPermissionTree = (nodes: any[], level = 0) => {
+        return nodes.map((node) => {
+            const hasChildren = !!node.children?.length;
+            const collapsed = !!collapsedMenus[node.menu_id];
+            const checked = roleMenuIds.includes(node.menu_id);
+
+            return (
+                <div key={node.menu_id}>
+                    <div className={`flex items-center gap-2 rounded-lg px-2 py-2 hover:bg-gray-50 ${level > 0 ? 'ml-4' : ''}`}>
+                        <div className="w-5 h-5 flex items-center justify-center">
+                            {hasChildren ? (
+                                <button
+                                    type="button"
+                                    onClick={() => setCollapsedMenus((prev) => ({...prev, [node.menu_id]: !prev[node.menu_id]}))}
+                                    className="text-gray-500 hover:text-gray-800"
+                                >
+                                    {collapsed ? <ChevronRight className="w-4 h-4"/> : <ChevronDown className="w-4 h-4"/>}
+                                </button>
+                            ) : null}
+                        </div>
+                        <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => togglePermission(node.menu_id)}
+                            className="w-4 h-4 rounded border-gray-300"
+                        />
+                        <span className="text-sm text-gray-800">{node.menu_name}</span>
+                        <span className="text-xs text-gray-400 font-mono">{node.menu_key || '-'}</span>
+                    </div>
+                    {hasChildren && !collapsed ? (
+                        <div className="border-l border-gray-200 ml-4 pl-2">
+                            {renderPermissionTree(node.children, level + 1)}
+                        </div>
+                    ) : null}
+                </div>
+            );
+        });
     };
 
     /** 新增保存 */
@@ -380,59 +540,35 @@ export default function RolesPage() {
                 onClose={() => {
                     setPermissionsModalOpen(false);
                     setSelectedRole(null);
+                    setRoleMenuIds([]);
                 }}
                 title={`${t('role.managePermissions')} - ${selectedRole?.role_name || t('role.roleName')}`}
                 size="lg"
             >
                 <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {[
-                            {id: 1, name: 'user:view', description: `${t('role.permission.view')} ${t('user.title')}`, checked: true},
-                            {id: 2, name: 'user:create', description: `${t('role.permission.create')} ${t('user.title')}`, checked: false},
-                            {id: 3, name: 'user:edit', description: `${t('role.permission.edit')} ${t('user.title')}`, checked: true},
-                            {id: 4, name: 'user:delete', description: `${t('role.permission.delete')} ${t('user.title')}`, checked: false},
-                            {id: 5, name: 'role:view', description: `${t('role.permission.view')} ${t('role.title')}`, checked: true},
-                            {id: 6, name: 'role:create', description: `${t('role.permission.create')} ${t('role.title')}`, checked: false},
-                            {id: 7, name: 'role:edit', description: `${t('role.permission.edit')} ${t('role.title')}`, checked: true},
-                            {id: 8, name: 'role:delete', description: `${t('role.permission.delete')} ${t('role.title')}`, checked: false},
-                        ].map(permission => (
-                            <motion.button
-                                key={permission.id}
-                                whileHover={{scale: 1.01}}
-                                whileTap={{scale: 0.99}}
-                                className="p-4 rounded-xl border-2 text-left hover:border-gray-300 bg-white"
-                            >
-                                <div className="flex items-start justify-between gap-3">
-                                    <div className="flex-1">
-                                        <code className="text-sm font-mono font-semibold text-gray-900">
-                                            {permission.name}
-                                        </code>
-                                        <p className="text-xs text-gray-500 mt-1">{permission.description}</p>
-                                    </div>
-                                    <div
-                                        className="w-5 h-5 rounded-md border-2 border-gray-300 flex items-center justify-center">
-                                        {permission.checked &&
-                                            <Check className="w-3.5 h-3.5 text-white bg-black rounded-sm"/>}
-                                    </div>
-                                </div>
-                            </motion.button>
-                        ))}
+                    <div className="max-h-[55vh] overflow-y-auto rounded-xl border border-gray-200 p-3">
+                        {permissionsLoading ? (
+                            <div className="text-sm text-gray-500 py-8 text-center">{t('common.loading')}</div>
+                        ) : (
+                            <div className="space-y-1">
+                                {renderPermissionTree(allMenus)}
+                            </div>
+                        )}
                     </div>
                     <div className="flex justify-end gap-3 pt-4 border-t">
                         <button
                             onClick={() => {
                                 setPermissionsModalOpen(false);
                                 setSelectedRole(null);
+                                setRoleMenuIds([]);
                             }}
                             className="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl"
                         >
                             {t('common.cancel')}
                         </button>
                         <button
-                            onClick={() => {
-                                notification.success(t('role.permissionsUpdated'));
-                                setPermissionsModalOpen(false);
-                            }}
+                            onClick={handleSavePermissions}
+                            disabled={permissionsSaving || permissionsLoading}
                             className="px-5 py-2.5 bg-black text-white rounded-xl"
                         >
                             {t('common.save')}
