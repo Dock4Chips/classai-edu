@@ -22,6 +22,7 @@ import {
     ListTree,
 } from 'lucide-react';
 import {IdentityService} from "@/lib/service/identity";
+import {MenuService} from "@/lib/service/menu";
 import {notification} from "@/utils/notification";
 import {apiClient} from "@/lib/api";
 import {usePermissions} from "@/lib/contexts/PermissionsContext";
@@ -118,6 +119,7 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
     const [systemName, setSystemName] = useState('ClassEdu');
     const [systemUrl, setSystemUrl] = useState('');
     const [systemLogoUrl, setSystemLogoUrl] = useState('');
+    const [menuIconMap, setMenuIconMap] = useState<Record<string, string>>({});
     const {allowedMenuKeys, loading: menuLoading} = usePermissions();
 
     useEffect(() => {
@@ -132,6 +134,56 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
         });
     }, []);
 
+    useEffect(() => {
+        MenuService.getUserMenus().then((res) => {
+            if (res?.code !== 200 || !Array.isArray(res?.data)) return;
+            const map: Record<string, string> = {};
+            const walk = (menus: any[]) => {
+                menus.forEach((menu) => {
+                    if (menu?.menu_key && menu?.icon) {
+                        map[String(menu.menu_key)] = String(menu.icon);
+                    }
+                    if (Array.isArray(menu?.children) && menu.children.length > 0) {
+                        walk(menu.children);
+                    }
+                });
+            };
+            walk(res.data);
+            setMenuIconMap(map);
+        }).catch(() => {
+            // ignore icon override errors
+        });
+    }, []);
+
+    const resolveIconNode = (iconName?: string, fallback?: React.ReactNode) => {
+        const iconClassName = "w-5 h-5";
+        const iconMap: Record<string, React.ReactNode> = {
+            LayoutDashboard: <LayoutDashboard className={iconClassName}/>,
+            Users: <Users className={iconClassName}/>,
+            Shield: <Shield className={iconClassName}/>,
+            ListTree: <ListTree className={iconClassName}/>,
+            Camera: <Camera className={iconClassName}/>,
+            BrainCircuit: <BrainCircuit className={iconClassName}/>,
+            ImageIcon: <ImageIcon className={iconClassName}/>,
+            Settings: <Settings className={iconClassName}/>,
+            Bell: <Bell className={iconClassName}/>,
+            Activity: <Activity className={iconClassName}/>,
+        };
+        if (iconName && iconMap[iconName]) return iconMap[iconName];
+        return fallback || <Sliders className={iconClassName}/>;
+    };
+
+    const applyServerIcons = (items: MenuItem[]): MenuItem[] => {
+        return items.map((item) => {
+            const serverIconName = menuIconMap[item.key];
+            return {
+                ...item,
+                icon: resolveIconNode(serverIconName, item.icon),
+                children: item.children ? applyServerIcons(item.children) : undefined,
+            };
+        });
+    };
+
     // 过滤菜单项（只显示用户有权限的菜单）
     const filterMenuItems = (items: MenuItem[]): MenuItem[] => {
         return items.filter(item => allowedMenuKeys.has(item.key));
@@ -142,7 +194,7 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
 
     // 根据模块选择菜单并过滤
     const baseMenuItems = isInSettingsModule ? settingsModuleMenuItems : mainMenuItems;
-    const currentMenuItems = menuLoading ? [] : filterMenuItems(baseMenuItems);
+    const currentMenuItems = menuLoading ? [] : applyServerIcons(filterMenuItems(baseMenuItems));
     const currentTitle = isInSettingsModule ? t('sidebar.settings') : t('sidebar.administration');
 
     const toggleMenu = (key: string) => {

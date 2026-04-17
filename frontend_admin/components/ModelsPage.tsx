@@ -549,12 +549,14 @@ export default function ModelsPage() {
                         onClick: () => handleEdit(record),
                     });
                 }
-                items.push({
-                    key: 'drawConfig',
-                    label: t('model.drawConfig'),
-                    icon: <Palette className="w-4 h-4"/>,
-                    onClick: () => handleDrawConfig(record),
-                });
+                if (hasPermission('models:drawConfig')) {
+                    items.push({
+                        key: 'drawConfig',
+                        label: t('model.drawConfig'),
+                        icon: <Palette className="w-4 h-4"/>,
+                        onClick: () => handleDrawConfig(record),
+                    });
+                }
                 if (hasPermission('models:edit')) {
                     const isSyncingThisRow = syncingModelId === Number(record.model_id);
                     const hasOtherSyncTask = syncingModelId !== null && !isSyncingThisRow;

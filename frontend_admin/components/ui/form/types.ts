@@ -1,3 +1,5 @@
+import type {ReactNode} from 'react';
+
 /**
  * 表单字段类型枚举
  */
@@ -19,7 +21,7 @@ export type FieldType =
  */
 export interface FieldOption {
   value: string | number;
-  label: string;
+  label: ReactNode;
   disabled?: boolean;
 }
 
