@@ -26,9 +26,9 @@ async def list_model_config(
     result = page_list_model(
         page=page,
         page_size=page_size,
-        order_by=[("create_time","desc")],
+        order_by=[("create_time","asc")],
         filters={"is_deleted": 0},
-        select_fields=None
+        select_fields=None,
     )
     return Res.ok(result)
 

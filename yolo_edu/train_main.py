@@ -30,23 +30,23 @@ def train_model():
         - 启用AMP和cache可显著提升训练速度并降低内存占用
         - patience参数有助于避免无效训练和过拟合问题
     '''
-    model = YOLO('yolov8m.pt')
+    model = YOLO('yolov8n.pt')
     log.info('Training started')
     results = model.train(
         data="datasets/dataset.yaml",
         epochs=200,
         imgsz=640,
-        batch=-1,
+        # batch=-1,
         device="mps",
-        workers=2,
-        amp=True,
-        cache=True,
-        val=True,
-        project="dodge_project",
-        name="classai_model_train",
-        patience=50,
-        lr0=0.01,
-        lrf=0.01,
+        # workers=2,
+        # amp=True,
+        # cache=True,
+        # val=True,
+        project="classai_model",
+        name="classai_model_8n",
+        # patience=50,
+        # lr0=0.01,
+        # lrf=0.01,
     )
     log.info(f"Training completed! Best model saved at: {model.trainer.save_dir}")
 

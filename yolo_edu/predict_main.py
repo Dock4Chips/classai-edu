@@ -4,7 +4,7 @@ from master_tools.logger_tool import log
 
 PIC_NAME = '9fe1f3f8-data_rbg_frame774.jpg'
 
-MODEL_PATH = "dodge_project/classai_model/weights/best.pt"
+MODEL_PATH = "/Users/dock4chips/Downloads/ToDesk/runs/detect/dodge_project/classai_model_train4/weights/best.pt"
 PIC_PATH = f"datasets/active/val/images/{PIC_NAME}"
 
 
