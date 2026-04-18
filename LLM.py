@@ -5,14 +5,15 @@
 # BASE_URL = "https://model-world.vip.cpolar.cn"
 # MODEL = "kwangsuklee/Qwen3.5-27B-Claude-4.6-Opus-Reasoning-Distilled-GGUF:latest"
 
-
 import requests
 import json
 
 BASE_URL = "http://175.27.242.42:6003"
-# MODEL = "llama3.1:8b"
-MODEL = "gemma3:4b"
+MODEL = "llama3.1:8b"
+# MODEL = "gemma3:4b"
 # MODEL = "qwen3.5:9b"
+# MODEL = "qwen3.5:0.8b"
+# MODEL = "deepseek-r1:1.5b"
 
 def chat(prompt: str, stream: bool = True):
     """发送聊天请求"""
