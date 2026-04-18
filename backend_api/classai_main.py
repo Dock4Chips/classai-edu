@@ -44,3 +44,5 @@ if __name__ == "__main__":
 # https://console.cloud.google.com/auth/clients?project=valiant-nucleus-454009-n5
 
 # https://github.com/settings/apps/classai-edu
+
+# dscacheutil -flushcache; sudo killall -HUP mDNSResponder
