@@ -2,6 +2,7 @@ import os.path
 
 from ultralytics import YOLO
 from master_tools.logger_tool import log
+import time
 
 
 def train_model():
@@ -18,9 +19,13 @@ def train_model():
         val (bool): 训练时关闭验证集评估 可大幅提升训练速度（调参阶段推荐关闭）
         project (str): 训练结果保存的项目目录（顶层文件夹）
         name (str): 本次训练的运行名称 最终路径: dodge_project/classai_model/
-        patience (int): Early Stopping 参数：如果验证指标连续 50 个 epoch 没有提升，则提前停止训练 防止过拟合和无效训练
-        lr0 (float): 初始学习率（Initial Learning Rate）控制训练初期参数更新幅度 YOLO 官方推荐默认值，一般不要随意修改
+        patience (int): Early Stopping 参数：如果验证指标连续 40 个 epoch 没有提升，则提前停止训练 防止过拟合和无效训练
+        optimizer (str): 优化器，使用 AdamW 在当前任务上通常比 auto 更稳定
+        lr0 (float): 初始学习率（Initial Learning Rate）控制训练初期参数更新幅度
         lrf (float): 最终学习率比例（Final LR Fraction）最终学习率 = lr0 * lrf 训练后期降低学习率，用于稳定收敛与提升置信度
+        cos_lr (bool): 使用余弦退火学习率，改善中后期收敛
+        close_mosaic (int): 最后 N 轮关闭 mosaic，减少训练/验证分布偏差
+        mosaic/mixup/copy_paste (float): 数据增强强度，用于提高泛化并缓解类别不均衡
     
     Returns:
         None: 函数无返回值，训练结果自动保存至指定项目目录
@@ -30,24 +35,38 @@ def train_model():
         - 启用AMP和cache可显著提升训练速度并降低内存占用
         - patience参数有助于避免无效训练和过拟合问题
     '''
-    model = YOLO('yolov8n.pt')
+    model = YOLO('/Users/dock4chips/code_workspace/script-P/classai-edu/yolo_edu/classai_model/classai_model_8n/weights/last.pt')
     log.info('Training started')
-    results = model.train(
+    start_time = time.time()
+    model.train(
         data="datasets/dataset.yaml",
-        epochs=200,
+        epochs=180,
         imgsz=640,
-        # batch=-1,
+        batch=24,
         device="mps",
-        # workers=2,
-        # amp=True,
-        # cache=True,
-        # val=True,
+        workers=2,
+        amp=True,
+        cache=True,
+        val=True,
         project="classai_model",
         name="classai_model_8n",
-        # patience=50,
-        # lr0=0.01,
-        # lrf=0.01,
+        patience=40,
+        optimizer="AdamW",
+        lr0=0.003,
+        lrf=0.01,
+        cos_lr=True,
+        close_mosaic=20,
+        mosaic=0.7,
+        mixup=0.1,
+        copy_paste=0.1,
+        degrees=5.0,
+        translate=0.08,
+        scale=0.4,
+        fliplr=0.5,
+        resume=True
     )
+    end_time = time.time()
+    log.info(f"\n\n总耗时: {(end_time - start_time) / 3600:.2f}H")
     log.info(f"Training completed! Best model saved at: {model.trainer.save_dir}")
 
 

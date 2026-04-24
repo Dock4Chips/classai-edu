@@ -2,7 +2,7 @@ fastapi==0.121.3
 loguru==0.7.3
 opencv_python==4.11.0.86
 python_jose==3.5.0
-Requests==2.32.5
+requests==2.32.5
 SQLAlchemy==2.0.44
 sqlmodel==0.0.27
 ultralytics==8.3.217
@@ -40,3 +40,4 @@ av==16.1.0
 passlib~=1.7.4
 bcrypt==4.0.1
 protobuf>=3.20.3,<6
+python-multipart==0.0.26
