@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Dock-pydev" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Dock-pydev" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="classai-edu" project-jdk-type="Python SDK" />
 </project>
