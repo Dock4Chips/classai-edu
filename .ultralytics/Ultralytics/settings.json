@@ -1,0 +1,21 @@
+{
+  "settings_version": "0.0.6",
+  "datasets_dir": "/Users/dock4chips/code_workspace/script-P/classai-edu/yolo_edu/datasets",
+  "weights_dir": "weights",
+  "runs_dir": "runs",
+  "uuid": "13e5694e6265a1d42a5a93f8a1ea4a2da4358283875ff0d5aff9adce4e2d3acd",
+  "sync": true,
+  "api_key": "",
+  "openai_api_key": "",
+  "clearml": true,
+  "comet": true,
+  "dvc": true,
+  "hub": true,
+  "mlflow": true,
+  "neptune": true,
+  "raytune": true,
+  "tensorboard": false,
+  "wandb": false,
+  "vscode_msg": true,
+  "openvino_msg": true
+}
