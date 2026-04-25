@@ -1,6 +1,6 @@
 import ast
 from typing import Dict, List, Tuple, Optional
-from master_tools.logger_tool import log
+from tools.logger_tool import log
 from repository.model_config_repository import get_model_by_id
 from repository.model_config_repository import page_list_model
 from repository.model_class_repository import get_model_class_by_model_id

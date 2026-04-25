@@ -1,12 +1,10 @@
-import hashlib
-
 from sentry_sdk.integrations import httpx
 from fastapi import Request
 
 from auth.authorization import Authorization
 from config import GITHUB_TOKEN_URL, GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, GITHUB_REDIRECT_URI, GITHUB_USER_INFO_URL, \
     GITHUB_AUTHORIZATION_URL
-from master_tools.logger_tool import log
+from tools.logger_tool import log
 from repository.identity_repository import get_user_by_username
 from repository.sys_user_repository import create_user
 from tools.login_tool import record_login

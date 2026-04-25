@@ -8,7 +8,7 @@ import numpy as np
 from fastapi import UploadFile
 
 from config.config import bucket, MINIO_BUCKET_NAME, MINIO_ENDPOINT
-from master_tools.logger_tool import log
+from tools.logger_tool import log
 from models.exceptions import ServiceException
 
 

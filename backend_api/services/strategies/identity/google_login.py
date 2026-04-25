@@ -1,12 +1,9 @@
-import hashlib
-
 from auth.authorization import Authorization
 from config import GOOGLE_AUTHORIZATION_URL, GOOGLE_CLIENT_ID, GOOGLE_REDIRECT_URI, GOOGLE_TOKEN_URL, \
     GOOGLE_CLIENT_SECRET, GOOGLE_USER_INFO_URL
 from fastapi import Request
 from sentry_sdk.integrations import httpx
 
-from master_tools.logger_tool import log
 from repository.sys_user_repository import get_user_by_username, create_user
 from tools.login_tool import record_login
 import secrets

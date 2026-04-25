@@ -6,7 +6,6 @@ from routers import api_router
 from models.security import security
 from config.exception_handler import handler_exception
 from models.result import ResContext
-from master_tools.logger_tool import log
 from yolo_edu.services.model_config_service import ModelConfigService
 
 

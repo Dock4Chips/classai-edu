@@ -1,6 +1,6 @@
 from ultralytics import YOLO
 import os
-from master_tools.logger_tool import log
+from tools.logger_tool import log
 
 PIC_NAME = '0a5bc839-data_rbg_frame1449.jpg'
 
