@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2, XCircle, AlertTriangle, Info, X, Sparkles } from 'lucide-react';
+import type { Results } from '@/lib/api';
 
 export type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
@@ -13,6 +14,27 @@ export interface NotificationOptions {
   type?: NotificationType;
   duration?: number;
 }
+
+type NotificationMessage<TData = unknown> =
+  | Results<TData>['data']
+  | Results<TData>['msg']
+  | Error
+  | number
+  | boolean
+  | null
+  | undefined;
+
+const normalizeMessage = <TData,>(message: NotificationMessage<TData>): string => {
+  if (typeof message === 'string') return message;
+  if (message == null) return '';
+  if (typeof message === 'number' || typeof message === 'boolean') return String(message);
+  if (message instanceof Error) return message.message;
+  try {
+    return JSON.stringify(message);
+  } catch {
+    return String(message);
+  }
+};
 
 interface NotificationItem extends NotificationOptions {
   id: string;
@@ -60,14 +82,14 @@ export const removeNotification = (id: string) => {
 
 // 便捷方法
 export const notification = {
-  success: (message: string, title?: string, duration?: number) =>
-    showNotification({ message, title, type: 'success', duration }),
-  error: (message: string, title?: string, duration?: number) =>
-    showNotification({ message, title, type: 'error', duration }),
-  warning: (message: string, title?: string, duration?: number) =>
-    showNotification({ message, title, type: 'warning', duration }),
-  info: (message: string, title?: string, duration?: number) =>
-    showNotification({ message, title, type: 'info', duration }),
+  success: <TData = unknown>(message: NotificationMessage<TData>, title?: string, duration?: number) =>
+    showNotification({ message: normalizeMessage(message), title, type: 'success', duration }),
+  error: <TData = unknown>(message: NotificationMessage<TData>, title?: string, duration?: number) =>
+    showNotification({ message: normalizeMessage(message), title, type: 'error', duration }),
+  warning: <TData = unknown>(message: NotificationMessage<TData>, title?: string, duration?: number) =>
+    showNotification({ message: normalizeMessage(message), title, type: 'warning', duration }),
+  info: <TData = unknown>(message: NotificationMessage<TData>, title?: string, duration?: number) =>
+    showNotification({ message: normalizeMessage(message), title, type: 'info', duration }),
 };
 
 // 图标组件

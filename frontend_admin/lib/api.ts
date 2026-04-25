@@ -88,7 +88,10 @@ export class ApiClient {
     }
 }
 
-export interface Results {
+export interface Results<TData = any> {
+    code?: number;
+    msg?: any;
+    data?: TData;
     [key: string]: any;
 }
 

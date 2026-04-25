@@ -52,8 +52,8 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
             Number(modelQueryParams.pageSize)
         ).then((results) => {
             if (results.code === 200) {
-                setModels(results.data.records || []);
-                setModelQueryParams(prev => ({...prev, total: results.data.total}));
+                setModels(results.data?.records || []);
+                setModelQueryParams(prev => ({...prev, total: results.data?.total || 0}));
             }
         }).catch((error) => {
             console.error('Failed to fetch models:', error);
@@ -69,8 +69,8 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
             Number(deviceQueryParams.pageSize)
         ).then((results) => {
             if (results.code === 200) {
-                setDevices(results.data.records || []);
-                setDeviceQueryParams(prev => ({...prev, total: results.data.total}));
+                setDevices(results.data?.records || []);
+                setDeviceQueryParams(prev => ({...prev, total: results.data?.total || 0}));
             }
         }).catch((error) => {
             console.error('Failed to fetch devices:', error);
@@ -196,12 +196,16 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
         return fields;
     };
 
+    const getConnectionType = (value: unknown): string | null => {
+        return typeof value === 'string' ? value : null;
+    };
+
     const getUpdateDeviceFields = (): FormFieldConfig[] => {
-        return [...baseDeviceFields, ...getDynamicDeviceFields(updateDeviceForm.connection_type, true)];
+        return [...baseDeviceFields, ...getDynamicDeviceFields(getConnectionType(updateDeviceForm.connection_type), true)];
     };
 
     const getAddDeviceFields = (): FormFieldConfig[] => {
-        return [...baseDeviceFields, ...getDynamicDeviceFields(addDeviceForm.connection_type, false)];
+        return [...baseDeviceFields, ...getDynamicDeviceFields(getConnectionType(addDeviceForm.connection_type), false)];
     };
 
     const getEmptyForm = (fields: readonly { key: string }[]) =>
@@ -226,7 +230,7 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
     useEffect(() => {
         const form = isDeviceEditMode ? updateDeviceForm : addDeviceForm;
         const setForm = isDeviceEditMode ? setUpdateDeviceForm : setAddDeviceForm;
-        const connectionType = form.connection_type;
+        const connectionType = getConnectionType(form.connection_type);
 
         if (connectionType === '0') {
             setForm(prev => ({...prev, http_url: null, device_index: '0'}));
@@ -289,7 +293,7 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
             getAddDeviceFields().map(f => [f.key, addDeviceForm[f.key]])
         );
 
-        if (addDeviceForm.connection_type === '2') {
+        if (getConnectionType(addDeviceForm.connection_type) === '2') {
             (data as any).device_index = 0;
         }
 
@@ -324,7 +328,7 @@ export function DeviceModelSettingModal({isOpen, onClose, onRefresh}: SettingsMo
 
         const data = Object.fromEntries(changedFields);
 
-        if (updateDeviceForm.connection_type === '2') {
+        if (getConnectionType(updateDeviceForm.connection_type) === '2') {
             (data as any).device_index = 0;
         }
 
