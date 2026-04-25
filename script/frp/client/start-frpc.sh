@@ -31,6 +31,19 @@ type = tcp
 local_ip = host.docker.internal
 local_port = 11434
 remote_port = 6003
+
+[minio-api]
+type = tcp
+local_ip = host.docker.internal
+local_port = 9000
+remote_port = 6004
+
+[minio-console]
+type = tcp
+local_ip = host.docker.internal
+local_port = 9001
+remote_port = 6005
+
 EOF
 
 docker rm -f frpc 2>/dev/null

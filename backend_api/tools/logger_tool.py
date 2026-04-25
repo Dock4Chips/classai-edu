@@ -110,7 +110,7 @@ class LoggingConfig:
     """日志配置类，支持根据模块自动命名日志文件"""
 
     def __init__(self, project_dir=None):
-        self.project_dir = project_dir or Path(os.path.dirname(os.path.abspath(__file__))).parent
+        self.project_dir = project_dir or Path(__file__).resolve().parents[2]
         self.log_dir = self.project_dir / "logs"
         os.makedirs(self.log_dir, exist_ok=True)
 
