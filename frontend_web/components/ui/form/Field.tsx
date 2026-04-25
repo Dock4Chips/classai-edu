@@ -2,6 +2,7 @@
 
 import { Select } from '@/components/ui/select';
 import { cn } from '@/utils/cn';
+import type { FormFieldProps, FieldOption } from './types';
 
 export function FormField({
   field,
@@ -9,7 +10,7 @@ export function FormField({
   onChange,
   error,
   className = '',
-}) {
+}: FormFieldProps) {
   const baseInputClass =
     'w-full px-4 py-2.5 rounded-xl border border-gray-200 bg-white ' +
     'focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black transition';
@@ -26,7 +27,7 @@ export function FormField({
         <Select
           value={value ?? ''}
           onChange={onChange}
-          options={field.options?.map(opt => ({
+          options={field.options?.map((opt: FieldOption) => ({
             value: opt.value,
             label: opt.label,
             disabled: opt.disabled,
@@ -54,7 +55,7 @@ export function FormField({
           rows={field.rows ?? 3}
           value={value ?? ''}
           placeholder={field.placeholder}
-          onChange={e => onChange(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => onChange(e.target.value)}
           className={baseInputClass}
         />
       </div>
@@ -76,7 +77,7 @@ export function FormField({
             <input
               type="color"
               value={value || '#FF0000'}
-              onChange={e => onChange(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
               className="w-12 h-10 rounded-lg border border-gray-200 cursor-pointer"
               style={{padding: '2px'}}
             />
@@ -84,7 +85,7 @@ export function FormField({
               type="text"
               value={value || ''}
               placeholder="#FF0000"
-              onChange={e => onChange(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
               className="flex-1 px-3 py-2 rounded-lg border border-gray-200 font-mono text-sm"
               pattern="^#[0-9A-Fa-f]{6}$"
             />
@@ -128,7 +129,7 @@ export function FormField({
         min={field.min}
         max={field.max}
         step={field.step}
-        onChange={e => onChange(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onChange(e.target.value)}
         className={cn(
           baseInputClass,
           error && 'border-red-500'

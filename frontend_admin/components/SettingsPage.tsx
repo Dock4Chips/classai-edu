@@ -113,10 +113,10 @@ export default function SettingsPage() {
         }
         const rawValue = res.data.config_value;
         if (SETTINGS_CONFIG_META[key].configType === 'boolean') {
-          merged[key] = String(rawValue).toLowerCase() === 'true';
+          (merged as Record<SettingsKey, string | boolean>)[key] = String(rawValue).toLowerCase() === 'true';
           return;
         }
-        merged[key] = String(rawValue ?? '');
+        (merged as Record<SettingsKey, string | boolean>)[key] = String(rawValue ?? '');
       });
       setSettings(merged);
     }).finally(() => {

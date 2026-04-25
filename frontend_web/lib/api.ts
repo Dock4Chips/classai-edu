@@ -67,7 +67,7 @@ export class ApiClient {
         return token;
     }
 
-    // GET (保留原写法)
+    // GET
     get<T>(endpoint: string, params?: Record<string, unknown>): Promise<T> {
         return this.instance.get(endpoint, { params });
     }
@@ -93,8 +93,11 @@ export class ApiClient {
     }
 }
 
-export interface Results {
-    [key: string]: unknown;
+export interface Results<TData = any> {
+    code?: number;
+    msg?: any;
+    data?: TData;
+    [key: string]: any;
 }
 
 // 创建实例

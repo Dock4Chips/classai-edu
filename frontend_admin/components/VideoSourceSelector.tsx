@@ -157,8 +157,8 @@ export function VideoSourceSelector({ value, onChange, disabled = false }: Video
     }
   };
 
-  const handleDeviceChange = (deviceId: string | number) => {
-    setSelectedDeviceId(deviceId ? parseInt(deviceId as string) : null);
+  const handleDeviceChange = (deviceId: string | number | null) => {
+    setSelectedDeviceId(deviceId ? parseInt(String(deviceId), 10) : null);
   };
 
   const handleManualInputChange = (inputValue: string) => {
