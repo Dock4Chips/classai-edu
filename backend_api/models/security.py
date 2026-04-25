@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from fastapi.security.utils import get_authorization_scheme_param
-from master_tools.logger_tool import log
+from tools.logger_tool import log
 from auth.authorization import Authorization
 from tools.security_tool import SecurityTool
 from repository.sys_user_online_repository import update_online_user_last_access

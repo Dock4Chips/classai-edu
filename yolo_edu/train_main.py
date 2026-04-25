@@ -1,7 +1,5 @@
-import os.path
-
 from ultralytics import YOLO
-from master_tools.logger_tool import log
+from tools.logger_tool import log
 import time
 
 

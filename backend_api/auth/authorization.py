@@ -5,7 +5,7 @@ from fastapi import Depends
 from jose import jwt, JWTError
 from config import redis_client
 from config.auth_config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
-from master_tools.logger_tool import log
+from tools.logger_tool import log
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import Request
 from fastapi.security.utils import get_authorization_scheme_param

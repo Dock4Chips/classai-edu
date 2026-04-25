@@ -1,5 +1,5 @@
 from config import mysql_client
-from master_tools.db_tools import DBTools
+from tools.db_tools import DBTools
 from repository.sys_notice_repository import page_list_notice
 from tools.db_fields import db_fill
 

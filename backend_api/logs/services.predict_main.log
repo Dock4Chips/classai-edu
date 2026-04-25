@@ -1,0 +1,5 @@
+2026-04-26 02:34:16.706 | INFO     | tools.logger_tool:setup_logging:105 - setup logging success for module: predict_main
+2026-04-26 02:34:16.773 | INFO     | __main__:predict_model:21 - Model loaded: /Users/dock4chips/Downloads/ToDesk/runs/detect/dodge_project/classai_model_train4/weights/best.pt
+2026-04-26 02:34:16.940 | INFO     | __main__:predict_model:33 - Detected object: [learning_to_copy] | Confidence: 0.76 | BBox: (354, 143) -> (554, 473)
+2026-04-26 02:34:16.940 | INFO     | __main__:predict_model:33 - Detected object: [sharing_answers ] | Confidence: 0.74 | BBox: (92, 102) -> (383, 549)
+2026-04-26 02:34:16.940 | INFO     | __main__:predict_model:33 - Detected object: [looking_around  ] | Confidence: 0.57 | BBox: (184, 138) -> (283, 319)

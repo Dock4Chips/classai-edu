@@ -1,7 +1,6 @@
-from langchain_community.callbacks.sagemaker_callback import save_json
 from ultralytics import YOLO
 
-from master_tools.logger_tool import log
+from tools.logger_tool import log
 
 
 MODEL_PATH = "dodge_project/classai_model/weights/best.pt"

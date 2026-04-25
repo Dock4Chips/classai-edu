@@ -1,5 +1,5 @@
 from ultralytics import YOLO
-from master_tools.logger_tool import log
+from tools.logger_tool import log
 from yolo_edu.services.model_config_service import ModelConfigService
 
 

@@ -1,7 +1,5 @@
-from collections import defaultdict
-
 from config import mysql_client
-from master_tools.db_tools import DBTools
+from tools.db_tools import DBTools
 
 db = DBTools(mysql_client)
 
