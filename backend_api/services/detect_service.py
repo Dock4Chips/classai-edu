@@ -87,7 +87,7 @@ async def frame_to_np(files: Union[UploadFile, List[UploadFile]]) -> List[np.nda
     return images
 
 
-async def detection_img_task_service(data: DetectionTaskCreateSchema, files: List[UploadFile],presign_save: bool = True) -> List[Dict]:
+async def detection_img_task_service(data: DetectionTaskCreateSchema, files: List[UploadFile],presign_save: bool = False) -> List[Dict]:
     np_imgs = await frame_to_np(files)
     results = process_image_detection(imgs=np_imgs, model_id=data.model_id, presign_save=presign_save)
     task_id =  valid_entity_before_save(data, results)
@@ -96,7 +96,7 @@ async def detection_img_task_service(data: DetectionTaskCreateSchema, files: Lis
     return results
 
 
-async def detection_cap_task_service(data: DetectionTaskCreateSchema, file: UploadFile,presign_save: bool = True) -> List[Dict]:
+async def detection_cap_task_service(data: DetectionTaskCreateSchema, file: UploadFile,presign_save: bool = False) -> List[Dict]:
     output_buffer = await process_cap_detection(file, model_id=data.model_id)
     url = upload_bytes_to_minio(
         data=output_buffer.read(),
@@ -242,6 +242,6 @@ if __name__ == '__main__':
         data=output_buffer.read(),
         filename=filename,
         content_type='video/mp4',
-        presign_save=True  # 或者 True，根据需要
+        presign_save=True
     )
     print(url)
