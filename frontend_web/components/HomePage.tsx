@@ -228,23 +228,39 @@ export default function HomePage() {
       icon: ImageIcon,
       title: 'Image Upload',
       description: 'Analyze classroom photos with instant YOLO insights',
+      href: '/detection',
     },
     {
       icon: Video,
       title: 'Video Processing',
       description: 'Process recorded videos to track patterns over time',
+      href: '/detection',
     },
     {
       icon: Camera,
       title: 'Live Detection',
       description: 'Real-time monitoring with instant analysis',
+      href: '/detection/predict',
+      preferredMode: 'camera' as const,
     },
     {
       icon: Plane,
       title: 'Drone Feed',
       description: 'Aerial classroom surveillance capabilities',
+      href: '/detection',
     },
   ];
+
+  const setPredictDefaultMode = (preferredMode?: 'camera') => {
+    if (typeof window === 'undefined') return;
+
+    if (preferredMode) {
+      window.sessionStorage.setItem('predict-default-mode', preferredMode);
+      return;
+    }
+
+    window.sessionStorage.removeItem('predict-default-mode');
+  };
 
   return (
     <div className="min-h-screen bg-white relative">
@@ -422,7 +438,10 @@ export default function HomePage() {
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
             {features.map((feature, i) => (
               <AnimatedContent key={feature.title} delay={i * 0.08}>
-                <Link href="/detection">
+                <Link
+                  href={feature.href}
+                  onClick={() => setPredictDefaultMode(feature.preferredMode)}
+                >
                   <SpotlightCard
                     spotlightColor="rgba(59, 130, 246, 0.3)"
                     className="p-6 h-full hover:scale-[1.02] transition-transform duration-200 cursor-pointer"
