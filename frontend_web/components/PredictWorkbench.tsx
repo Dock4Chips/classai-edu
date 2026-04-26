@@ -309,6 +309,16 @@ export default function PredictWorkbench() {
         void fetchModelConfig()
     }, []);
 
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const storedMode = window.sessionStorage.getItem('predict-default-mode');
+        if (storedMode === 'camera') {
+            setMode('camera');
+        }
+        window.sessionStorage.removeItem('predict-default-mode');
+    }, []);
+
 
     useEffect(() => {
         if (mode === 'camera') {
@@ -476,24 +486,6 @@ export default function PredictWorkbench() {
                 }}
                 leftContent={
                     <div className="flex items-center gap-4">
-                        <div
-                            className={`flex items-center gap-2 ${isProcessing ? 'pointer-events-none opacity-50' : ''}`}>
-                            <span className="text-sm text-gray-600">{t('detection.common.model')}:</span>
-                            <Dropdown
-                                trigger={
-                                    <DropdownButton variant="default" className="justify-between min-w-[120px]">
-                                        <span className="text-sm">
-                                            {modelList.find(m => m.model_id === selectedModelId)?.model_name || t('detection.common.selectModel')}
-                                        </span>
-                                    </DropdownButton>
-                                }
-                                items={modelList.map((model) => ({
-                                    key: model.model_id.toString(),
-                                    label: model.model_name,
-                                    onClick: () => setSelectedModelId(model.model_id)
-                                }))}
-                            />
-                        </div>
                         {mode === 'camera' && deviceList.length > 0 && (
                             <div
                                 className={`flex items-center gap-2 ${isProcessing ? 'pointer-events-none opacity-50' : ''}`}>
@@ -514,6 +506,24 @@ export default function PredictWorkbench() {
                                 />
                             </div>
                         )}
+                        <div
+                            className={`flex items-center gap-2 ${isProcessing ? 'pointer-events-none opacity-50' : ''}`}>
+                            <span className="text-sm text-gray-600">{t('detection.common.model')}:</span>
+                            <Dropdown
+                                trigger={
+                                    <DropdownButton variant="default" className="justify-between min-w-[120px]">
+                                        <span className="text-sm">
+                                            {modelList.find(m => m.model_id === selectedModelId)?.model_name || t('detection.common.selectModel')}
+                                        </span>
+                                    </DropdownButton>
+                                }
+                                items={modelList.map((model) => ({
+                                    key: model.model_id.toString(),
+                                    label: model.model_name,
+                                    onClick: () => setSelectedModelId(model.model_id)
+                                }))}
+                            />
+                        </div>
                         <div className="flex items-center gap-2">
                             <span className="text-sm text-gray-600">{t('detection.common.confidence')}:</span>
                             <input

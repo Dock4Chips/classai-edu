@@ -69,11 +69,22 @@ export default function DashboardPage() {
   const [confusionMatrix, setConfusionMatrix] = useState<ConfusionMatrixData | null>(null);
   const [metricsLoading, setMetricsLoading] = useState(true);
   const quickActions = [
-    { icon: ImageIcon, label: t('dashboard.uploadImage'), desc: t('dashboard.analyzePhotos'), color: 'from-blue-500 to-cyan-500' },
-    { icon: Video, label: t('dashboard.uploadVideo'), desc: t('dashboard.processFootage'), color: 'from-violet-500 to-purple-500' },
-    { icon: Camera, label: t('dashboard.liveCamera'), desc: t('dashboard.realTimeAnalysis'), color: 'from-emerald-500 to-teal-500' },
-    { icon: BarChart3, label: t('dashboard.viewReports'), desc: t('dashboard.detailedInsights'), color: 'from-amber-500 to-orange-500' }
+    { icon: ImageIcon, label: t('dashboard.uploadImage'), desc: t('dashboard.analyzePhotos'), color: 'from-blue-500 to-cyan-500', href: '/detection/predict' },
+    { icon: Video, label: t('dashboard.uploadVideo'), desc: t('dashboard.processFootage'), color: 'from-violet-500 to-purple-500', href: '/detection/track' },
+    { icon: Camera, label: t('dashboard.liveCamera'), desc: t('dashboard.realTimeAnalysis'), color: 'from-emerald-500 to-teal-500', href: '/detection/predict', preferredMode: 'camera' as const },
+    { icon: BarChart3, label: t('dashboard.viewReports'), desc: t('dashboard.detailedInsights'), color: 'from-amber-500 to-orange-500', href: '/reports' }
   ];
+
+  const handleQuickActionClick = (preferredMode?: 'camera') => {
+    if (typeof window === 'undefined') return;
+
+    if (preferredMode) {
+      window.sessionStorage.setItem('predict-default-mode', preferredMode);
+      return;
+    }
+
+    window.sessionStorage.removeItem('predict-default-mode');
+  };
 
   function loadTrainingMetrics() {
     DashboardService.get_metrics()
@@ -247,29 +258,36 @@ export default function DashboardPage() {
               <h2 className="text-2xl font-bold text-gray-900">{t('dashboard.quickActions')}</h2>
               <p className="text-gray-500">{t('dashboard.startANewAnalysis')}</p>
             </div>
-            <button className="text-sm text-violet-600 hover:text-violet-700 font-medium">{t('dashboard.viewAll')}</button>
+            <Link href="/detection" className="text-sm text-violet-600 hover:text-violet-700 font-medium">
+              {t('dashboard.viewAll')}
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {quickActions.map((action, index) => (
-              <motion.button
+              <motion.div
                 key={action.label}
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 + index * 0.08 }}
                 whileHover={{ y: -8 }}
-                className="group relative p-6 bg-white rounded-2xl shadow-lg shadow-gray-100 hover:shadow-2xl transition-all text-left"
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${action.color} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity`} />
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${action.color} p-0.5 mb-4 group-hover:scale-110 transition-transform`}>
-                  <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center">
-                    <action.icon className="text-gray-700" size={24} />
+                <Link
+                  href={action.href}
+                  onClick={() => handleQuickActionClick(action.preferredMode)}
+                  className="group relative block h-full p-6 bg-white rounded-2xl shadow-lg shadow-gray-100 hover:shadow-2xl transition-all text-left"
+                >
+                  <div className={`absolute inset-0 bg-gradient-to-br ${action.color} opacity-0 group-hover:opacity-5 rounded-2xl transition-opacity`} />
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${action.color} p-0.5 mb-4 group-hover:scale-110 transition-transform`}>
+                    <div className="w-full h-full rounded-2xl bg-white flex items-center justify-center">
+                      <action.icon className="text-gray-700" size={24} />
+                    </div>
                   </div>
-                </div>
-                <div className="font-semibold text-gray-900 mb-1">{action.label}</div>
-                <div className="text-sm text-gray-500">{action.desc}</div>
-                <ArrowRight className="absolute top-6 right-6 text-gray-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-all" size={20} />
-              </motion.button>
+                  <div className="font-semibold text-gray-900 mb-1">{action.label}</div>
+                  <div className="text-sm text-gray-500">{action.desc}</div>
+                  <ArrowRight className="absolute top-6 right-6 text-gray-300 group-hover:text-violet-500 group-hover:translate-x-1 transition-all" size={20} />
+                </Link>
+              </motion.div>
             ))}
           </div>
         </motion.div>
