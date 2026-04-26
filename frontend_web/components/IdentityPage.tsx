@@ -281,20 +281,20 @@ export default function IdentityPage() {
               </span>
                         </h1>
                         <p className="text-xl text-gray-600 max-w-md">
-                            AI-powered classroom monitoring for smarter education.
+                            YOLO-powered classroom monitoring for smarter education.
                         </p>
                     </motion.div>
 
                     <motion.div
-                        className="mt-16 relative"
+                        className="mt-16 relative w-full flex justify-center -translate-x-8"
                         initial={{opacity: 0}}
                         animate={{opacity: 1}}
                         transition={{delay: 0.5}}
                     >
                         {/* Floating badges */}
-                        <div className="flex flex-wrap gap-3">
+                        <div className="flex flex-nowrap items-center justify-center gap-2">
                             <motion.div
-                                className="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-blue-100 flex items-center gap-2"
+                                className="shrink-0 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-blue-100 flex items-center gap-2 whitespace-nowrap"
                                 animate={{y: [0, -10, 0]}}
                                 transition={{duration: 3, repeat: Infinity, delay: 0}}
                             >
@@ -302,7 +302,7 @@ export default function IdentityPage() {
                                 <span className="text-sm font-semibold text-gray-700">Real-time Detection</span>
                             </motion.div>
                             <motion.div
-                                className="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-purple-100 flex items-center gap-2"
+                                className="shrink-0 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-purple-100 flex items-center gap-2 whitespace-nowrap"
                                 animate={{y: [0, -10, 0]}}
                                 transition={{duration: 3, repeat: Infinity, delay: 0.3}}
                             >
@@ -310,7 +310,7 @@ export default function IdentityPage() {
                                 <span className="text-sm font-semibold text-gray-700">AI-Powered</span>
                             </motion.div>
                             <motion.div
-                                className="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-pink-100 flex items-center gap-2"
+                                className="shrink-0 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg border border-pink-100 flex items-center gap-2 whitespace-nowrap"
                                 animate={{y: [0, -10, 0]}}
                                 transition={{duration: 3, repeat: Infinity, delay: 0.6}}
                             >
