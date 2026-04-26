@@ -57,6 +57,7 @@ export default function ProjectsPage() {
     const [showSearch, setShowSearch] = useState(false);
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
+    const [pageLoading, setPageLoading] = useState(false);
     const [pagination, setPagination] = useState({
         page: 1,
         page_size: 6,
@@ -81,7 +82,14 @@ export default function ProjectsPage() {
     }, [pagination.page]);
 
     const fetchProject = () => {
-        setLoading(true);
+        const isFirstLoad = projects.length === 0;
+
+        if (isFirstLoad) {
+            setLoading(true);
+        } else {
+            setPageLoading(true);
+        }
+
         DetectionTaskService.get_task_data(pagination.page, pagination.page_size).then((results) => {
             if (results.code === 200 && results.data?.records) {
                 const mappedProjects: Project[] = results.data.records.map((record: Results) => {
@@ -126,11 +134,29 @@ export default function ProjectsPage() {
             notification.error(error?.message);
         }).finally(() => {
             setLoading(false);
+            setPageLoading(false);
         });
     };
 
     const handlePageChange = (page: number) => {
         setPagination({...pagination, page: page});
+    };
+
+    const getVisiblePages = () => {
+        const totalPages = pagination.pages;
+        const currentPage = pagination.page;
+
+        if (totalPages <= 7) {
+            return Array.from({length: totalPages}, (_, i) => i + 1);
+        }
+
+        return Array.from({length: totalPages}, (_, i) => i + 1).filter(page => {
+            if (page === 1 || page === totalPages) {
+                return true;
+            }
+
+            return Math.abs(page - currentPage) <= 1;
+        });
     };
 
     const filteredProjects = projects.filter(project => {
@@ -313,6 +339,15 @@ export default function ProjectsPage() {
                         <p className="mt-4 text-gray-500">{t('projects.loadingProjects')}</p>
                     </div>
                 ) : (
+                    <div className="relative">
+                        {pageLoading && (
+                            <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-white/60 backdrop-blur-[1px]">
+                                <div className="flex items-center gap-3 rounded-xl bg-white px-4 py-3 shadow-lg">
+                                    <div className="h-5 w-5 animate-spin rounded-full border-2 border-gray-300 border-t-black"></div>
+                                    <span className="text-sm text-gray-600">{t('projects.loadingProjects')}</span>
+                                </div>
+                            </div>
+                        )}
                     <>
                         {viewMode === 'grid' ? (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -442,45 +477,56 @@ export default function ProjectsPage() {
                             <motion.div
                                 initial={{opacity: 0}}
                                 animate={{opacity: 1}}
-                                className="flex justify-center items-center gap-2 mt-8"
+                                className="mt-8 flex flex-col items-center gap-4"
                             >
-                                <button
-                                    onClick={() => handlePageChange(pagination.page - 1)}
-                                    disabled={pagination.page === 1}
-                                    className="p-2 bg-white rounded-xl border border-gray-200 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                              d="M15 19l-7-7 7-7"/>
-                                    </svg>
-                                </button>
-
-                                {Array.from({length: pagination.pages}, (_, i) => i + 1).map((page) => (
+                                <div className="flex flex-wrap justify-center items-center gap-2">
                                     <button
-                                        key={page}
-                                        onClick={() => handlePageChange(page)}
-                                        className={`min-w-[40px] px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                                            pagination.page === page
-                                                ? 'bg-black text-white shadow-md'
-                                                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
-                                        }`}
+                                        onClick={() => handlePageChange(pagination.page - 1)}
+                                        disabled={pagination.page === 1}
+                                        className="p-2 bg-white rounded-xl border border-gray-200 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                                     >
-                                        {page}
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M15 19l-7-7 7-7"/>
+                                        </svg>
                                     </button>
-                                ))}
 
-                                <button
-                                    onClick={() => handlePageChange(pagination.page + 1)}
-                                    disabled={pagination.page === pagination.pages}
-                                    className="p-2 bg-white rounded-xl border border-gray-200 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                                              d="M9 5l7 7-7 7"/>
-                                    </svg>
-                                </button>
+                                    {getVisiblePages().map((page, index, visiblePages) => {
+                                        const prevPage = visiblePages[index - 1];
+                                        const showEllipsis = prevPage && page - prevPage > 1;
 
-                                <span className="ml-4 text-sm text-gray-500">
+                                        return (
+                                            <div key={page} className="flex items-center gap-2">
+                                                {showEllipsis && (
+                                                    <span className="px-1 text-sm text-gray-400">...</span>
+                                                )}
+                                                <button
+                                                    onClick={() => handlePageChange(page)}
+                                                    className={`min-w-[40px] px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                                                        pagination.page === page
+                                                            ? 'bg-black text-white shadow-md'
+                                                            : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                                                    }`}
+                                                >
+                                                    {page}
+                                                </button>
+                                            </div>
+                                        );
+                                    })}
+
+                                    <button
+                                        onClick={() => handlePageChange(pagination.page + 1)}
+                                        disabled={pagination.page === pagination.pages}
+                                        className="p-2 bg-white rounded-xl border border-gray-200 hover:border-gray-300 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                    >
+                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                                  d="M9 5l7 7-7 7"/>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <span className="text-sm text-gray-500 text-center">
                                     {t('projects.pageInfo', {
                                         page: pagination.page,
                                         pages: pagination.pages,
@@ -490,6 +536,7 @@ export default function ProjectsPage() {
                             </motion.div>
                         )}
                     </>
+                    </div>
                 )}
             </main>
         </div>
