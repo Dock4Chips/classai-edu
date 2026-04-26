@@ -26,7 +26,6 @@ from services.strategies.identity.login_registry import LOGIN_STRATEGY_MAP
 from tools.security_tool import SecurityTool
 from passlib.context import CryptContext
 
-
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 pub_identity_router = APIRouter(
@@ -80,6 +79,7 @@ def _create_targeted_notice(notice_title: str, notice_content: str, target_user_
             "is_read": 0 if uid in target_user_ids else 1,
         })
 
+
 @pub_identity_router.get('/captcha')
 async def get_captcha(request: Request):
     ip = request.client.host
@@ -107,14 +107,14 @@ async def get_captcha(request: Request):
 @pub_identity_router.post('/login')
 async def identity_login(request: Request,
                          login_type: LoginType = Body(..., embed=True),
-                         data: Dict[str, Any] = Body(...,default_factory=dict)):
-
+                         data: Dict[str, Any] = Body(..., default_factory=dict)):
     login_func = LOGIN_STRATEGY_MAP.get(login_type)
     if not login_func:
         raise ServiceException(msg="不支持的登录方式")
 
     result = login_func(data, request)
     return Res.ok(result)
+
 
 @pub_identity_router.post('/register')
 async def identity_register(data: Dict[str, Any] = Body(...)):
@@ -135,7 +135,8 @@ async def identity_register(data: Dict[str, Any] = Body(...)):
     new_user = create_user({
         'user_name': data.get('user_name'),
         'password': pwd_context.hash(password),
-        'role_id': 2  # 默认角色
+        'avatar': 'http://127.0.0.1:9000/classai-edu/2026/04/27/d821bdd7-7696-48db-bcab-adf290c65d39.jpg',
+        'role_id': 2
     })
 
     user_id = new_user['user_id']
@@ -180,11 +181,9 @@ async def identity_logout(request: Request):
         scheme, token = get_authorization_scheme_param(authorization)
         if scheme.lower() == "bearer" and token:
             Authorization.logout(token)
-    user_id =  SecurityTool.get_user_id()
-    update_online_user_by_user_id(user_id,'off_line')
+    user_id = SecurityTool.get_user_id()
+    update_online_user_by_user_id(user_id, 'off_line')
     return Res.ok("登出成功")
-
-
 
 
 @pub_identity_router.get("/auth/google")
@@ -201,6 +200,7 @@ async def callback_auth_github(code: str, state: str, request: Request):
     token = result['token']
     callback_url = f"{state}?token={token}&provider=github"
     return RedirectResponse(callback_url)
+
 
 @pro_identity_router.get('/current')
 async def get_current_user():
