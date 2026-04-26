@@ -14,7 +14,8 @@ from repository.model_config_repository import (
     create_model,
     update_model,
     clear_model_fields,
-    unset_other_default_models,
+    clear_user_default_models,
+    clear_user_other_default_models,
     delete_model
 )
 from schema.model_config_schema import ModelConfigCreateUpdateSchema
@@ -31,25 +32,19 @@ pro_model_config_router = APIRouter(
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 METRICS_DIR = Path(DASHBOARD_METRICS_DIR)
 MODEL_SYNC_STATUS_PREFIX = "model:sync:status"
+PUBLIC_MODEL_ID = 1
 
 
 def _ensure_single_default_model(is_default: bool, exclude_model_id: int | None = None):
-    """确保默认模型全局唯一。"""
+    """确保默认模型仅在当前用户范围内唯一。"""
     if not is_default:
         return
 
-    result = page_list_model(
-        page=1,
-        page_size=100,
-        filters={"is_deleted": 0, "is_default": 1},
-        order_by=[("model_id", "asc")],
-    )
-    default_models = result.get("records", [])
-    if exclude_model_id is not None:
-        default_models = [m for m in default_models if m.get("model_id") != exclude_model_id]
+    if exclude_model_id is None:
+        clear_user_default_models(SecurityTool.get_user_id())
+        return
 
-    if default_models:
-        raise ServiceException(msg="默认模型已存在，请先取消当前默认模型")
+    clear_user_other_default_models(SecurityTool.get_user_id(), exclude_model_id)
 
 
 def _resolve_model_path(model_path: str) -> Path:
@@ -128,9 +123,18 @@ async def list_model_config(
         page=page,
         page_size=page_size,
         order_by=[("create_time","asc")],
-        filters=apply_data_scope_filter({"is_deleted": 0}, data_scope="user_id"),
+        filters=apply_data_scope_filter({"is_deleted": 0, "is_default": 1}, data_scope="user_id"),
         select_fields=None,
     )
+
+    public_model = get_model_by_id(PUBLIC_MODEL_ID)
+    if public_model and public_model.get("is_deleted") == 0 and public_model.get("is_default") == 1:
+        records = result.get("records", [])
+        if not any(int(model.get("model_id") or -1) == PUBLIC_MODEL_ID for model in records):
+            records.append(public_model)
+            result["records"] = records
+            result["total"] = int(result.get("total") or 0) + 1
+
     return Res.ok(result)
 
 
@@ -139,7 +143,8 @@ async def get_model_config(model_id: int):
     model = get_model_by_id(model_id)
     if not model:
         raise ServiceException(msg="模型配置不存在")
-    ensure_record_data_scope(model)
+    if model_id != PUBLIC_MODEL_ID:
+        ensure_record_data_scope(model)
     return Res.ok(model)
 
 
@@ -246,7 +251,7 @@ async def edit_model_config(model_id: int, data: ModelConfigCreateUpdateSchema =
     }
     clear_fields = [field for field in clear_fields if field in allowed_clear_fields]
     if bool(payload.get("is_default")):
-        unset_other_default_models(model_id)
+        clear_user_other_default_models(SecurityTool.get_user_id(), model_id)
     if payload:
         payload["updated_by"] = SecurityTool.get_user_id()
         update_model(model_id, payload)
