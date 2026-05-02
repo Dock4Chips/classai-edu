@@ -122,13 +122,13 @@ async def list_model_config(
     result = page_list_model(
         page=page,
         page_size=page_size,
-        order_by=[("create_time","asc")],
-        filters=apply_data_scope_filter({"is_deleted": 0, "is_default": 1}, data_scope="user_id"),
+        order_by=[("is_default", "desc"), ("create_time","asc")],
+        filters=apply_data_scope_filter({"is_deleted": 0}, data_scope="user_id"),
         select_fields=None,
     )
 
     public_model = get_model_by_id(PUBLIC_MODEL_ID)
-    if public_model and public_model.get("is_deleted") == 0 and public_model.get("is_default") == 1:
+    if public_model and public_model.get("is_deleted") == 0:
         records = result.get("records", [])
         if not any(int(model.get("model_id") or -1) == PUBLIC_MODEL_ID for model in records):
             records.append(public_model)
