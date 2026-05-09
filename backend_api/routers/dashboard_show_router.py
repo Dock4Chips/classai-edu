@@ -110,6 +110,7 @@ def _get_file_mtime_ns(file_key: str) -> int:
 
 
 def _build_single_etag(file_key: str) -> str:
+    # ETag: W/"yolo:results-1746789123456789"
     model_name = _sanitize_model_name(_get_dashboard_metrics_model_name())
     return f'W/"{model_name}:{file_key}-{_get_file_mtime_ns(file_key)}"'
 
