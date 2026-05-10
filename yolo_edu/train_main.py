@@ -33,7 +33,7 @@ def train_model():
         - 启用AMP和cache可显著提升训练速度并降低内存占用
         - patience参数有助于避免无效训练和过拟合问题
     '''
-    model = YOLO('/Users/dock4chips/code_workspace/script-P/classai-edu/yolo_edu/classai_model/classai_model_8n/weights/last.pt')
+    model = YOLO('/Users/dock4chips/code_workspace/script-P/classai-edu/yolo_edu/yolov8n.pt')
     log.info('Training started')
     start_time = time.time()
     model.train(
