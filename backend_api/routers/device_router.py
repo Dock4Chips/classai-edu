@@ -48,7 +48,7 @@ async def get_device(device_id: int):
 @pro_device_router.post('')
 async def add_device(data: DeviceCreateSchema):
     payload = data.model_dump()
-    payload["device_type"] = data.device_type.value
+    payload["device_txype"] = data.device_type.value
     payload["connection_type"] = data.connection_type.value
     payload["user_id"] = SecurityTool.get_user_id()
     payload["created_by"] = SecurityTool.get_user_id()

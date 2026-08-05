@@ -87,8 +87,8 @@ async def get_captcha(request: Request):
     req_count = redis_client.incr(redis_key)
     if req_count == 1:
         redis_client.expire(redis_key, 60)
-    if req_count > MAX_CAPTCHA_PER_MIN:
-        raise ServiceException(msg="请求过于频繁，请稍后再试")
+    # if req_count > MAX_CAPTCHA_PER_MIN:
+    #     raise ServiceException(msg="请求过于频繁，请稍后再试")
     code = ''.join(choice(string.ascii_uppercase + string.digits) for _ in range(4))
     data_io = _image.generate(code)
     base64_image = (
@@ -135,7 +135,7 @@ async def identity_register(data: Dict[str, Any] = Body(...)):
     new_user = create_user({
         'user_name': data.get('user_name'),
         'password': pwd_context.hash(password),
-        'avatar': 'http://127.0.0.1:9000/classai-edu/2026/04/27/d821bdd7-7696-48db-bcab-adf290c65d39.jpg',
+        # 'avatar': 'http://127.0.0.1:9000/classai-edu/2026/04/27/d821bdd7-7696-48db-bcab-adf290c65d39.jpg',
         'role_id': 2
     })
 
