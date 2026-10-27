@@ -199,6 +199,19 @@ Notes:
 - In-container MySQL / Redis / MinIO addresses are automatically overridden with service names; the local addresses in `backend_api/.env.prod` only apply to local development
 - All services ship health checks; the backend waits for the infrastructure to be ready
 
+> **Build tip for networks behind a firewall**: if apt / pip downloads stall or return `502 Bad Gateway` during the build, route build traffic through a local proxy (ClashX on its default port 7890; make sure "Allow LAN" is enabled in the proxy app):
+>
+> ```bash
+> docker compose build \
+>   --build-arg HTTP_PROXY=http://host.docker.internal:7890 \
+>   --build-arg HTTPS_PROXY=http://host.docker.internal:7890 \
+>   backend frontend_web frontend_admin
+>
+> docker compose up -d
+> ```
+>
+> Completed build layers are cached, so retries resume from where it failed.
+
 ## Tech Stack
 
 | Layer | Technologies |

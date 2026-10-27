@@ -199,6 +199,19 @@ NEXT_PUBLIC_BASE_URL=http://<服务器IP>:7869 docker compose up -d --build
 - 容器内 MySQL / Redis / MinIO 地址会自动覆盖为服务名，`backend_api/.env.prod` 中的本机地址仅本地开发生效
 - 各服务带健康检查，后端会等基础设施就绪后再启动
 
+> **国内网络构建提示**：构建时 apt / pip 下载缓慢或报 `502 Bad Gateway`，可让构建流量走本机代理（以 ClashX 默认端口 7890 为例，需在代理软件中开启「允许局域网连接」）：
+>
+> ```bash
+> docker compose build \
+>   --build-arg HTTP_PROXY=http://host.docker.internal:7890 \
+>   --build-arg HTTPS_PROXY=http://host.docker.internal:7890 \
+>   backend frontend_web frontend_admin
+>
+> docker compose up -d
+> ```
+>
+> 已完成的构建层有缓存，重试只会从失败处继续。
+
 ## 技术栈
 
 | 层级 | 技术 |
