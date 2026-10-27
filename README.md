@@ -14,6 +14,7 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Redis](https://img.shields.io/badge/Redis-7.2-DC382D?logo=redis&logoColor=white)](https://redis.io/)
 [![MinIO](https://img.shields.io/badge/MinIO-Object%20Storage-C72E49?logo=minio&logoColor=white)](https://min.io/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 </div>
 
@@ -46,34 +47,20 @@ ClassAI-Edu 是一套端到端的课堂学生行为智能监测系统，覆盖 *
 
 ## 系统架构
 
-```mermaid
-flowchart LR
-    subgraph Client["浏览器"]
-        WEB["frontend_web<br/>用户端 :3000"]
-        ADMIN["frontend_admin<br/>管理端 :4000"]
-    end
+系统采用前后端分离的五层架构：
 
-    subgraph Backend["backend_api :7869"]
-        API["FastAPI<br/>REST + WebSocket"]
-        SVC["检测服务<br/>登录策略 / RBAC / 数据权限"]
-    end
+**接入层**：两个独立的 Next.js 应用——`frontend_web` 用户端（:3000，检测工作台/任务/报表）与 `frontend_admin` 管理端（:4000，RBAC 管理/监控），通过 REST 与 WebSocket 访问后端。
 
-    subgraph AI["yolo_edu 推理引擎"]
-        YOLO["YOLOv8 检测<br/>BotSort 跟踪"]
-    end
+**服务层**：`backend_api`（FastAPI，:7869）承担 REST API 与实时 WebSocket 通道，内置登录策略（password/GitHub/Google）、JWT 认证（Redis jti 吊销表）、基于菜单键的功能权限与基于 user_id 的数据权限（data_scope）。
 
-    subgraph Storage["存储层"]
-        MYSQL[("MySQL 8.0<br/>23 张业务表")]
-        REDIS[("Redis 7.2<br/>会话 / 缓存 / 验证码")]
-        MINIO[("MinIO<br/>图片 / 视频 / 头像")]
-    end
+**AI 层**：`yolo_edu` 推理引擎——YOLOv8 检测 + BotSort 多目标跟踪，被后端以库方式直接调用；模型路径、类别定义与绘制样式由数据库驱动，支持 ONNX / CoreML / TorchScript 多格式导出。
 
-    WEB -->|REST / WS| API
-    ADMIN -->|REST| API
-    API --> SVC --> YOLO
-    API --> MYSQL & REDIS & MINIO
-    YOLO -->|模型路径/类别/颜色| MYSQL
-```
+**存储层**：
+- MySQL 8.0 —— 23 张业务表（检测任务/明细/统计、模型配置、系统管理）
+- Redis 7.2 —— 会话吊销、在线用户、图形验证码、指标缓存
+- MinIO —— 检测结果图/视频、头像、Logo 等对象存储
+
+**数据流向**：前端 → FastAPI（JWT 鉴权）→ 检测服务 → YOLO 引擎推理 → 结果图上传 MinIO + 结构化数据入库 → 前端展示；模型配置由管理端维护，写操作实时刷新推理引擎缓存。
 
 ## 项目结构
 
@@ -232,4 +219,4 @@ NEXT_PUBLIC_BASE_URL=http://<服务器IP>:7869 docker compose up -d --build
 
 ## 许可证
 
-本项目暂未设置开源许可证，如需使用请联系作者。
+本项目基于 [MIT License](LICENSE) 开源，可自由用于个人与商业项目。
