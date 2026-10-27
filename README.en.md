@@ -14,6 +14,7 @@
 [![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
 [![Redis](https://img.shields.io/badge/Redis-7.2-DC382D?logo=redis&logoColor=white)](https://redis.io/)
 [![MinIO](https://img.shields.io/badge/MinIO-Object%20Storage-C72E49?logo=minio&logoColor=white)](https://min.io/)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 </div>
 
@@ -46,34 +47,20 @@ ClassAI-Edu is an end-to-end intelligent classroom behavior monitoring system co
 
 ## Architecture
 
-```mermaid
-flowchart LR
-    subgraph Client["Browser"]
-        WEB["frontend_web<br/>User Portal :3000"]
-        ADMIN["frontend_admin<br/>Admin Console :4000"]
-    end
+The system adopts a decoupled five-layer architecture:
 
-    subgraph Backend["backend_api :7869"]
-        API["FastAPI<br/>REST + WebSocket"]
-        SVC["Detection Service<br/>Login Strategies / RBAC / Data Scope"]
-    end
+**Access layer**: two independent Next.js applications — `frontend_web` (user portal, :3000, detection workbench / tasks / reports) and `frontend_admin` (admin console, :4000, RBAC management / monitoring), both communicating with the backend over REST and WebSocket.
 
-    subgraph AI["yolo_edu Inference Engine"]
-        YOLO["YOLOv8 Detection<br/>BotSort Tracking"]
-    end
+**Service layer**: `backend_api` (FastAPI, :7869) provides the REST API and real-time WebSocket channel, with built-in login strategies (password/GitHub/Google), JWT authentication (Redis jti revocation), menu-key-based functional permissions, and user_id-based data scope.
 
-    subgraph Storage["Storage Layer"]
-        MYSQL[("MySQL 8.0<br/>23 Business Tables")]
-        REDIS[("Redis 7.2<br/>Sessions / Cache / CAPTCHA")]
-        MINIO[("MinIO<br/>Images / Videos / Avatars")]
-    end
+**AI layer**: the `yolo_edu` inference engine — YOLOv8 detection + BotSort multi-object tracking — consumed directly by the backend as a library; model paths, class definitions, and drawing styles are database-driven, with ONNX / CoreML / TorchScript export support.
 
-    WEB -->|REST / WS| API
-    ADMIN -->|REST| API
-    API --> SVC --> YOLO
-    API --> MYSQL & REDIS & MINIO
-    YOLO -->|model path / classes / colors| MYSQL
-```
+**Storage layer**:
+- MySQL 8.0 — 23 business tables (detection tasks/details/statistics, model configuration, system administration)
+- Redis 7.2 — token revocation, online users, CAPTCHA, metrics caching
+- MinIO — object storage for detection results, videos, avatars, logos, etc.
+
+**Data flow**: frontend → FastAPI (JWT auth) → detection service → YOLO inference → annotated results uploaded to MinIO + structured data persisted → frontend rendering; model configuration is maintained in the admin console, and write operations refresh the inference engine cache in real time.
 
 ## Project Structure
 
@@ -232,4 +219,4 @@ Notes:
 
 ## License
 
-No open-source license has been set for this project yet. Please contact the author for usage inquiries.
+This project is open-sourced under the [MIT License](LICENSE) — free for both personal and commercial use.
