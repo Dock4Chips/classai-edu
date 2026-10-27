@@ -1,0 +1,141 @@
+# ============================================================
+# ClassAI-Edu 全栈部署
+#
+# 使用方式：
+#   1. 准备后端环境变量：cp backend_api/.env.example backend_api/.env.prod
+#      （容器内 MySQL/Redis/MinIO 地址会被下方 environment 自动覆盖为服务名）
+#   2. 初始化数据库（仅首次）：
+#        docker compose up -d mysql
+#        docker compose exec -T mysql mysql -uroot -p123456 classai_edu < script/sql/classai_edu.sql
+#   3. 构建并启动全部服务：
+#        NEXT_PUBLIC_BASE_URL=http://<服务器IP>:7869 docker compose up -d --build
+#   4. 仅启动基础设施（本地跑后端/前端开发时）：
+#        docker compose up -d mysql redis minio
+# ============================================================
+name: classai-edu
+
+services:
+  mysql:
+    image: mysql:8.0.34
+    container_name: classai_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-123456}
+      MYSQL_DATABASE: ${MYSQL_DB:-classai_edu}
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - "${MYSQL_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-123456}"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  redis:
+    image: redis:7.2
+    container_name: classai_redis
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:-123456}"]
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a ${REDIS_PASSWORD:-123456} ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:RELEASE.2025-04-22T22-12-26Z
+    container_name: classai_minio
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ADMIN:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_PASSWORD:-minioadmin}
+    command: server /data --console-address ":9001"
+    ports:
+      - "${MINIO_PORT:-9000}:9000"
+      - "9001:9001"
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend_api/Dockerfile
+    image: classai-backend
+    container_name: classai_backend
+    restart: unless-stopped
+    env_file:
+      - backend_api/.env.prod
+    # 容器内互联：覆盖 .env.prod 中的本机地址
+    environment:
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MINIO_ADDRESS: minio
+      MINIO_PORT: 9000
+      DASHBOARD_METRICS_DIR: /app/yolo_edu/scripts/metrics
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    ports:
+      - "${BACKEND_PORT:-7869}:7869"
+    volumes:
+      - backend_logs:/app/logs
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request as u; u.urlopen('http://127.0.0.1:7869/api/public/system/basic', timeout=5)"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+
+  frontend_web:
+    build:
+      context: ./frontend_web
+      dockerfile: Dockerfile
+      args:
+        # 浏览器实际访问后端的地址（必须可从外部访问，不能写容器名）
+        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:7869}
+    image: classai-frontend-web
+    container_name: classai_frontend_web
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${WEB_PORT:-3000}:3000"
+
+  frontend_admin:
+    build:
+      context: ./frontend_admin
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:7869}
+    image: classai-frontend-admin
+    container_name: classai_frontend_admin
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${ADMIN_PORT:-4000}:4000"
+
+volumes:
+  mysql_data:
+  redis_data:
+  minio_data:
+  backend_logs:

@@ -1,0 +1,23 @@
+# 后端构建上下文 = 仓库根目录，排除无关/敏感内容
+.git
+.idea
+.claude
+.cache
+**/__pycache__
+*.pyc
+logs
+*.mp4
+*.log
+.DS_Store
+
+# 前端不进后端镜像
+frontend_web
+frontend_admin
+
+# 凭据文件绝不入镜像（环境变量由 compose 注入）
+backend_api/.env
+backend_api/.env.prod
+!backend_api/.env.example
+
+# 文档
+*.md
