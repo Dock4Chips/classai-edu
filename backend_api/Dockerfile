@@ -31,6 +31,9 @@ COPY backend_api /app/backend_api
 COPY yolo_edu /app/yolo_edu
 COPY model /app/model
 
+# 让容器内能以包路径找到 yolo_edu（与本地从仓库根启动等效）
+ENV PYTHONPATH=/app
+
 EXPOSE 7869
 
 CMD ["python", "backend_api/classai_main.py"]
