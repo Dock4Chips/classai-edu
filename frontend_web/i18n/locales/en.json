@@ -209,6 +209,7 @@
       "status": {
         "idle": "Idle",
         "ready": "Ready",
+        "uploading": "Uploading",
         "processing": "Processing",
         "completed": "Completed",
         "failed": "Failed"

@@ -278,28 +278,7 @@ export function Sidebar({collapsed, onToggle}: SidebarProps) {
                                             alt="logo"
                                             className="w-10 h-10 rounded-xl object-cover shadow-lg border border-gray-200"
                                         />
-                                    ) : (
-                                        <>
-                                            <motion.div
-                                                className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shadow-lg"
-                                                animate={{
-                                                    boxShadow: [
-                                                        '0 10px 40px -10px rgba(0, 0, 0, 0.3)',
-                                                        '0 10px 40px -10px rgba(0, 0, 0, 0.4)',
-                                                        '0 10px 40px -10px rgba(0, 0, 0, 0.3)',
-                                                    ],
-                                                }}
-                                                transition={{duration: 2, repeat: Infinity}}
-                                            >
-                                                <BrainCircuit className="text-white" size={22} />
-                                            </motion.div>
-                                            <motion.div
-                                                className="absolute -inset-1 bg-black rounded-xl opacity-20 blur-lg"
-                                                animate={{scale: [1, 1.1, 1]}}
-                                                transition={{duration: 2, repeat: Infinity}}
-                                            />
-                                        </>
-                                    )}
+                                    ) : null}
                                 </div>
                                 <div>
                                     {systemUrl ? (

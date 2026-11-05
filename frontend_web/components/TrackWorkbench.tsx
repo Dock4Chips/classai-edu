@@ -48,6 +48,13 @@ function StatusIndicator({status}: { status: SessionStatus }) {
             label: t('detection.common.status.ready'),
             pulse: true
         },
+        uploading: {
+            bg: 'bg-amber-50',
+            dot: 'bg-amber-500',
+            text: 'text-amber-600',
+            label: t('detection.common.status.uploading'),
+            pulse: true
+        },
         running: {
             bg: 'bg-blue-50',
             dot: 'bg-blue-500',

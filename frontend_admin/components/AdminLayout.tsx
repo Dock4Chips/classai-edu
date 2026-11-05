@@ -7,7 +7,6 @@ import {LanguageSwitcher} from './LanguageSwitcher';
 import {
     Bell,
     Search,
-    User,
     UserCircle,
     KeyRound,
     LogOut,
@@ -410,12 +409,7 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                                     alt="avatar"
                                                     className="w-9 h-9 rounded-xl object-cover shadow-lg"
                                                 />
-                                            ) : (
-                                                <div
-                                                    className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-                                                    <User className="w-5 h-5 text-white"/>
-                                                </div>
-                                            )}
+                                            ) : null}
                                             <div className="text-left hidden md:block">
                                                 <p className="text-sm font-semibold text-gray-900">
                                                     {loading ? t('adminLayout.loading') : (userInfo?.user_name)}
@@ -437,12 +431,7 @@ export function AdminLayout({children}: AdminLayoutProps) {
                                                         alt="avatar"
                                                         className="w-12 h-12 rounded-xl object-cover shadow-lg"
                                                     />
-                                                ) : (
-                                                    <div
-                                                        className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-                                                        <User className="w-6 h-6 text-white"/>
-                                                    </div>
-                                                )}
+                                                ) : null}
                                                 <div>
                                                     <p className="text-sm font-semibold text-gray-900">
                                                         {userInfo?.nick_name || userInfo?.user_name}

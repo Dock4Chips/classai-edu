@@ -6,8 +6,6 @@ import Link from 'next/link';
 import {
     Search,
     Bell,
-    BrainCircuit,
-    User,
     LogOut,
     ChevronDown,
     FileText,
@@ -197,11 +195,7 @@ export default function Navigation() {
                                     alt="logo"
                                     className="w-10 h-10 rounded-xl object-cover shadow-lg border border-gray-200 flex-shrink-0"
                                 />
-                            ) : (
-                                <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center shadow-lg flex-shrink-0">
-                                    <BrainCircuit className="text-white" size={22}/>
-                                </div>
-                            )}
+                            ) : null}
                             <span className="text-xl font-bold text-black whitespace-nowrap truncate">{systemBasic.system_name || 'ClassEdu'}</span>
                         </motion.div>
                     </Link>
@@ -317,12 +311,7 @@ export default function Navigation() {
                                                 className="w-8 h-8 rounded-xl object-cover shadow-lg scale-150 hover:scale-[1.6] transition-transform"
                                             />
 
-                                        ) : (
-                                            <div
-                                                className="w-8 h-8 bg-gradient-to-br from-blue-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
-                                                <User className="text-white" size={18}/>
-                                            </div>
-                                        )}
+                                        ) : null}
                                         <ChevronDown className="w-3.5 h-3.5 text-gray-500"/>
                                     </div>
                                 </DropdownButton>
@@ -338,12 +327,7 @@ export default function Navigation() {
                                                     alt="avatar"
                                                     className="w-14 h-14 rounded-xl object-cover shadow-lg"
                                                 />
-                                            ) : (
-                                                <div
-                                                    className="w-14 h-14 bg-gradient-to-br from-blue-500 to-violet-600 rounded-xl flex items-center justify-center shadow-lg">
-                                                    <User className="text-white" size={28}/>
-                                                </div>
-                                            )}
+                                            ) : null}
                                             <div>
                                                 <p className="text-sm font-semibold text-gray-900">{userInfo?.nick_name || userInfo?.user_name}</p>
                                                 <p className="text-xs text-gray-500">{userInfo?.email}</p>

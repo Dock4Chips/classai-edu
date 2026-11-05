@@ -52,7 +52,7 @@ interface DetectionResult {
     }>;
 }
 
-function StatusIndicator({status}: { status: SessionStatus }) {
+function StatusIndicator({status, progress}: { status: SessionStatus, progress?: number }) {
     const {t} = useTranslation();
     const statusConfig = {
         idle: {
@@ -67,6 +67,13 @@ function StatusIndicator({status}: { status: SessionStatus }) {
             dot: 'bg-blue-500',
             text: 'text-blue-600',
             label: t('detection.common.status.ready'),
+            pulse: true
+        },
+        uploading: {
+            bg: 'bg-amber-50',
+            dot: 'bg-amber-500',
+            text: 'text-amber-600',
+            label: `${t('detection.common.status.uploading')}${progress !== undefined ? ` ${progress}%` : ''}`,
             pulse: true
         },
         running: {
@@ -118,6 +125,7 @@ function TaskInfoBadge({
                            fileName,
                            isVideoFile,
                            status,
+                           progress,
                            onTaskNameChange,
                            disabled
                        }: {
@@ -125,6 +133,7 @@ function TaskInfoBadge({
     fileName: string;
     isVideoFile: boolean;
     status: SessionStatus;
+    progress?: number;
     onTaskNameChange: (name: string) => void;
     disabled?: boolean;
 }) {
@@ -184,7 +193,7 @@ function TaskInfoBadge({
                 </div>
             )}
 
-            <StatusIndicator status={status}/>
+            <StatusIndicator status={status} progress={progress}/>
         </div>
     );
 }
@@ -201,6 +210,7 @@ export default function PredictWorkbench() {
     const [previewUrl, setPreviewUrl] = useState<string>('');
     const [isVideoFile, setIsVideoFile] = useState<boolean>(false);
     const [isProcessing, setIsProcessing] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
     const [taskName, setTaskName] = useState('');
     const [results, setResults] = useState<DetectionResult[]>([]);
 
@@ -391,7 +401,8 @@ export default function PredictWorkbench() {
         } else {
             // File 模式：使用 REST API
             setIsProcessing(true);
-            setStatus('running');
+            setUploadProgress(0);
+            setStatus('uploading');
             const formData = new FormData();
             for (const file of selectedFiles) {
                 formData.append('files', file);
@@ -402,7 +413,12 @@ export default function PredictWorkbench() {
                 model_id: selectedModelId.toString(),
                 conf_threshold: confidence.toString(),
             });
-            DetectionTaskService.createTask(formData, queryParams)
+            DetectionTaskService.createTask(formData, queryParams, (percent) => {
+                setUploadProgress(percent);
+                if (percent >= 100) {
+                    setStatus('running'); // 上传完毕,进入服务端推理阶段
+                }
+            })
                 .then((response) => {
                     if (response.code === 200) {
                         setResults(response.data as DetectionResult[]);
@@ -561,6 +577,7 @@ export default function PredictWorkbench() {
                             fileName={selectedFileName}
                             isVideoFile={isVideoFile}
                             status={status}
+                            progress={uploadProgress}
                             onTaskNameChange={setTaskName}
                             disabled={isProcessing}
                         />

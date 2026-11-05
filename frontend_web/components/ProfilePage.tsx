@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Save, Camera, Loader2 } from 'lucide-react';
+import { Mail, Save, Camera, Loader2 } from 'lucide-react';
 import Navigation from './Navigation';
 import { IdentityService } from '@/lib/service/identity';
 import { UserService } from '@/lib/service/user';
@@ -133,11 +133,7 @@ export default function ProfilePage() {
                     alt="avatar"
                     className="w-20 h-20 rounded-2xl object-cover shadow-md"
                   />
-                ) : (
-                  <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-violet-600 rounded-2xl flex items-center justify-center shadow-md">
-                    <User className="w-10 h-10 text-white" />
-                  </div>
-                )}
+                ) : null}
                 <div className="absolute inset-0 bg-black/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-2xl">
                   {uploadingAvatar ? (
                     <Loader2 className="w-6 h-6 text-white animate-spin" />

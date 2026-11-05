@@ -28,10 +28,16 @@ export class DetectionTaskService {
      * 创建检测任务（图片或视频）
      * task_name, task_type, model_id, conf_threshold 是 query 参数
      * files 是 form-data
+     * onUploadProgress 上传进度回调(0-100)
      */
-    static async createTask(formData: FormData, queryParams: URLSearchParams): Promise<Results> {
+    static async createTask(formData: FormData, queryParams: URLSearchParams, onUploadProgress?: (percent: number) => void): Promise<Results> {
         return await apiClient.post<Results>(`/api/detection/task?${queryParams.toString()}`, formData, {
-            headers: {'Content-Type': 'multipart/form-data'}
+            headers: {'Content-Type': 'multipart/form-data'},
+            onUploadProgress: (e) => {
+                if (onUploadProgress && e.total) {
+                    onUploadProgress(Math.round((e.loaded / e.total) * 100));
+                }
+            },
         });
     }
 }

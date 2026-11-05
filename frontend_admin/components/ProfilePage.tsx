@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, User, Mail,Save, Camera, Loader2 } from 'lucide-react';
+import { Sparkles, Mail,Save, Camera, Loader2 } from 'lucide-react';
 import { IdentityService } from '@/lib/service/identity';
 import { UserService } from '@/lib/service/user';
 import { Results } from '@/lib/api';
@@ -179,11 +179,7 @@ export default function ProfilePage() {
                 alt="avatar"
                 className="w-24 h-24 rounded-2xl object-cover shadow-lg"
               />
-            ) : (
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-                <User className="w-12 h-12 text-white" />
-              </div>
-            )}
+            ) : null}
             {/* Upload overlay */}
             <div className="absolute inset-0 bg-black/50 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
               {uploadingAvatar ? (

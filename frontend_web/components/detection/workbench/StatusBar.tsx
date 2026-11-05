@@ -3,7 +3,7 @@
 import { Circle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-export type SessionStatus = 'idle' | 'ready' | 'running' | 'completed' | 'error';
+export type SessionStatus = 'idle' | 'ready' | 'uploading' | 'running' | 'completed' | 'error';
 
 export interface StatusBarProps {
   status: SessionStatus;
@@ -15,6 +15,7 @@ export interface StatusBarProps {
 const statusConfig: Record<SessionStatus, { label: string; color: string }> = {
   idle: { label: 'Idle', color: 'text-gray-400' },
   ready: { label: 'Ready', color: 'text-blue-500' },
+  uploading: { label: 'Uploading', color: 'text-amber-500' },
   running: { label: 'Running', color: 'text-emerald-500' },
   completed: { label: 'Completed', color: 'text-emerald-600' },
   error: { label: 'Error', color: 'text-rose-500' },
