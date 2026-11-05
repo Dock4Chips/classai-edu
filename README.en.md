@@ -49,7 +49,7 @@ ClassAI-Edu is an end-to-end intelligent classroom behavior monitoring system co
 
 The system adopts a decoupled five-layer architecture:
 
-**Access layer**: two independent Next.js applications — `frontend_web` (user portal, :3000, detection workbench / tasks / reports) and `frontend_admin` (admin console, :4000, RBAC management / monitoring), both communicating with the backend over REST and WebSocket.
+**Access layer**: Cloudflare Tunnel (a cloudflared container) brings domain traffic back to the internal network — HTTPS is terminated at the CF edge, no public IP or self-managed certificates required. Below it sit two independent Next.js applications — `frontend_web` (user portal, :3000, detection workbench / tasks / reports) and `frontend_admin` (admin console, :4000, RBAC management / monitoring), both communicating with the backend over REST and WebSocket.
 
 **Service layer**: `backend_api` (FastAPI, :7869) provides the REST API and real-time WebSocket channel, with built-in login strategies (password/GitHub/Google), JWT authentication (Redis jti revocation), menu-key-based functional permissions, and user_id-based data scope.
 
@@ -85,9 +85,9 @@ classai-edu/
 │   └── datasets/           # 6-class behavior dataset (70/20/10 split)
 ├── model/                  # Training artifacts (n/s/m variants + multi-format exports)
 ├── script/
-│   ├── frp/                # Reverse tunnel config (frp + nginx)
+│   ├── frp/                # Legacy frp tunnel config (deprecated, replaced by Cloudflare Tunnel)
 │   └── sql/                # Database initialization script
-├── docker-compose.yml      # One-command deployment (MySQL/Redis/MinIO/backend/two frontends)
+├── docker-compose.yml      # One-command deployment (MySQL/Redis/MinIO/backend/two frontends/Cloudflare Tunnel)
 └── requirements.txt        # Python dependencies
 ```
 
@@ -139,10 +139,13 @@ Key environment variables:
 | --- | --- | --- |
 | `MYSQL_HOST` / `MYSQL_PORT` | Database connection | `127.0.0.1` / `3306` |
 | `REDIS_HOST` / `REDIS_PORT` | Cache connection | `127.0.0.1` / `6379` |
-| `MINIO_ADDRESS` / `MINIO_BUCKET_NAME` | Object storage | `127.0.0.1:9000` / `classai-edu` |
-| `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | MinIO credentials | — |
+| `MINIO_ADDRESS` / `MINIO_PORT` | Object storage (domain-based in production, see `.env.prod`) | `127.0.0.1` / `9000` |
+| `MINIO_SECURE` | Whether MinIO uses HTTPS (`true` for domain deployment) | `false` |
+| `MINIO_BUCKET_NAME` | MinIO bucket name | `classai-edu` |
 | `JWT_SECRET_KEY` | JWT signing secret | Change this in production |
-| `DASHBOARD_METRICS_DIR` | Training metrics directory | `yolo_edu/scripts/metrics` |
+| `DASHBOARD_METRICS_DIR` | Training metrics directory (relative to project root) | `yolo_edu/scripts/metrics` |
+
+> **Path convention**: all paths stored in the database or configuration must be relative (resolved against the project root, i.e. `/app` inside the container) — including `model_config.model_path` — so deployments stay portable across machines.
 
 ### 3. Start the Backend
 
@@ -180,37 +183,49 @@ Access URLs:
 
 ## Docker Deployment
 
-Bring up all 6 services (MySQL / Redis / MinIO / backend / user portal / admin console) with one command:
+Bring up all 7 services (MySQL / Redis / MinIO / backend / user portal / admin console / Cloudflare Tunnel) with one command:
 
 ```bash
-# 1. Prepare backend environment variables (first time)
-cp backend_api/.env.example backend_api/.env.prod
+# 1. Prepare environment variables (first time)
+cp backend_api/.env.example backend_api/.env.prod   # Adjust for your environment
+# Create the root .env manually (gitignored) — see below
 
 # 2. Initialize the database (first time only)
 docker compose up -d mysql
 docker compose exec -T mysql mysql -uroot -p123456 classai_edu < script/sql/classai_edu.sql
 
 # 3. Build and start everything
-NEXT_PUBLIC_BASE_URL=http://<server-ip>:7869 docker compose up -d --build
+docker compose build backend frontend_web frontend_admin
+docker compose up -d
 ```
 
-Notes:
-- `NEXT_PUBLIC_BASE_URL` is the address from which **browsers** reach the backend (baked in at build time); it must be an externally reachable IP or domain, not a container name
-- In-container MySQL / Redis / MinIO addresses are automatically overridden with service names; the local addresses in `backend_api/.env.prod` only apply to local development
-- All services ship health checks; the backend waits for the infrastructure to be ready
+Root `.env` (gitignored; holds the tunnel token and build settings):
 
-> **Build tip for networks behind a firewall**: if apt / pip downloads stall or return `502 Bad Gateway` during the build, route build traffic through a local proxy (ClashX on its default port 7890; make sure "Allow LAN" is enabled in the proxy app):
->
-> ```bash
-> docker compose build \
->   --build-arg HTTP_PROXY=http://host.docker.internal:7890 \
->   --build-arg HTTPS_PROXY=http://host.docker.internal:7890 \
->   backend frontend_web frontend_admin
->
-> docker compose up -d
-> ```
->
-> Completed build layers are cached, so retries resume from where it failed.
+```bash
+TUNNEL_TOKEN=<token generated in the CF dashboard Tunnel page>
+NEXT_PUBLIC_BASE_URL=https://api.dock-chips.top   # Browser-facing backend URL, baked in at build time
+HTTP_PROXY=http://host.docker.internal:7890        # Build-time + runtime proxy via the host (empty for direct connection)
+HTTPS_PROXY=http://host.docker.internal:7890
+```
+
+### Domain Publishing (Cloudflare Tunnel)
+
+The service is reachable via domain even without a public IP: the cloudflared container shares the compose network with the app containers, and adding a Public Hostname route in the CF dashboard (Zero Trust → Networks → Tunnels) creates DNS automatically:
+
+| Domain | Service | Notes |
+| --- | --- | --- |
+| `dock-chips.top` / `www` | `http://frontend_web:3000` | User portal |
+| `api.dock-chips.top` | `http://backend:7869` | Backend API |
+| `admin.dock-chips.top` | `http://frontend_admin:4000` | Admin console (Cloudflare Access recommended) |
+| `files.dock-chips.top` | `http://minio:9000` | Object storage (needs anonymous read: `mc anonymous set download`) |
+
+Notes:
+- `NEXT_PUBLIC_BASE_URL` is the address from which **browsers** reach the backend (baked in at build time); it must be an externally reachable domain, not a container name
+- Route Service URLs use **container names** (same compose network), not localhost
+- MinIO in production goes through `files.<domain>:443` with `MINIO_SECURE=true`, keeping the presigned URL's signing host consistent with the browser's
+- OAuth callback URLs must use `https://api.<domain>/api/strategies/identity/auth/<google|github>`, updated in Google Cloud Console / GitHub App settings accordingly
+- In-container MySQL / Redis addresses are automatically overridden with service names; external APIs (e.g. Google) are reached through the runtime `HTTP_PROXY` (container-to-container traffic is excluded via `NO_PROXY`)
+- All services ship health checks; the backend waits for the infrastructure to be ready; build-time apt / pip proxying is injected automatically via compose `build.args` — no manual `--build-arg` needed
 
 ## Tech Stack
 
@@ -220,7 +235,7 @@ Notes:
 | AI | PyTorch · Ultralytics YOLOv8 · OpenCV · PyAV · SAHI (sliced inference) · filterpy (tracking) |
 | Frontend | Next.js 16 · React 19 · TypeScript · Tailwind CSS 4 · framer-motion · recharts · i18next |
 | Storage | MySQL 8.0 · Redis 7.2 · MinIO |
-| Deployment | Docker Compose · frp + nginx (optional reverse tunnel) |
+| Deployment | Docker Compose · Cloudflare Tunnel (domain publishing without a public IP, replacing frp + nginx) |
 
 ## Roadmap
 

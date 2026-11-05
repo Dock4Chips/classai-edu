@@ -49,7 +49,7 @@ ClassAI-Edu 是一套端到端的课堂学生行为智能监测系统，覆盖 *
 
 系统采用前后端分离的五层架构：
 
-**接入层**：两个独立的 Next.js 应用——`frontend_web` 用户端（:3000，检测工作台/任务/报表）与 `frontend_admin` 管理端（:4000，RBAC 管理/监控），通过 REST 与 WebSocket 访问后端。
+**接入层**：Cloudflare Tunnel（cloudflared 容器）将域名流量带回内网，HTTPS 在 CF 边缘终结，无需公网 IP 与自签证书；其下是两个独立的 Next.js 应用——`frontend_web` 用户端（:3000，检测工作台/任务/报表）与 `frontend_admin` 管理端（:4000，RBAC 管理/监控），通过 REST 与 WebSocket 访问后端。
 
 **服务层**：`backend_api`（FastAPI，:7869）承担 REST API 与实时 WebSocket 通道，内置登录策略（password/GitHub/Google）、JWT 认证（Redis jti 吊销表）、基于菜单键的功能权限与基于 user_id 的数据权限（data_scope）。
 
@@ -85,9 +85,9 @@ classai-edu/
 │   └── datasets/           # 6 类行为数据集（70/20/10 划分）
 ├── model/                  # 训练产物（n/s/m 三规格 + 多格式导出）
 ├── script/
-│   ├── frp/                # 内网穿透配置（frp + nginx）
+│   ├── frp/                # 旧 frp 穿透配置（已弃用，现用 Cloudflare Tunnel）
 │   └── sql/                # 数据库初始化脚本
-├── docker-compose.yml      # 一键部署（MySQL/Redis/MinIO/后端/双前端）
+├── docker-compose.yml      # 一键部署（MySQL/Redis/MinIO/后端/双前端/Cloudflare Tunnel）
 └── requirements.txt        # Python 依赖
 ```
 
@@ -139,10 +139,13 @@ cp .env.example .env   # 按实际环境修改连接信息
 | --- | --- | --- |
 | `MYSQL_HOST` / `MYSQL_PORT` | 数据库连接 | `127.0.0.1` / `3306` |
 | `REDIS_HOST` / `REDIS_PORT` | 缓存连接 | `127.0.0.1` / `6379` |
-| `MINIO_ADDRESS` / `MINIO_BUCKET_NAME` | 对象存储 | `127.0.0.1:9000` / `classai-edu` |
-| `MINIO_ACCESS_KEY` / `MINIO_SECRET_KEY` | MinIO 凭据 | — |
+| `MINIO_ADDRESS` / `MINIO_PORT` | 对象存储（生产走域名，见 `.env.prod`） | `127.0.0.1` / `9000` |
+| `MINIO_SECURE` | MinIO 是否走 HTTPS（域名部署时 `true`） | `false` |
+| `MINIO_BUCKET_NAME` | MinIO 桶名 | `classai-edu` |
 | `JWT_SECRET_KEY` | JWT 签名密钥 | 建议生产环境务必修改 |
-| `DASHBOARD_METRICS_DIR` | 训练指标目录 | `yolo_edu/scripts/metrics` |
+| `DASHBOARD_METRICS_DIR` | 训练指标目录（相对路径，以项目根为基准） | `yolo_edu/scripts/metrics` |
+
+> **路径规范**：所有入库/配置的文件路径一律使用相对路径（以项目根为基准，容器内即 `/app`），数据库 `model_config.model_path` 亦然，保证跨机器部署通用。
 
 ### 3. 启动后端
 
@@ -180,37 +183,49 @@ npm run dev
 
 ## Docker 一键部署
 
-生产环境一条命令拉起全部 6 个服务（MySQL / Redis / MinIO / 后端 / 用户端 / 管理端）：
+生产环境一条命令拉起全部 7 个服务（MySQL / Redis / MinIO / 后端 / 用户端 / 管理端 / Cloudflare Tunnel）：
 
 ```bash
-# 1. 准备后端环境变量（首次）
-cp backend_api/.env.example backend_api/.env.prod
+# 1. 准备环境变量（首次）
+cp backend_api/.env.example backend_api/.env.prod   # 按实际环境修改
+cp .env.example .env                                 # 若无此模板则手动创建,内容见下
 
 # 2. 初始化数据库（仅首次）
 docker compose up -d mysql
 docker compose exec -T mysql mysql -uroot -p123456 classai_edu < script/sql/classai_edu.sql
 
 # 3. 构建并启动全部服务
-NEXT_PUBLIC_BASE_URL=http://<服务器IP>:7869 docker compose up -d --build
+docker compose build backend frontend_web frontend_admin
+docker compose up -d
 ```
 
-说明：
-- `NEXT_PUBLIC_BASE_URL` 是**浏览器**访问后端的地址（构建期固化到前端），必须是外部可达的 IP 或域名，不能写容器名
-- 容器内 MySQL / Redis / MinIO 地址会自动覆盖为服务名，`backend_api/.env.prod` 中的本机地址仅本地开发生效
-- 各服务带健康检查，后端会等基础设施就绪后再启动
+项目根目录 `.env`（gitignored，存放隧道令牌与构建参数）：
 
-> **国内网络构建提示**：构建时 apt / pip 下载缓慢或报 `502 Bad Gateway`，可让构建流量走本机代理（以 ClashX 默认端口 7890 为例，需在代理软件中开启「允许局域网连接」）：
->
-> ```bash
-> docker compose build \
->   --build-arg HTTP_PROXY=http://host.docker.internal:7890 \
->   --build-arg HTTPS_PROXY=http://host.docker.internal:7890 \
->   backend frontend_web frontend_admin
->
-> docker compose up -d
-> ```
->
-> 已完成的构建层有缓存，重试只会从失败处继续。
+```bash
+TUNNEL_TOKEN=<CF 后台 Tunnel 生成的令牌>
+NEXT_PUBLIC_BASE_URL=https://api.dock-chips.top   # 浏览器访问后端的地址,构建期固化
+HTTP_PROXY=http://host.docker.internal:7890        # 构建期+运行时走宿主机代理(可置空直连)
+HTTPS_PROXY=http://host.docker.internal:7890
+```
+
+### 域名发布（Cloudflare Tunnel）
+
+无公网 IP 也可通过域名对外提供服务：cloudflared 容器与业务容器同网络，CF 后台（Zero Trust → Networks → Tunnels）添加 Public Hostname 路由即可，DNS 自动配置：
+
+| 域名 | 服务 | 说明 |
+| --- | --- | --- |
+| `dock-chips.top` / `www` | `http://frontend_web:3000` | 用户端 |
+| `api.dock-chips.top` | `http://backend:7869` | 后端 API |
+| `admin.dock-chips.top` | `http://frontend_admin:4000` | 管理端（建议套 Cloudflare Access） |
+| `files.dock-chips.top` | `http://minio:9000` | 对象存储（需开桶匿名只读：`mc anonymous set download`） |
+
+说明：
+- `NEXT_PUBLIC_BASE_URL` 是**浏览器**访问后端的地址（构建期固化到前端），必须是外部可达的域名，不能写容器名
+- 路由填的 Service URL 是**容器名**（同 compose 网络），不是 localhost
+- MinIO 生产走 `files.<域名>:443` + `MINIO_SECURE=true`，保证预签名 URL 的签名 host 与浏览器一致
+- OAuth 回调地址需使用 `https://api.<域名>/api/strategies/identity/auth/<google|github>`，并在 Google Cloud Console / GitHub App 后台同步修改
+- 容器内 MySQL / Redis 地址自动覆盖为服务名；访问 Google 等外部 API 走运行时 `HTTP_PROXY`（容器互访走 `NO_PROXY` 排除）
+- 各服务带健康检查，后端会等基础设施就绪后再启动；构建期 apt / pip 代理已通过 compose `build.args` 自动注入，无需手动传 `--build-arg`
 
 ## 技术栈
 
@@ -220,7 +235,7 @@ NEXT_PUBLIC_BASE_URL=http://<服务器IP>:7869 docker compose up -d --build
 | AI | PyTorch · Ultralytics YOLOv8 · OpenCV · PyAV · SAHI（切片推理）· filterpy（跟踪） |
 | 前端 | Next.js 16 · React 19 · TypeScript · Tailwind CSS 4 · framer-motion · recharts · i18next |
 | 存储 | MySQL 8.0 · Redis 7.2 · MinIO |
-| 部署 | Docker Compose · frp + nginx（可选内网穿透） |
+| 部署 | Docker Compose · Cloudflare Tunnel（无公网 IP 域名发布，已替代 frp + nginx） |
 
 ## 路线图
 
