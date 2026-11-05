@@ -20,6 +20,13 @@
 
 ---
 
+## Screenshots
+
+| User Portal | Admin Console |
+| --- | --- |
+| ![User portal home](docs/web-home-page.png) | ![Admin dashboard](docs/admin-dashboard.png) |
+| ![User portal login](docs/web-admin.png) | ![Admin login](docs/admin-login.png) |
+
 ## Overview
 
 ClassAI-Edu is an end-to-end intelligent classroom behavior monitoring system covering the full pipeline of **data collection → annotation & training → real-time detection → statistical reporting**. Built on the YOLOv8 object detection model, it automatically recognizes 6 typical classroom behaviors, delivers millisecond-level real-time video stream detection and multi-object tracking over WebSocket, and provides objective quantitative data for teaching management.
