@@ -7,9 +7,11 @@ import cv2
 import numpy as np
 from fastapi import UploadFile
 
-from config.config import bucket, MINIO_BUCKET_NAME, MINIO_ENDPOINT
+from config.config import bucket, MINIO_BUCKET_NAME, MINIO_ENDPOINT, MINIO_SECURE
 from tools.logger_tool import log
 from models.exceptions import ServiceException
+
+_FILE_URL_SCHEME = "https" if MINIO_SECURE else "http"
 
 
 async def upload_file_to_minio(file: UploadFile,presign_save: bool = False) -> str:
@@ -36,7 +38,7 @@ async def upload_file_to_minio(file: UploadFile,presign_save: bool = False) -> s
             expires=timedelta(days=7)
         )
         return url
-    return f"http://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
+    return f"{_FILE_URL_SCHEME}://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
 
 
 def upload_bytes_to_minio(data: bytes, filename: str, content_type: str , presign_save: bool = False) -> str:
@@ -59,7 +61,7 @@ def upload_bytes_to_minio(data: bytes, filename: str, content_type: str , presig
         )
         return url
 
-    return f"http://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
+    return f"{_FILE_URL_SCHEME}://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
 
 
 def upload_np_image_to_minio(img: np.ndarray, suffix: str = ".jpg",presign_save: bool = False) -> str:
@@ -89,7 +91,7 @@ def upload_np_image_to_minio(img: np.ndarray, suffix: str = ".jpg",presign_save:
         )
         return url
 
-    return f"http://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
+    return f"{_FILE_URL_SCHEME}://{MINIO_ENDPOINT}/{MINIO_BUCKET_NAME}/{object_name}"
 
 
 def delete_minio_file(image_url: Optional[str]):

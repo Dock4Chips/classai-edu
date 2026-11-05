@@ -7,17 +7,17 @@ import io
 # bucket类似于文件夹或目录，其中每个bucket可以容纳任意数量的对象。
 class Bucket:
 
-    def __init__(self, minio_address, minio_admin, minio_password):
+    def __init__(self, minio_address, minio_admin, minio_password, minio_secure=False):
         # 通过ip 账号 密码 连接minio server
-        # Http连接 将secure设置为False
+        # Http连接 将secure设置为False; 走域名/HTTPS时由环境变量 MINIO_SECURE 控制
         http_client = urllib3.PoolManager(
             timeout=urllib3.Timeout(connect=10, read=600)  # 这里将读超时设置为600秒 (10分钟)
         )
         self.minioClient = Minio(endpoint=minio_address,
                                  access_key=minio_admin,
                                  secret_key=minio_password,
-                                 secure=False,
-                                 http_client=http_client)  # <--- 新增这行，将自定义的http_client传递进去
+                                 secure=minio_secure,
+                                 http_client=http_client)
 
     def create_one_bucket(self, bucket_name):
         # 创建桶(调用make_bucket api来创建一个桶)
