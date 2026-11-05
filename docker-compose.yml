@@ -88,6 +88,10 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       DASHBOARD_METRICS_DIR: /app/yolo_edu/scripts/metrics
+      # 运行时访问外部 OAuth(Google/GitHub)走宿主机代理;容器互访不走代理
+      HTTP_PROXY: ${HTTP_PROXY:-}
+      HTTPS_PROXY: ${HTTP_PROXY:-}
+      NO_PROXY: localhost,127.0.0.1,mysql,redis,minio,frontend_web,frontend_admin,host.docker.internal
     depends_on:
       mysql:
         condition: service_healthy
