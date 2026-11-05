@@ -133,6 +133,8 @@ docker compose up -d mysql redis minio
 mysql -h 127.0.0.1 -uroot -p123456 < script/sql/classai_edu.sql
 ```
 
+> 默认管理员账号：`admin / 123456`（登录后请及时修改密码）。
+
 ### 2. 配置后端
 
 ```bash
@@ -200,7 +202,11 @@ cp .env.example .env                                 # 若无此模板则手动�
 # 2. 初始化数据库（仅首次）
 docker compose up -d mysql
 docker compose exec -T mysql mysql -uroot -p123456 classai_edu < script/sql/classai_edu.sql
+```
 
+> 默认管理员账号：`admin / 123456`（登录后请及时修改密码）。
+
+```bash
 # 3. 构建并启动全部服务
 docker compose build backend frontend_web frontend_admin
 docker compose up -d

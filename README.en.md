@@ -133,6 +133,8 @@ Initialize the database:
 mysql -h 127.0.0.1 -uroot -p123456 < script/sql/classai_edu.sql
 ```
 
+> Default admin account: `admin / 123456` (change the password promptly after first login).
+
 ### 2. Configure the Backend
 
 ```bash
@@ -200,7 +202,11 @@ cp backend_api/.env.example backend_api/.env.prod   # Adjust for your environmen
 # 2. Initialize the database (first time only)
 docker compose up -d mysql
 docker compose exec -T mysql mysql -uroot -p123456 classai_edu < script/sql/classai_edu.sql
+```
 
+> Default admin account: `admin / 123456` (change the password promptly after first login).
+
+```bash
 # 3. Build and start everything
 docker compose build backend frontend_web frontend_admin
 docker compose up -d
