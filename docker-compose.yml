@@ -71,19 +71,22 @@ services:
     build:
       context: .
       dockerfile: backend_api/Dockerfile
+      args:
+        # 构建期走宿主机 Clash 代理(.env 可改),运行时不受影响
+        HTTP_PROXY: ${HTTP_PROXY:-}
+        HTTPS_PROXY: ${HTTPS_PROXY:-}
     image: classai-backend
     container_name: classai_backend
     restart: unless-stopped
     env_file:
       - backend_api/.env.prod
     # 容器内互联：覆盖 .env.prod 中的本机地址
+    # MinIO 不在此覆盖：走 files.dock-chips.top(见 .env.prod),保证签名 host 一致
     environment:
       MYSQL_HOST: mysql
       MYSQL_PORT: 3306
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      MINIO_ADDRESS: minio
-      MINIO_PORT: 9000
       DASHBOARD_METRICS_DIR: /app/yolo_edu/scripts/metrics
     depends_on:
       mysql:
@@ -110,6 +113,8 @@ services:
       args:
         # 浏览器实际访问后端的地址（必须可从外部访问，不能写容器名）
         NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:7869}
+        HTTP_PROXY: ${HTTP_PROXY:-}
+        HTTPS_PROXY: ${HTTPS_PROXY:-}
     image: classai-frontend-web
     container_name: classai_frontend_web
     restart: unless-stopped
@@ -125,6 +130,8 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_BASE_URL: ${NEXT_PUBLIC_BASE_URL:-http://localhost:7869}
+        HTTP_PROXY: ${HTTP_PROXY:-}
+        HTTPS_PROXY: ${HTTPS_PROXY:-}
     image: classai-frontend-admin
     container_name: classai_frontend_admin
     restart: unless-stopped
@@ -133,6 +140,22 @@ services:
         condition: service_healthy
     ports:
       - "${ADMIN_PORT:-4000}:4000"
+
+  # Cloudflare Tunnel:把域名流量带回本机容器(域名映射在 CF 后台 Public Hostname 配置)
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: classai_cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN}
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend_web:
+        condition: service_started
+      frontend_admin:
+        condition: service_started
 
 volumes:
   mysql_data:
