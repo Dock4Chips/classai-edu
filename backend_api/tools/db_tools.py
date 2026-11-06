@@ -6,7 +6,9 @@ from typing import List, Optional, Any, Dict, Union, Tuple
 import os
 from datetime import datetime
 
-from tools.logger_tool import log
+from tools.logger_tool import mod_log_setup
+
+log = mod_log_setup(__name__)
 
 
 # MySQL 数据库配置

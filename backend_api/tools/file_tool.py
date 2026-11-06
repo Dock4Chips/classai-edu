@@ -8,7 +8,9 @@ import numpy as np
 from fastapi import UploadFile
 
 from config.config import bucket, MINIO_BUCKET_NAME, MINIO_ENDPOINT, MINIO_SECURE
-from tools.logger_tool import log
+from tools.logger_tool import mod_log_setup
+
+log = mod_log_setup(__name__)
 from models.exceptions import ServiceException
 
 _FILE_URL_SCHEME = "https" if MINIO_SECURE else "http"

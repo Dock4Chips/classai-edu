@@ -1,7 +1,9 @@
 import os
 import cv2
 import torch
-from tools.logger_tool import log
+from tools.logger_tool import mod_log_setup
+
+log = mod_log_setup(__name__)
 from sahi import AutoDetectionModel
 from sahi.predict import get_sliced_prediction
 

@@ -4,7 +4,9 @@ from dotenv import load_dotenv
 import redis
 
 from tools.db_tools import DBConfig, DBTools
-from tools.logger_tool import log
+from tools.logger_tool import mod_log_setup
+
+log = mod_log_setup(__name__)
 from tools.minio_tools import Bucket
 
 env_path = Path(__file__).parent.parent / ".env"

@@ -1,6 +1,8 @@
 from ultralytics import YOLO
 
-from tools.logger_tool import log
+from tools.logger_tool import mod_log_setup
+
+log = mod_log_setup(__name__)
 
 
 MODEL_PATH = "dodge_project/classai_model/weights/best.pt"

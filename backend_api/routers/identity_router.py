@@ -11,7 +11,9 @@ from fastapi.responses import RedirectResponse
 from auth.authorization import Authorization
 from config import redis_client
 from enums.login_type import LoginType
-from tools.logger_tool import log
+from tools.logger_tool import mod_log_setup
+
+log = mod_log_setup(__name__)
 from models.exceptions import ServiceException
 from models.result import Res
 from repository.identity_repository import get_user_by_username, create_user, get_user_by_user_id

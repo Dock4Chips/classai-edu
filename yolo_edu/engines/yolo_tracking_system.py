@@ -2,7 +2,9 @@ import cv2
 from ultralytics import YOLO
 
 from yolo_edu.services.model_config_service import ModelConfigService
-from tools.logger_tool import log
+from tools.logger_tool import mod_log_setup
+
+log = mod_log_setup(__name__)
 from yolo_edu.yolo_tools.draw_tool import DrawTool
 
 class YOLOTrackingSystem:

@@ -1,5 +1,7 @@
 from ultralytics import YOLO
-from tools.logger_tool import log
+from tools.logger_tool import mod_log_setup
+
+log = mod_log_setup(__name__)
 import time
 
 

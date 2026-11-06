@@ -6,7 +6,9 @@ from typing import Union
 
 from auth.authorization import Authorization
 from enums.detection_type import Action
-from tools.logger_tool import log
+from tools.logger_tool import mod_log_setup
+
+log = mod_log_setup(__name__)
 from models.exceptions import ServiceException
 from models.result import Res
 from tools.file_tool import upload_file_to_minio
