@@ -1,17 +1,4 @@
-# ============================================================
-# ClassAI-Edu 全栈部署
-#
-# 使用方式：
-#   1. 准备后端环境变量：cp backend_api/.env.example backend_api/.env.prod
-#      （容器内 MySQL/Redis/MinIO 地址会被下方 environment 自动覆盖为服务名）
-#   2. 初始化数据库（仅首次）：
-#        docker compose up -d mysql
-#        docker compose exec -T mysql mysql -uroot -p123456 classai_edu < script/sql/classai_edu.sql
-#   3. 构建并启动全部服务：
-#        NEXT_PUBLIC_BASE_URL=http://<服务器IP>:7869 docker compose up -d --build
-#   4. 仅启动基础设施（本地跑后端/前端开发时）：
-#        docker compose up -d mysql redis minio
-# ============================================================
+
 name: classai-edu
 
 services:
